@@ -318,7 +318,7 @@
             background: var(--carbon-black);
             border-radius: 28px;
             padding: 10px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-align: center;
             margin-top: 14px;
             border: 1px dashed var(--strawberry-red);
@@ -378,7 +378,7 @@
         <button class="checkout" onclick="checkout()">💬 Go to Discord</button>
     </div>
     <div class="discord-note">
-        ⚡ <strong>Next step:</strong> Paste this order in Discord channel: <span style="color: var(--strawberry-red);">#order-list</span>
+        ⚡ <strong>Next step:</strong> Paste this order in a <span style="color: var(--strawberry-red); font-weight: bold;">ticket</span> on Discord
     </div>
 </div>
 
@@ -402,7 +402,7 @@
             </div>
         </div>
 
-        <!-- The Forest (price updated to $2.00) -->
+        <!-- The Forest (price $2.00) -->
         <div class="card" data-cat="games">
             <img class="card-img" src="https://placehold.co/600x400/ba181b/d3d3d3?text=THE+FOREST&font=montserrat" alt="The Forest">
             <div class="card-content">
@@ -544,7 +544,7 @@
             </div>
         </div>
 
-        <!-- Dr Donut Money 1M (0.10) -->
+        <!-- Dr Donut Money 1M ($0.10) -->
         <div class="card" data-cat="other">
             <img class="card-img" src="https://placehold.co/600x400/a4161a/ffddbb?text=DR+DONUT+MONEY&font=montserrat" alt="Dr Donut Money">
             <div class="card-content">
@@ -556,7 +556,7 @@
     </div>
 </div>
 <div id="toastMsg" class="toast">✨ Added to cart</div>
-<footer>🔥 full catalog • Rust NFA • The Forest $2.00 • Dr Donut Money $0.10 • copy order & paste in #order-list</footer>
+<footer>🔥 full catalog • Rust NFA • The Forest $2.00 • Dr Donut Money $0.10 • copy order & open a ticket on Discord</footer>
 
 <script>
     let cart = [];
@@ -571,7 +571,7 @@
         cartContainer.innerHTML = "";
         if (cart.length === 0) {
             cartContainer.innerHTML = `<div style="text-align:center; opacity:0.8; padding:30px 0;">🛒 Cart empty<br>✨ add items from the shop ✨</div>`;
-            copyArea.value = "🍪 COOKIE'S SHOP ORDER LIST\n━━━━━━━━━━━━━━━━━━━━━━━━━━\nNo items yet.\nAdd products to generate order.\n\n👉 Paste this in Discord channel: #order-list";
+            copyArea.value = "🍪 COOKIE'S SHOP ORDER LIST\n━━━━━━━━━━━━━━━━━━━━━━━━━━\nNo items yet.\nAdd products to generate order.\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord";
             totalBox.textContent = "Total: $0.00";
             cartCountSpan.textContent = "0";
             return;
@@ -592,7 +592,7 @@
             orderText += `◆ ${item.name}  •  $${item.price.toFixed(2)}\n`;
         });
 
-        orderText += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL: $${total.toFixed(2)}\n✨ Thank you for shopping at Cookie's Shop! ✨\n\n📌 NEXT STEP: Paste this order in Discord channel: #order-list`;
+        orderText += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL: $${total.toFixed(2)}\n✨ Thank you for shopping at Cookie's Shop! ✨\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord`;
         copyArea.value = orderText;
         totalBox.textContent = `Total: $${total.toFixed(2)}`;
         cartCountSpan.textContent = cart.length;
@@ -642,10 +642,10 @@
         copyArea.select();
         copyArea.setSelectionRange(0, 99999);
         navigator.clipboard.writeText(copyArea.value).then(() => {
-            showToast("📋 Copied! Paste in #order-list");
+            showToast("📋 Order copied! Now paste it in a ticket on Discord");
         }).catch(() => {
             document.execCommand("copy");
-            showToast("📋 Copied!");
+            showToast("📋 Copied! Now paste it in a ticket");
         });
     }
 
@@ -657,7 +657,7 @@
         manualCopy();
         setTimeout(() => {
             window.open("https://discord.gg/49cwUj62aC", "_blank");
-            showToast("✨ Discord opened — paste order in #order-list");
+            showToast("✨ Discord opened — create a ticket and paste your order there");
         }, 200);
     }
 

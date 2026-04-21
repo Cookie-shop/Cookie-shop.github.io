@@ -77,22 +77,35 @@
             100% { text-shadow: 0 0 18px var(--white), 0 0 24px var(--strawberry-red);}
         }
 
-        /* currency switcher bar */
+        /* currency bar - payment methods on far left */
         .currency-bar {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             gap: 15px;
             padding: 10px 24px;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--mahogany-red);
+            flex-wrap: wrap;
+        }
+        .payment-methods {
+            font-size: 0.8rem;
+            background: var(--dark-garnet);
+            padding: 6px 18px;
+            border-radius: 40px;
+            color: var(--dust-grey);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .currency-selector {
             display: flex;
             gap: 12px;
             background: var(--onyx);
-            padding: 6px 16px;
+            padding: 5px 16px;
             border-radius: 60px;
             border: 1px solid var(--strawberry-red);
         }
@@ -108,13 +121,6 @@
             background: var(--strawberry-red);
             color: white;
             box-shadow: 0 0 8px var(--strawberry-red);
-        }
-        .payment-badge {
-            font-size: 0.8rem;
-            background: var(--dark-garnet);
-            padding: 5px 15px;
-            border-radius: 40px;
-            color: var(--dust-grey);
         }
 
         .cart-btn {
@@ -392,7 +398,8 @@
             .container { padding: 16px; }
             .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
             .cart-btn { top: 75px; padding: 6px 14px; right: 12px;}
-            .currency-bar { flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 16px;}
+            .currency-bar { flex-direction: column; align-items: stretch; gap: 10px; padding: 10px 16px;}
+            .payment-methods { justify-content: center; }
             .currency-selector { justify-content: center; }
         }
     </style>
@@ -402,11 +409,13 @@
 <header>🍪 COOKIE'S SHOP 🔥 | Premium Keys & Accounts</header>
 
 <div class="currency-bar">
+    <div class="payment-methods">
+        💳 PayPal | 🏦 Swedbank | ₿ Crypto
+    </div>
     <div class="currency-selector">
         <div class="currency-option active" data-currency="eur">🇪🇺 EUR (€)</div>
         <div class="currency-option" data-currency="usd">🇺🇸 USD ($)</div>
     </div>
-    <div class="payment-badge">💳 PayPal | 🏦 Swedbank | ₿ Crypto</div>
 </div>
 
 <div class="cart-btn" onclick="toggleCart()">
@@ -446,7 +455,7 @@
 <footer>🔥 All prices in EUR • Switch to USD • We accept PayPal, Swedbank, Crypto • Open a ticket after copying order</footer>
 
 <script>
-    // ----- BASE PRICES IN EUR (updated: Rust 4.99, DayZ 3.49, others lowered by 1 cent, Minecraft 7.99) -----
+    // ----- BASE PRICES IN EUR (Rust 4.99, DayZ 3.49, others lowered by 1 cent, Minecraft 7.99) -----
     const productsEUR = [
         { name: "🦀 Rust NFA", cat: "games", price: 4.99, img: "RUST+NFA" },
         { name: "🌲 The Forest", cat: "games", price: 1.99, img: "THE+FOREST" },
@@ -467,7 +476,7 @@
         { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, img: "DR+DONUT+MONEY" }
     ];
 
-    // USD prices calculated with 1.08 conversion (realistic), then rounded to nearest cent
+    // USD prices with 1.08 conversion rate
     const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.08) * 100) / 100 }));
 
     let currentCurrency = "eur";
@@ -494,9 +503,9 @@
             const card = document.createElement("div");
             card.className = "card";
             card.setAttribute("data-cat", prod.cat);
-            const imgText = prod.img.replace(/\+/g, '+').replace(/ /g, '+');
+            const cleanName = prod.name.replace(/[^a-zA-Z0-9 ]/g, '').trim();
             card.innerHTML = `
-                <img class="card-img" src="https://placehold.co/600x400/660708/f5f3f4?text=${encodeURIComponent(prod.name.replace(/[^a-zA-Z0-9 ]/g, ''))}&font=montserrat" alt="${prod.name}">
+                <img class="card-img" src="https://placehold.co/600x400/660708/f5f3f4?text=${encodeURIComponent(cleanName)}&font=montserrat" alt="${prod.name}">
                 <div class="card-content">
                     <div class="title">${prod.name}</div>
                     <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>
@@ -506,7 +515,9 @@
             gamesGrid.appendChild(card);
         });
         bindAddButtons();
-        applyFilter(document.querySelector(".tab.active")?.getAttribute("data-filter") || "all");
+        const activeTab = document.querySelector(".tab.active");
+        if (activeTab) applyFilter(activeTab.getAttribute("data-filter"));
+        else applyFilter("all");
     }
 
     function applyFilter(category) {
@@ -674,28 +685,29 @@
         const eurBtn = document.querySelector(".currency-option[data-currency='eur']");
         const usdBtn = document.querySelector(".currency-option[data-currency='usd']");
         
-        eurBtn.addEventListener("click", () => {
-            if (currentCurrency === "eur") return;
-            currentCurrency = "eur";
-            eurBtn.classList.add("active");
-            usdBtn.classList.remove("active");
-            // Convert cart prices?
-            cart = [];
-            renderShop();
-            updateCartUI();
-            showToast("💰 Currency switched to EUR (€)");
-        });
-        
-        usdBtn.addEventListener("click", () => {
-            if (currentCurrency === "usd") return;
-            currentCurrency = "usd";
-            usdBtn.classList.add("active");
-            eurBtn.classList.remove("active");
-            cart = [];
-            renderShop();
-            updateCartUI();
-            showToast("💵 Currency switched to USD ($)");
-        });
+        if (eurBtn && usdBtn) {
+            eurBtn.addEventListener("click", () => {
+                if (currentCurrency === "eur") return;
+                currentCurrency = "eur";
+                eurBtn.classList.add("active");
+                usdBtn.classList.remove("active");
+                cart = [];
+                renderShop();
+                updateCartUI();
+                showToast("💰 Currency switched to EUR (€)");
+            });
+            
+            usdBtn.addEventListener("click", () => {
+                if (currentCurrency === "usd") return;
+                currentCurrency = "usd";
+                usdBtn.classList.add("active");
+                eurBtn.classList.remove("active");
+                cart = [];
+                renderShop();
+                updateCartUI();
+                showToast("💵 Currency switched to USD ($)");
+            });
+        }
     }
 
     document.addEventListener("DOMContentLoaded", () => {

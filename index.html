@@ -446,6 +446,7 @@
         <div class="tab" data-filter="games">🎮 Games</div>
         <div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
         <div class="tab" data-filter="other">💎 Other</div>
+        <div class="tab" data-filter="bundles">📦 Bundles</div>
     </div>
 
     <div class="games" id="gamesGrid"></div>
@@ -454,8 +455,9 @@
 <footer>🔥 All prices in EUR • Switch to USD • We accept PayPal, Swedbank, Crypto • Open a ticket after copying order</footer>
 
 <script>
-    // ----- PRODUCTS WITH CUSTOM IMAGES -----
+    // ----- COMPLETE PRODUCT LIST WITH IMAGES FROM SCREENSHOTS -----
     const productsEUR = [
+        // Existing games
         { name: "🦀 Rust NFA", cat: "games", price: 4.99, img: "header.jpg" },
         { name: "🌲 The Forest", cat: "games", price: 1.99, img: "capsule_616x353.jpg" },
         { name: "⚡ Full Access Rust", cat: "games", price: 14.99, img: "header.jpg" },
@@ -466,17 +468,32 @@
         { name: "🖼️ Wallpaper Engine", cat: "games", price: 1.49, img: "colorful-gaming-accessories.jpg" },
         { name: "🏁 Forza Horizon 5", cat: "games", price: 3.49, img: "kaosk.jpg" },
         { name: "🌲 Sons of The Forest", cat: "games", price: 2.49, img: "capsule_616x353 (1).jpg" },
-        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, img: "minecraft.png" },
+        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, img: "colorful-gaming-accessories.jpg" },
+        
+        // NEW GAMES FROM SCREENSHOTS
+        { name: "🎮 Cyberpunk 2077", cat: "games", price: 2.49, img: "capsule_616x353.png" },
+        { name: "📅 Schedule I", cat: "games", price: 2.99, img: "capsuse_616x353.png" },
+        { name: "🛶 Raft", cat: "games", price: 2.49, img: "capsule_616x353 (1).jpg" },
+        { name: "👽 Among Us", cat: "games", price: 1.99, img: "758ab0b61205081da2466386940752c70e0e5ea43bd39e8b9b13eaa455c69b7e.png" },
+        { name: "🔫 Rainbow Six Siege", cat: "games", price: 1.49, img: "images.jpg" },
+        { name: "🎲 Mystery Steam Account", cat: "other", price: 0.49, img: "colorful-gaming-accessories.jpg" },
+        
+        // Subscriptions
         { name: "🤖 ChatGPT Plus (FA)", cat: "subscriptions", price: 2.99, img: "Chat-GPT-logo.png" },
         { name: "📺 Netflix (Lifetime FA)", cat: "subscriptions", price: 5.49, img: "netflix_vx8r.jpg" },
         { name: "🎵 Spotify Premium (3 Months)", cat: "subscriptions", price: 3.99, img: "spotify-logo-zoom-s.png" },
         { name: "📹 YouTube Premium (1 Month)", cat: "subscriptions", price: 5.99, img: "YTP_logo_social_1200x630.png" },
         { name: "🎮 Discord Nitro Codes", cat: "other", price: 0.66, img: "e924d3bb6be94ac699234ef9.png" },
-        { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, img: "channels4_profile.jpg" }
+        { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, img: "channels4_profile.jpg" },
+        
+        // EPIC GAMES BUNDLES
+        { name: "📦 Epic Bundle (20-50 Games)", cat: "bundles", price: 0.99, img: "9xBT864XC3j5wcZRPgQapa.png" },
+        { name: "📦 Epic Bundle (50-100 Games)", cat: "bundles", price: 1.49, img: "9xBT864XC3j5wcZRPgQapa.png" },
+        { name: "📦 Epic Bundle (350+ Games)", cat: "bundles", price: 4.99, img: "9xBT864XC3j5wcZRPgQapa.png" }
     ];
 
-    // USD prices with 1.08 conversion rate
-    const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.08) * 100) / 100 }));
+    // USD prices with 1.17 conversion rate (based on screenshots: 2.49€/2.92$ = ~1.17 rate)
+    const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.175) * 100) / 100 }));
 
     let currentCurrency = "eur";
     let cart = [];
@@ -487,8 +504,6 @@
     const totalBox = document.getElementById("totalBox");
     const gamesGrid = document.getElementById("gamesGrid");
 
-    // Base path for images (using placeholder images as fallback, but actual filenames will be used)
-    // The images will attempt to load from the same directory as the HTML file
     function getImagePath(imgName) {
         return imgName;
     }

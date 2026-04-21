@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>🍪 Cookie's Shop | Premium Game Store</title>
+    <title>🍪 Cookie's Shop | Premium Game Store (€/$)</title>
     <style>
         * {
             margin: 0;
@@ -62,9 +62,9 @@
 
         header {
             background: linear-gradient(115deg, var(--dark-garnet), var(--mahogany-red), var(--mahogany-red-2));
-            padding: 1.3rem;
+            padding: 1rem;
             text-align: center;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             letter-spacing: 2px;
             border-bottom: 2px solid var(--strawberry-red);
@@ -77,33 +77,72 @@
             100% { text-shadow: 0 0 18px var(--white), 0 0 24px var(--strawberry-red);}
         }
 
+        /* currency switcher bar */
+        .currency-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 24px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--mahogany-red);
+        }
+        .currency-selector {
+            display: flex;
+            gap: 12px;
+            background: var(--onyx);
+            padding: 6px 16px;
+            border-radius: 60px;
+            border: 1px solid var(--strawberry-red);
+        }
+        .currency-option {
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            transition: 0.2s;
+            color: var(--silver);
+        }
+        .currency-option.active {
+            background: var(--strawberry-red);
+            color: white;
+            box-shadow: 0 0 8px var(--strawberry-red);
+        }
+        .payment-badge {
+            font-size: 0.8rem;
+            background: var(--dark-garnet);
+            padding: 5px 15px;
+            border-radius: 40px;
+            color: var(--dust-grey);
+        }
+
         .cart-btn {
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 22px;
             background: var(--onyx);
             backdrop-filter: blur(14px);
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 60px;
             cursor: pointer;
             z-index: 1100;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             border: 1px solid var(--strawberry-red);
             transition: 0.25s;
             box-shadow: 0 8px 18px rgba(0,0,0,0.5);
             color: var(--white-smoke);
         }
-
-        .cart-btn:hover { background: var(--mahogany-red); transform: scale(1.02); border-color: var(--silver); box-shadow: 0 0 14px var(--strawberry-red);}
+        .cart-btn:hover { background: var(--mahogany-red); transform: scale(1.02);}
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 28px 24px;
+            padding: 20px 24px;
         }
 
         .tabs {
@@ -111,13 +150,14 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 12px;
-            margin-bottom: 42px;
+            margin-bottom: 35px;
+            margin-top: 10px;
         }
 
         .tab {
             background: var(--onyx);
             backdrop-filter: blur(8px);
-            padding: 10px 24px;
+            padding: 8px 22px;
             border-radius: 60px;
             cursor: pointer;
             font-weight: 600;
@@ -126,10 +166,9 @@
             border: 1px solid var(--dust-grey);
             color: var(--silver);
         }
-
         .tab.active {
             background: linear-gradient(110deg, var(--mahogany-red-2), var(--strawberry-red));
-            box-shadow: 0 0 14px var(--strawberry-red);
+            box-shadow: 0 0 12px var(--strawberry-red);
             border-color: var(--white);
             color: var(--white);
         }
@@ -149,13 +188,11 @@
             border: 1px solid var(--mahogany-red);
             box-shadow: 0 20px 35px -16px black;
         }
-
         .card:hover {
             transform: translateY(-6px);
             border-color: var(--strawberry-red);
             box-shadow: 0 28px 45px -12px rgba(229, 56, 59, 0.3);
         }
-
         .card-img {
             width: 100%;
             height: 140px;
@@ -163,11 +200,9 @@
             display: block;
             background: linear-gradient(145deg, var(--dark-garnet), var(--carbon-black));
         }
-
         .card-content {
             padding: 14px 14px 18px;
         }
-
         .title {
             font-size: 1rem;
             font-weight: 700;
@@ -176,16 +211,13 @@
             gap: 6px;
             margin-bottom: 6px;
             color: var(--white-smoke);
-            line-height: 1.3;
         }
-
         .price {
-            color: var(--strawberry-red);
             font-weight: 800;
             margin: 10px 0 14px;
             font-size: 1.2rem;
+            color: var(--strawberry-red);
         }
-
         button {
             width: 100%;
             padding: 10px;
@@ -198,7 +230,6 @@
             cursor: pointer;
             transition: 0.2s;
         }
-
         button:active { transform: scale(0.96);}
         button:hover { filter: brightness(1.08); box-shadow: 0 4px 12px rgba(186, 24, 27, 0.5);}
 
@@ -220,7 +251,6 @@
             border-left: 3px solid var(--strawberry-red);
             box-shadow: -12px 0 35px rgba(0,0,0,0.8);
         }
-
         .cart.active { right: 0;}
 
         .cart h3 {
@@ -237,7 +267,7 @@
         #cartItems {
             flex: 1;
             overflow-y: auto;
-            max-height: 40vh;
+            max-height: 35vh;
             padding-right: 6px;
             margin-bottom: 15px;
         }
@@ -253,7 +283,6 @@
             font-size: 0.8rem;
             border: 1px solid var(--mahogany-red);
         }
-
         .remove {
             background: var(--dark-garnet);
             border: none;
@@ -263,7 +292,6 @@
             cursor: pointer;
             font-weight: bold;
             width: auto;
-            font-size: 0.7rem;
         }
         .remove:hover { background: var(--strawberry-red);}
 
@@ -302,7 +330,6 @@
         .copy-btn { background: var(--mahogany-red); color: var(--white); margin-bottom: 10px; }
         .checkout { background: var(--dark-garnet); color: var(--white-smoke); border: 1px solid var(--silver);}
         .checkout:hover { background: var(--mahogany-red-2);}
-
         .close-cart {
             position: absolute;
             top: 18px;
@@ -313,17 +340,24 @@
             color: var(--strawberry-red);
             font-weight: bold;
         }
-
         .discord-note {
             background: var(--carbon-black);
             border-radius: 28px;
             padding: 10px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-align: center;
             margin-top: 14px;
             border: 1px dashed var(--strawberry-red);
         }
-
+        .payment-info {
+            background: #1e162e;
+            border-radius: 28px;
+            padding: 10px;
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 12px;
+            border: 1px solid var(--mahogany-red);
+        }
         .toast {
             position: fixed;
             bottom: 30px;
@@ -342,26 +376,38 @@
             font-size: 0.85rem;
         }
         .toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
-
         footer {
             text-align: center;
             margin-top: 50px;
             font-size: 0.7rem;
             color: var(--silver);
         }
-
+        .join-discord {
+            background: #5865F2;
+            margin-top: 10px;
+            border: none;
+        }
+        .join-discord:hover { background: #4752c4; }
         @media (max-width: 640px) {
             .container { padding: 16px; }
             .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
-            .cart-btn { padding: 8px 16px; top: 12px; right: 12px; font-size: 0.85rem;}
-            .tab { padding: 6px 16px; font-size: 0.75rem;}
-            .title { font-size: 0.85rem;}
+            .cart-btn { top: 75px; padding: 6px 14px; right: 12px;}
+            .currency-bar { flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 16px;}
+            .currency-selector { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
 <header>🍪 COOKIE'S SHOP 🔥 | Premium Keys & Accounts</header>
+
+<div class="currency-bar">
+    <div class="currency-selector">
+        <div class="currency-option active" data-currency="eur">🇪🇺 EUR (€)</div>
+        <div class="currency-option" data-currency="usd">🇺🇸 USD ($)</div>
+    </div>
+    <div class="payment-badge">💳 PayPal | 🏦 Swedbank | ₿ Crypto</div>
+</div>
 
 <div class="cart-btn" onclick="toggleCart()">
     🛒 <span id="cartCount">0</span> <span>⛓️</span>
@@ -371,14 +417,18 @@
     <div class="close-cart" onclick="toggleCart()">✖️</div>
     <h3>✦ YOUR CART ✦</h3>
     <div id="cartItems"></div>
-    <div class="total" id="totalBox">Total: $0.00</div>
+    <div class="total" id="totalBox">Total: €0.00</div>
     <textarea id="copyArea" readonly placeholder="🔥 Order summary will appear here..."></textarea>
     <div class="cart-actions">
         <button class="copy-btn" onclick="manualCopy()">📋 Copy Order</button>
         <button class="checkout" onclick="checkout()">💬 Go to Discord</button>
+        <button class="join-discord" onclick="joinDiscord()">➕ Join Our Discord</button>
     </div>
     <div class="discord-note">
-        ⚡ <strong>Next step:</strong> Paste this order in a <span style="color: var(--strawberry-red); font-weight: bold;">ticket</span> on Discord
+        ⚡ <strong>Next step:</strong> Paste this order in a <span style="color: var(--strawberry-red);">ticket</span> on Discord
+    </div>
+    <div class="payment-info">
+        💰 <strong>We accept:</strong> PayPal, Swedbank, Crypto (BTC/ETH/USDT)
     </div>
 </div>
 
@@ -390,211 +440,114 @@
         <div class="tab" data-filter="other">💎 Other</div>
     </div>
 
-    <div class="games" id="gamesGrid">
-        <!-- ========== GAMES CATEGORY ========== -->
-        <!-- Rust NFA -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/660708/f5f3f4?text=RUST+NFA&font=montserrat" alt="Rust NFA">
-            <div class="card-content">
-                <div class="title">🦀 Rust NFA</div>
-                <div class="price">$6.00</div>
-                <button class="add-btn" data-name="Rust NFA" data-price="6.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- The Forest (price $2.00) -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/ba181b/d3d3d3?text=THE+FOREST&font=montserrat" alt="The Forest">
-            <div class="card-content">
-                <div class="title">🌲 The Forest</div>
-                <div class="price">$2.00</div>
-                <button class="add-btn" data-name="The Forest" data-price="2.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Full Access Rust -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/a4161a/ffccaa?text=FULL+ACCESS+RUST&font=montserrat" alt="Full Access Rust">
-            <div class="card-content">
-                <div class="title">⚡ Full Access Rust</div>
-                <div class="price">$15.00</div>
-                <button class="add-btn" data-name="Full Access Rust" data-price="15.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Arc Raider -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/660708/e0dcdd?text=ARC+RAIDER&font=montserrat" alt="Arc Raider">
-            <div class="card-content">
-                <div class="title">🚀 Arc Raider</div>
-                <div class="price">$4.50</div>
-                <button class="add-btn" data-name="Arc Raider" data-price="4.50">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- DayZ -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/ba181b/f5f3f4?text=DAYZ&font=montserrat" alt="DayZ">
-            <div class="card-content">
-                <div class="title">🧟 DayZ</div>
-                <div class="price">$4.50</div>
-                <button class="add-btn" data-name="DayZ" data-price="4.50">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- GTA V Steam -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/660708/ffdd99?text=GTA5+STEAM&font=montserrat" alt="GTA5 Steam">
-            <div class="card-content">
-                <div class="title">🏎️ GTA V (Steam)</div>
-                <div class="price">$5.00</div>
-                <button class="add-btn" data-name="GTA V Steam" data-price="5.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- BeamNG.drive -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/a4161a/d3d3d3?text=BEAMNG.DRIVE&font=montserrat" alt="BeamNG.drive">
-            <div class="card-content">
-                <div class="title">🚗 BeamNG.drive</div>
-                <div class="price">$4.00</div>
-                <button class="add-btn" data-name="BeamNG.drive" data-price="4.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Wallpaper Engine -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/ba181b/ffffff?text=WALLPAPER+ENGINE&font=montserrat" alt="Wallpaper Engine">
-            <div class="card-content">
-                <div class="title">🖼️ Wallpaper Engine</div>
-                <div class="price">$1.50</div>
-                <button class="add-btn" data-name="Wallpaper Engine" data-price="1.50">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Forza Horizon 5 -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/660708/f5c2a0?text=FORZA+HORIZON+5&font=montserrat" alt="Forza Horizon 5">
-            <div class="card-content">
-                <div class="title">🏁 Forza Horizon 5</div>
-                <div class="price">$3.50</div>
-                <button class="add-btn" data-name="Forza Horizon 5" data-price="3.50">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Sons of The Forest -->
-        <div class="card" data-cat="games">
-            <img class="card-img" src="https://placehold.co/600x400/a4161a/e0e0e0?text=SONS+OF+FOREST&font=montserrat" alt="Sons of The Forest">
-            <div class="card-content">
-                <div class="title">🌲 Sons of The Forest</div>
-                <div class="price">$2.50</div>
-                <button class="add-btn" data-name="Sons of The Forest" data-price="2.50">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- ========== SUBSCRIPTIONS & APPS ========== -->
-        <!-- ChatGPT Plus FA -->
-        <div class="card" data-cat="subscriptions">
-            <img class="card-img" src="https://placehold.co/600x400/ba181b/ccffdd?text=CHATGPT&font=montserrat" alt="ChatGPT">
-            <div class="card-content">
-                <div class="title">🤖 ChatGPT Plus (FA)</div>
-                <div class="price">$3.00</div>
-                <button class="add-btn" data-name="ChatGPT Plus FA" data-price="3.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Netflix Lifetime FA -->
-        <div class="card" data-cat="subscriptions">
-            <img class="card-img" src="https://placehold.co/600x400/660708/ffe0b5?text=NETFLIX&font=montserrat" alt="Netflix">
-            <div class="card-content">
-                <div class="title">📺 Netflix (Lifetime FA)</div>
-                <div class="price">$5.50</div>
-                <button class="add-btn" data-name="Netflix Lifetime FA" data-price="5.50">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Spotify Premium 3 Months -->
-        <div class="card" data-cat="subscriptions">
-            <img class="card-img" src="https://placehold.co/600x400/a4161a/f0e6d2?text=SPOTIFY&font=montserrat" alt="Spotify">
-            <div class="card-content">
-                <div class="title">🎵 Spotify Premium (3 Months)</div>
-                <div class="price">$4.00</div>
-                <button class="add-btn" data-name="Spotify Premium 3 Months" data-price="4.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- YouTube Premium 1 Month -->
-        <div class="card" data-cat="subscriptions">
-            <img class="card-img" src="https://placehold.co/600x400/ba181b/ffddcc?text=YOUTUBE+PREMIUM&font=montserrat" alt="YouTube Premium">
-            <div class="card-content">
-                <div class="title">📹 YouTube Premium (1 Month)</div>
-                <div class="price">$6.00</div>
-                <button class="add-btn" data-name="YouTube Premium 1 Month" data-price="6.00">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- ========== OTHER (Nitro + Dr Donut Money) ========== -->
-        <!-- Discord Nitro Codes -->
-        <div class="card" data-cat="other">
-            <img class="card-img" src="https://placehold.co/600x400/660708/e9c7c2?text=DISCORD+NITRO&font=montserrat" alt="Nitro Codes">
-            <div class="card-content">
-                <div class="title">🎮 Discord Nitro Codes</div>
-                <div class="price">$0.67</div>
-                <button class="add-btn" data-name="Discord Nitro Codes" data-price="0.67">➕ Add</button>
-            </div>
-        </div>
-
-        <!-- Dr Donut Money 1M ($0.10) -->
-        <div class="card" data-cat="other">
-            <img class="card-img" src="https://placehold.co/600x400/a4161a/ffddbb?text=DR+DONUT+MONEY&font=montserrat" alt="Dr Donut Money">
-            <div class="card-content">
-                <div class="title">🍩 Dr Donut Money 1M</div>
-                <div class="price">$0.10</div>
-                <button class="add-btn" data-name="Dr Donut Money 1M" data-price="0.10">➕ Add</button>
-            </div>
-        </div>
-    </div>
+    <div class="games" id="gamesGrid"></div>
 </div>
 <div id="toastMsg" class="toast">✨ Added to cart</div>
-<footer>🔥 full catalog • Rust NFA • The Forest $2.00 • Dr Donut Money $0.10 • copy order & open a ticket on Discord</footer>
+<footer>🔥 All prices in EUR • Switch to USD • We accept PayPal, Swedbank, Crypto • Open a ticket after copying order</footer>
 
 <script>
+    // ----- BASE PRICES IN EUR (updated: Rust 4.99, DayZ 3.49, others lowered by 1 cent, Minecraft 7.99) -----
+    const productsEUR = [
+        { name: "🦀 Rust NFA", cat: "games", price: 4.99, img: "RUST+NFA" },
+        { name: "🌲 The Forest", cat: "games", price: 1.99, img: "THE+FOREST" },
+        { name: "⚡ Full Access Rust", cat: "games", price: 14.99, img: "FULL+ACCESS+RUST" },
+        { name: "🚀 Arc Raider", cat: "games", price: 4.49, img: "ARC+RAIDER" },
+        { name: "🧟 DayZ", cat: "games", price: 3.49, img: "DAYZ" },
+        { name: "🏎️ GTA V (Steam)", cat: "games", price: 4.99, img: "GTA5+STEAM" },
+        { name: "🚗 BeamNG.drive", cat: "games", price: 3.99, img: "BEAMNG.DRIVE" },
+        { name: "🖼️ Wallpaper Engine", cat: "games", price: 1.49, img: "WALLPAPER+ENGINE" },
+        { name: "🏁 Forza Horizon 5", cat: "games", price: 3.49, img: "FORZA+HORIZON+5" },
+        { name: "🌲 Sons of The Forest", cat: "games", price: 2.49, img: "SONS+OF+FOREST" },
+        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, img: "MINECRAFT" },
+        { name: "🤖 ChatGPT Plus (FA)", cat: "subscriptions", price: 2.99, img: "CHATGPT" },
+        { name: "📺 Netflix (Lifetime FA)", cat: "subscriptions", price: 5.49, img: "NETFLIX" },
+        { name: "🎵 Spotify Premium (3 Months)", cat: "subscriptions", price: 3.99, img: "SPOTIFY" },
+        { name: "📹 YouTube Premium (1 Month)", cat: "subscriptions", price: 5.99, img: "YOUTUBE+PREMIUM" },
+        { name: "🎮 Discord Nitro Codes", cat: "other", price: 0.66, img: "DISCORD+NITRO" },
+        { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, img: "DR+DONUT+MONEY" }
+    ];
+
+    // USD prices calculated with 1.08 conversion (realistic), then rounded to nearest cent
+    const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.08) * 100) / 100 }));
+
+    let currentCurrency = "eur";
     let cart = [];
 
     const cartContainer = document.getElementById("cartItems");
     const cartCountSpan = document.getElementById("cartCount");
     const copyArea = document.getElementById("copyArea");
     const totalBox = document.getElementById("totalBox");
+    const gamesGrid = document.getElementById("gamesGrid");
+
+    function getCurrentProducts() {
+        return currentCurrency === "eur" ? productsEUR : productsUSD;
+    }
+
+    function getCurrencySymbol() {
+        return currentCurrency === "eur" ? "€" : "$";
+    }
+
+    function renderShop() {
+        const products = getCurrentProducts();
+        gamesGrid.innerHTML = "";
+        products.forEach(prod => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.setAttribute("data-cat", prod.cat);
+            const imgText = prod.img.replace(/\+/g, '+').replace(/ /g, '+');
+            card.innerHTML = `
+                <img class="card-img" src="https://placehold.co/600x400/660708/f5f3f4?text=${encodeURIComponent(prod.name.replace(/[^a-zA-Z0-9 ]/g, ''))}&font=montserrat" alt="${prod.name}">
+                <div class="card-content">
+                    <div class="title">${prod.name}</div>
+                    <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>
+                    <button class="add-btn" data-name="${prod.name}" data-price="${prod.price}">➕ Add to Cart</button>
+                </div>
+            `;
+            gamesGrid.appendChild(card);
+        });
+        bindAddButtons();
+        applyFilter(document.querySelector(".tab.active")?.getAttribute("data-filter") || "all");
+    }
+
+    function applyFilter(category) {
+        const allCards = document.querySelectorAll(".card");
+        allCards.forEach(card => {
+            const cardCat = card.getAttribute("data-cat");
+            if (category === "all" || cardCat === category) card.style.display = "block";
+            else card.style.display = "none";
+        });
+    }
 
     function updateCartUI() {
         if (!cartContainer) return;
         cartContainer.innerHTML = "";
+        const symbol = getCurrencySymbol();
         if (cart.length === 0) {
             cartContainer.innerHTML = `<div style="text-align:center; opacity:0.8; padding:30px 0;">🛒 Cart empty<br>✨ add items from the shop ✨</div>`;
-            copyArea.value = "🍪 COOKIE'S SHOP ORDER LIST\n━━━━━━━━━━━━━━━━━━━━━━━━━━\nNo items yet.\nAdd products to generate order.\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord";
-            totalBox.textContent = "Total: $0.00";
+            copyArea.value = "🍪 COOKIE'S SHOP ORDER LIST\n━━━━━━━━━━━━━━━━━━━━━━━━━━\nNo items yet.\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord\n\n💳 Payment methods: PayPal, Swedbank, Crypto";
+            totalBox.textContent = `Total: ${symbol}0.00`;
             cartCountSpan.textContent = "0";
             return;
         }
 
         let total = 0;
-        let orderText = "🍪 COOKIE'S SHOP - ORDER LIST 🍪\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+        let orderText = `🍪 COOKIE'S SHOP - ORDER LIST (${symbol.toUpperCase()})\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
         
         cart.forEach((item, idx) => {
             total += item.price;
             const itemDiv = document.createElement("div");
             itemDiv.className = "cart-item";
             itemDiv.innerHTML = `
-                <span><strong>${escapeHtml(item.name)}</strong>  —  $${item.price.toFixed(2)}</span>
+                <span><strong>${escapeHtml(item.name)}</strong>  —  ${symbol}${item.price.toFixed(2)}</span>
                 <button class="remove" data-index="${idx}">🗑️</button>
             `;
             cartContainer.appendChild(itemDiv);
-            orderText += `◆ ${item.name}  •  $${item.price.toFixed(2)}\n`;
+            orderText += `◆ ${item.name}  •  ${symbol}${item.price.toFixed(2)}\n`;
         });
 
-        orderText += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL: $${total.toFixed(2)}\n✨ Thank you for shopping at Cookie's Shop! ✨\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord`;
+        orderText += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL: ${symbol}${total.toFixed(2)}\n✨ Thank you for shopping at Cookie's Shop! ✨\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord\n💳 Payment methods: PayPal, Swedbank, Crypto (BTC/ETH/USDT)`;
         copyArea.value = orderText;
-        totalBox.textContent = `Total: $${total.toFixed(2)}`;
+        totalBox.textContent = `Total: ${symbol}${total.toFixed(2)}`;
         cartCountSpan.textContent = cart.length;
 
         document.querySelectorAll(".remove").forEach(btn => {
@@ -604,8 +557,7 @@
     }
 
     function removeHandler(e) {
-        const btn = e.currentTarget;
-        const idx = btn.getAttribute("data-index");
+        const idx = e.currentTarget.getAttribute("data-index");
         if (idx !== null) removeItem(parseInt(idx));
         e.stopPropagation();
     }
@@ -621,7 +573,7 @@
     function addToCart(name, price) {
         cart.push({ name: name, price: price });
         updateCartUI();
-        showToast(`➕ ${name} added • $${price.toFixed(2)}`);
+        showToast(`➕ ${name} added • ${getCurrencySymbol()}${price.toFixed(2)}`);
         const cartBtn = document.querySelector(".cart-btn");
         if(cartBtn) {
             cartBtn.style.transform = "scale(1.06)";
@@ -661,6 +613,11 @@
         }, 200);
     }
 
+    function joinDiscord() {
+        window.open("https://discord.gg/49cwUj62aC", "_blank");
+        showToast("✨ Join our Discord for support and orders!");
+    }
+
     function toggleCart() {
         document.getElementById("cart").classList.toggle("active");
     }
@@ -672,31 +629,6 @@
             if (m === '>') return '&gt;';
             return m;
         });
-    }
-
-    // Filters
-    function initFilters() {
-        const tabs = document.querySelectorAll(".tab");
-        const allCards = document.querySelectorAll(".card");
-
-        function filterProducts(category) {
-            allCards.forEach(card => {
-                const cardCat = card.getAttribute("data-cat");
-                if (category === "all" || cardCat === category) card.style.display = "block";
-                else card.style.display = "none";
-            });
-        }
-
-        tabs.forEach(tab => {
-            tab.addEventListener("click", (e) => {
-                const filterValue = tab.getAttribute("data-filter");
-                if (!filterValue) return;
-                tabs.forEach(t => t.classList.remove("active"));
-                tab.classList.add("active");
-                filterProducts(filterValue);
-            });
-        });
-        filterProducts("all");
     }
 
     function bindAddButtons() {
@@ -714,6 +646,19 @@
         if (name && !isNaN(price)) addToCart(name, price);
     }
 
+    function initFilters() {
+        const tabs = document.querySelectorAll(".tab");
+        tabs.forEach(tab => {
+            tab.addEventListener("click", (e) => {
+                const filterValue = tab.getAttribute("data-filter");
+                if (!filterValue) return;
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                applyFilter(filterValue);
+            });
+        });
+    }
+
     function setupCartClose() {
         const cartPanel = document.getElementById("cart");
         document.addEventListener("click", (e) => {
@@ -725,10 +670,39 @@
         });
     }
 
+    function setupCurrencySwitcher() {
+        const eurBtn = document.querySelector(".currency-option[data-currency='eur']");
+        const usdBtn = document.querySelector(".currency-option[data-currency='usd']");
+        
+        eurBtn.addEventListener("click", () => {
+            if (currentCurrency === "eur") return;
+            currentCurrency = "eur";
+            eurBtn.classList.add("active");
+            usdBtn.classList.remove("active");
+            // Convert cart prices?
+            cart = [];
+            renderShop();
+            updateCartUI();
+            showToast("💰 Currency switched to EUR (€)");
+        });
+        
+        usdBtn.addEventListener("click", () => {
+            if (currentCurrency === "usd") return;
+            currentCurrency = "usd";
+            usdBtn.classList.add("active");
+            eurBtn.classList.remove("active");
+            cart = [];
+            renderShop();
+            updateCartUI();
+            showToast("💵 Currency switched to USD ($)");
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+        renderShop();
         initFilters();
-        bindAddButtons();
         setupCartClose();
+        setupCurrencySwitcher();
         updateCartUI();
     });
 </script>

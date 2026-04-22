@@ -12,7 +12,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* === CUSTOM COLOR PALETTE (dark red theme) === */
         :root {
             --onyx: #0b090aff;
             --carbon-black: #161a1dff;
@@ -42,22 +41,6 @@
             background: radial-gradient(circle at 40% 50%, rgba(102, 7, 8, 0.25), transparent 70%);
             pointer-events: none;
             z-index: -1;
-        }
-
-        body::after {
-            content: "";
-            position: fixed;
-            width: 200%;
-            height: 200%;
-            background: repeating-linear-gradient(45deg, rgba(186, 24, 27, 0.04) 0px, rgba(186, 24, 27, 0.04) 2px, transparent 2px, transparent 15px);
-            animation: slowDrift 28s linear infinite;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes slowDrift {
-            0% { transform: translate(0, 0) rotate(0deg);}
-            100% { transform: translate(-3%, -3%) rotate(0.6deg);}
         }
 
         header {
@@ -95,10 +78,6 @@
             border-radius: 40px;
             color: var(--dust-grey);
             font-weight: 500;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         .currency-selector {
             display: flex;
@@ -139,7 +118,6 @@
             gap: 8px;
             border: 1px solid var(--strawberry-red);
             transition: 0.25s;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.5);
             color: var(--white-smoke);
         }
         .cart-btn:hover { background: var(--mahogany-red); transform: scale(1.02);}
@@ -445,55 +423,99 @@
         <div class="tab active" data-filter="all">✨ All</div>
         <div class="tab" data-filter="games">🎮 Games</div>
         <div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
-        <div class="tab" data-filter="other">💎 Other</div>
+        <div class="tab" data-filter="robux">💰 Robux</div>
+        <div class="tab" data-filter="fivem">⚙️ FiveM Cheats</div>
         <div class="tab" data-filter="bundles">📦 Bundles</div>
     </div>
 
     <div class="games" id="gamesGrid"></div>
 </div>
 <div id="toastMsg" class="toast">✨ Added to cart</div>
-<footer>🔥 All prices in EUR • Switch to USD • We accept PayPal, Swedbank, Crypto • Open a ticket after copying order</footer>
+<footer>🔥 Place your custom images (.png/.jpg) in the same folder as this HTML file</footer>
 
 <script>
-    // ----- COMPLETE PRODUCT LIST WITH IMAGES FROM SCREENSHOTS -----
+    // ============================================================
+    // COMPLETE PRODUCT LIST - ALL FIVEM CHEATS USE "Fivem.jpg"
+    // Includes: Valk Menu, Keyser Menu, Ryven Menu
+    // ============================================================
+    
     const productsEUR = [
-        // Existing games
-        { name: "🦀 Rust NFA", cat: "games", price: 4.99, img: "header.jpg" },
-        { name: "🌲 The Forest", cat: "games", price: 1.99, img: "capsule_616x353.jpg" },
-        { name: "⚡ Full Access Rust", cat: "games", price: 14.99, img: "header.jpg" },
-        { name: "🚀 Arc Raiders", cat: "games", price: 4.49, img: "images.jpg" },
-        { name: "🧟 DayZ", cat: "games", price: 3.49, img: "ORrwkbfh9B1OwfQbPGLBsgs7.jpg" },
-        { name: "🏎️ GTA V (Steam)", cat: "games", price: 4.99, img: "images (1).jpg" },
-        { name: "🚗 BeamNG.drive", cat: "games", price: 3.99, img: "beamngdrive-11zv3.jpg" },
-        { name: "🖼️ Wallpaper Engine", cat: "games", price: 1.49, img: "colorful-gaming-accessories.jpg" },
-        { name: "🏁 Forza Horizon 5", cat: "games", price: 3.49, img: "kaosk.jpg" },
-        { name: "🌲 Sons of The Forest", cat: "games", price: 2.49, img: "capsule_616x353 (1).jpg" },
-        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, img: "minecraft.png" },
+        // ========== GAMES ==========
+        { name: "🦀 Rust", cat: "games", price: 4.99, image: "header.png", emoji: "🦀", defaultColor: "ff6600" },
+        { name: "🌲 The Forest", cat: "games", price: 1.99, image: "theforest.jpg", emoji: "🌲", defaultColor: "2d6a4f" },
+        { name: "⚡ Full Access Rust", cat: "games", price: 14.99, image: "header.png", emoji: "⚡", defaultColor: "ffaa00" },
+        { name: "🚀 Arc Raiders", cat: "games", price: 4.49, image: "images.png", emoji: "🚀", defaultColor: "00aaff" },
+        { name: "🧟 DayZ", cat: "games", price: 3.49, image: "dayz.jpg", emoji: "🧟", defaultColor: "663300" },
+        { name: "🏎️ GTA V Steam", cat: "games", price: 4.99, image: "gtav.jpg", emoji: "🏎️", defaultColor: "ff8800" },
+        { name: "🚗 BeamNG.drive", cat: "games", price: 3.99, image: "beamngdrive.jpg", emoji: "🚗", defaultColor: "cc3333" },
+        { name: "🏁 Forza Horizon 5", cat: "games", price: 3.49, image: "kaoskjpg", emoji: "🏁", defaultColor: "ff3333" },
+        { name: "🌲 Sons of The Forest", cat: "games", price: 2.49, image: "sotf.jpg", emoji: "🌲", defaultColor: "3d8c40" },
+        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, image: "minecraft.png", emoji: "⛏️", defaultColor: "55aa55" },
+        { name: "🎮 Cyberpunk 2077", cat: "games", price: 2.49, image: "cyberpunk.png", emoji: "🎮", defaultColor: "ff0066" },
+        { name: "📅 Schedule I", cat: "games", price: 2.99, image: "schedule1.png", emoji: "📅", defaultColor: "ff9933" },
+        { name: "🛶 Raft", cat: "games", price: 2.49, image: "image.png", emoji: "🛶", defaultColor: "3399ff" },
+        { name: "👽 Among Us", cat: "games", price: 1.99, image: "amongus.png", emoji: "👽", defaultColor: "dd4444" },
+        { name: "🚛 Euro Truck Sim 2", cat: "games", price: 3.49, image: "maxresdefault_2.png", emoji: "🚛", defaultColor: "44aaff" },
+        { name: "🛒 Supermarket Simulator", cat: "games", price: 2.99, image: "asdasdasd.png", emoji: "🛒", defaultColor: "66cc66" },
+        { name: "⚔️ Mortal Kombat 1", cat: "games", price: 2.99, image: "klll.png", emoji: "⚔️", defaultColor: "aa44ff" },
+        { name: "🔫 Rainbow Six Siege", cat: "games", price: 1.49, image: "rainbow6.png", emoji: "🔫", defaultColor: "ffcc00" },
+        { name: "🧟 Resident Evil Village", cat: "games", price: 4.99, image: "NMu5EEmFLFUsuzOW4jGw2KOj.png", emoji: "🧟", defaultColor: "993333" },
+        { name: "⚽ FC 25", cat: "games", price: 3.49, image: "afgghj.png", emoji: "⚽", defaultColor: "2255cc" },
+        { name: "⚽ FC 26", cat: "games", price: 19.99, image: "lk.png", emoji: "⚽", defaultColor: "2255cc" },
+        { name: "🦸 Marvel Rivals", cat: "games", price: 1.49, image: "imagje.png", emoji: "🦸", defaultColor: "dd3333" },
         
-        // NEW GAMES FROM SCREENSHOTS
-        { name: "🎮 Cyberpunk 2077", cat: "games", price: 2.49, img: "capsule_616x353.png" },
-        { name: "📅 Schedule I", cat: "games", price: 2.99, img: "capsuse_616x353.png" },
-        { name: "🛶 Raft", cat: "games", price: 2.49, img: "capsule_616x353 (1).jpg" },
-        { name: "👽 Among Us", cat: "games", price: 1.99, img: "758ab0b61205081da2466386940752c70e0e5ea43bd39e8b9b13eaa455c69b7e.png" },
-        { name: "🔫 Rainbow Six Siege", cat: "games", price: 1.49, img: "images.jpg" },
-        { name: "🎲 Mystery Steam Account", cat: "other", price: 0.49, img: "colorful-gaming-accessories.jpg" },
+        // ========== SUBSCRIPTIONS ==========
+        { name: "🎮 Discord Nitro", cat: "subscriptions", price: 0.66, image: "nitro.png", emoji: "🎮", defaultColor: "5865f2" },
+        { name: "📺 Netflix Lifetime", cat: "subscriptions", price: 5.49, image: "netflix_vx8r.jpg", emoji: "📺", defaultColor: "e50914" },
+        { name: "🎵 Spotify Premium 3M", cat: "subscriptions", price: 3.99, image: "spotify-logo-zoom-s.png", emoji: "🎵", defaultColor: "1db954" },
+        { name: "📹 YouTube Premium 1M", cat: "subscriptions", price: 5.99, image: "YTP.png", emoji: "📹", defaultColor: "ff0000" },
+        { name: "🤖 ChatGPT Plus", cat: "subscriptions", price: 2.99, image: "Chat-GPT-logo.png", emoji: "🤖", defaultColor: "10a37f" },
+        { name: "📺 Disney+ Lifetime", cat: "subscriptions", price: 4.99, image: "public.png", emoji: "📺", defaultColor: "0066cc" },
+        { name: "🔒 NordVPN Lifetime", cat: "subscriptions", price: 2.49, image: "maxresdefault.png", emoji: "🔒", defaultColor: "4d8cff" },
+        { name: "✂️ CapCut Pro Lifetime", cat: "subscriptions", price: 1.99, image: "capcut-pro-12-men-3362289.png", emoji: "✂️", defaultColor: "00cc99" },
         
-        // Subscriptions
-        { name: "🤖 ChatGPT Plus (FA)", cat: "subscriptions", price: 2.99, img: "Chat-GPT-logo.png" },
-        { name: "📺 Netflix (Lifetime FA)", cat: "subscriptions", price: 5.49, img: "netflix_vx8r.jpg" },
-        { name: "🎵 Spotify Premium (3 Months)", cat: "subscriptions", price: 3.99, img: "spotify-logo-zoom-s.png" },
-        { name: "📹 YouTube Premium (1 Month)", cat: "subscriptions", price: 5.99, img: "YTP_logo_social_1200x630.png" },
-        { name: "🎮 Discord Nitro Codes", cat: "other", price: 0.66, img: "e924d3bb6be94ac699234ef9.png" },
-        { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, img: "channels4_profile.jpg" },
+        // ========== ROBUX ==========
+        { name: "💰 Robux 2,500-5,000", cat: "robux", price: 8.49, image: "imajjhges.png", emoji: "💰", defaultColor: "00aa66" },
+        { name: "💰 Robux 5,000-10,000", cat: "robux", price: 10.99, image: "imajjhges.png", emoji: "💰", defaultColor: "00aa66" },
+        { name: "💰 Robux 10,000-15,000", cat: "robux", price: 15.99, image: "imajjhges.png", emoji: "💰", defaultColor: "00aa66" },
+        { name: "💰 Robux 15,000-30,000", cat: "robux", price: 18.49, image: "imajjhges.png", emoji: "💰", defaultColor: "00aa66" },
+        { name: "💰 Robux 50,000+", cat: "robux", price: 35.99, image: "imajjhges.png", emoji: "💰", defaultColor: "00aa66" },
         
-        // EPIC GAMES BUNDLES
-        { name: "📦 Epic Bundle (20-50 Games)", cat: "bundles", price: 0.99, img: "9xBT864XC3j5wcZRPgQapa.png" },
-        { name: "📦 Epic Bundle (50-100 Games)", cat: "bundles", price: 1.49, img: "9xBT864XC3j5wcZRPgQapa.png" },
-        { name: "📦 Epic Bundle (350+ Games)", cat: "bundles", price: 4.99, img: "9xBT864XC3j5wcZRPgQapa.png" }
+        // ========== FIVEM CHEATS - ALL USE "Fivem.jpg" ==========
+        // FiveM Ready Account & Bundle
+        { name: "⚙️ FiveM Ready Account", cat: "fivem", price: 0.99, image: "Fivem.jpg", emoji: "⚙️", defaultColor: "ff8844" },
+        { name: "📦 FiveM Bundle", cat: "fivem", price: 2.49, image: "Fivem.jpg", emoji: "📦", defaultColor: "ff8844" },
+        { name: "🎮 Rockstar Activation Code", cat: "fivem", price: 0.99, image: "Fivem.jpg", emoji: "🎮", defaultColor: "ffaa33" },
+        { name: "🛠️ Rockstar Tool", cat: "fivem", price: 19.99, image: "Fivem.jpg", emoji: "🛠️", defaultColor: "ffaa33" },
+        
+        // Valk FiveM Menu
+        { name: "👑 Valk FiveM Menu (3 Days)", cat: "fivem", price: 3.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
+        { name: "👑 Valk FiveM Menu (1 Week)", cat: "fivem", price: 6.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
+        { name: "👑 Valk FiveM Menu (1 Month)", cat: "fivem", price: 13.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
+        { name: "👑 Valk FiveM Menu (Lifetime)", cat: "fivem", price: 26.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
+        
+        // Keyser FiveM Menu
+        { name: "🔑 Keyser FiveM (3 Days)", cat: "fivem", price: 6.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
+        { name: "🔑 Keyser FiveM (1 Week)", cat: "fivem", price: 11.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
+        { name: "🔑 Keyser FiveM (1 Month)", cat: "fivem", price: 15.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
+        { name: "🔑 Keyser FiveM (Lifetime)", cat: "fivem", price: 36.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
+        
+        // Ryven FiveM Menu (NEW)
+        { name: "⚡ Ryven FiveM (3 Days)", cat: "fivem", price: 8.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
+        { name: "⚡ Ryven FiveM (1 Month)", cat: "fivem", price: 11.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
+        { name: "⚡ Ryven FiveM (3 Months)", cat: "fivem", price: 19.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
+        { name: "⚡ Ryven FiveM (Lifetime)", cat: "fivem", price: 31.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
+        
+        // ========== BUNDLES ==========
+        { name: "📦 Epic Bundle (20-50 Games)", cat: "bundles", price: 0.99, image: "epicgames.png", emoji: "📦", defaultColor: "ff66cc" },
+        { name: "📦 Epic Bundle (50-100 Games)", cat: "bundles", price: 1.49, image: "epicgames.png", emoji: "📦", defaultColor: "ff66cc" },
+        { name: "📦 Epic Bundle (350+ Games)", cat: "bundles", price: 4.99, image: "epicgames.png", emoji: "📦", defaultColor: "ff66cc" },
+        { name: "🎲 Mystery Steam Account", cat: "bundles", price: 0.49, image: "mystery-steam.png", emoji: "🎲", defaultColor: "66ccff" },
+        { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, image: "channels4_profile.jpg", emoji: "🍩", defaultColor: "ffaa88" }
     ];
 
-    // USD prices with 1.17 conversion rate (based on screenshots: 2.49€/2.92$ = ~1.17 rate)
-    const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.175) * 100) / 100 }));
+    // USD prices with conversion rate (1€ ≈ 1.173$)
+    const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.173) * 100) / 100 }));
 
     let currentCurrency = "eur";
     let cart = [];
@@ -503,10 +525,6 @@
     const copyArea = document.getElementById("copyArea");
     const totalBox = document.getElementById("totalBox");
     const gamesGrid = document.getElementById("gamesGrid");
-
-    function getImagePath(imgName) {
-        return imgName;
-    }
 
     function getCurrentProducts() {
         return currentCurrency === "eur" ? productsEUR : productsUSD;
@@ -523,8 +541,11 @@
             const card = document.createElement("div");
             card.className = "card";
             card.setAttribute("data-cat", prod.cat);
+            
+            const imgHtml = `<img class="card-img" src="${prod.image}" alt="${prod.name}" onerror="this.parentElement.innerHTML='<div class=\'card-img\' style=\'background: linear-gradient(135deg, #${prod.defaultColor}55, #${prod.defaultColor}cc); display: flex; align-items: center; justify-content: center; font-size: 4rem;\'>${prod.emoji}</div>'">`;
+            
             card.innerHTML = `
-                <img class="card-img" src="${getImagePath(prod.img)}" alt="${prod.name}" onerror="this.src='https://placehold.co/600x400/660708/f5f3f4?text=${encodeURIComponent(prod.name.replace(/[^a-zA-Z0-9 ]/g, ''))}&font=montserrat'">
+                ${imgHtml}
                 <div class="card-content">
                     <div class="title">${prod.name}</div>
                     <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>

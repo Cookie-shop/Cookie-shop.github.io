@@ -23,6 +23,7 @@
             --dust-grey: #d3d3d3ff;
             --white-smoke: #f5f3f4ff;
             --white: #ffffffff;
+            --gold: #ffd700;
         }
 
         body {
@@ -34,6 +35,7 @@
             padding-bottom: 40px;
         }
 
+        /* animated background particles */
         body::before {
             content: "";
             position: fixed;
@@ -41,6 +43,22 @@
             background: radial-gradient(circle at 40% 50%, rgba(102, 7, 8, 0.25), transparent 70%);
             pointer-events: none;
             z-index: -1;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(45deg, rgba(186, 24, 27, 0.03) 0px, rgba(186, 24, 27, 0.03) 2px, transparent 2px, transparent 15px);
+            animation: slowDrift 28s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes slowDrift {
+            0% { transform: translate(0, 0) rotate(0deg);}
+            100% { transform: translate(-3%, -3%) rotate(0.6deg);}
         }
 
         header {
@@ -53,6 +71,8 @@
             border-bottom: 2px solid var(--strawberry-red);
             animation: headerGlow 2s infinite alternate;
             box-shadow: 0 12px 28px -8px rgba(0,0,0,0.7);
+            position: relative;
+            z-index: 10;
         }
 
         @keyframes headerGlow {
@@ -66,10 +86,13 @@
             align-items: center;
             gap: 15px;
             padding: 10px 24px;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--mahogany-red);
             flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         .payment-methods {
             font-size: 0.8rem;
@@ -78,6 +101,34 @@
             border-radius: 40px;
             color: var(--dust-grey);
             font-weight: 500;
+        }
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-box {
+            background: var(--onyx);
+            border: 1px solid var(--strawberry-red);
+            border-radius: 60px;
+            padding: 6px 16px;
+            color: var(--white-smoke);
+            font-size: 0.85rem;
+            width: 200px;
+            outline: none;
+        }
+        .search-box::placeholder {
+            color: var(--silver);
+        }
+        .sort-select {
+            background: var(--onyx);
+            border: 1px solid var(--strawberry-red);
+            border-radius: 60px;
+            padding: 6px 16px;
+            color: var(--white-smoke);
+            font-size: 0.85rem;
+            cursor: pointer;
         }
         .currency-selector {
             display: flex;
@@ -103,29 +154,60 @@
 
         .cart-btn {
             position: fixed;
-            top: 110px;
+            top: 120px;
             right: 22px;
             background: var(--onyx);
             backdrop-filter: blur(14px);
-            padding: 10px 20px;
+            padding: 12px 22px;
             border-radius: 60px;
             cursor: pointer;
             z-index: 1100;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 8px;
             border: 1px solid var(--strawberry-red);
             transition: 0.25s;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.5);
             color: var(--white-smoke);
         }
         .cart-btn:hover { background: var(--mahogany-red); transform: scale(1.02);}
+        .cart-btn .badge {
+            background: var(--strawberry-red);
+            border-radius: 30px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            animation: pulse 0.5s ease;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px 24px;
+        }
+
+        .featured-section {
+            margin-bottom: 40px;
+        }
+        .featured-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--strawberry-red);
+            padding-left: 16px;
+        }
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 24px;
         }
 
         .tabs {
@@ -134,7 +216,7 @@
             justify-content: center;
             gap: 12px;
             margin-bottom: 35px;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .tab {
@@ -158,8 +240,13 @@
 
         .games {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 24px;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
         }
 
         .card {
@@ -167,14 +254,28 @@
             backdrop-filter: blur(8px);
             border-radius: 28px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             border: 1px solid var(--mahogany-red);
             box-shadow: 0 20px 35px -16px black;
+            position: relative;
         }
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-8px);
             border-color: var(--strawberry-red);
-            box-shadow: 0 28px 45px -12px rgba(229, 56, 59, 0.3);
+            box-shadow: 0 28px 45px -12px rgba(229, 56, 59, 0.4);
+        }
+        .discount-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--gold);
+            color: #000;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         .card-img {
             width: 100%;
@@ -201,6 +302,12 @@
             font-size: 1.2rem;
             color: var(--strawberry-red);
         }
+        .old-price {
+            font-size: 0.8rem;
+            text-decoration: line-through;
+            color: var(--silver);
+            margin-left: 8px;
+        }
         button {
             width: 100%;
             padding: 10px;
@@ -216,12 +323,13 @@
         button:active { transform: scale(0.96);}
         button:hover { filter: brightness(1.08); box-shadow: 0 4px 12px rgba(186, 24, 27, 0.5);}
 
+        /* CART ENHANCED */
         .cart {
             position: fixed;
             top: 0;
             right: -100%;
             width: 100%;
-            max-width: 420px;
+            max-width: 450px;
             height: 100%;
             background: var(--onyx);
             backdrop-filter: blur(24px);
@@ -235,25 +343,33 @@
         }
         .cart.active { right: 0;}
 
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
         .cart h3 {
             font-size: 1.8rem;
-            margin-bottom: 20px;
             font-weight: 800;
             background: linear-gradient(135deg, var(--white-smoke), var(--silver));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-align: center;
         }
-
+        .clear-cart {
+            background: var(--dark-garnet);
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            width: auto;
+        }
         #cartItems {
             flex: 1;
             overflow-y: auto;
-            max-height: 35vh;
+            max-height: 40vh;
             padding-right: 6px;
             margin-bottom: 15px;
         }
-
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -264,19 +380,35 @@
             margin-bottom: 10px;
             font-size: 0.8rem;
             border: 1px solid var(--mahogany-red);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cart-item-info {
+            flex: 2;
+        }
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border-radius: 30px;
+            background: var(--mahogany-red);
+            font-size: 1rem;
+        }
+        .item-qty {
+            font-weight: bold;
+            min-width: 24px;
+            text-align: center;
         }
         .remove {
             background: var(--dark-garnet);
-            border: none;
-            color: var(--white);
-            border-radius: 50px;
             padding: 5px 14px;
-            cursor: pointer;
-            font-weight: bold;
             width: auto;
         }
-        .remove:hover { background: var(--strawberry-red);}
-
         .total {
             margin: 16px 0 18px;
             padding: 12px;
@@ -287,7 +419,6 @@
             border: 1px solid var(--strawberry-red);
             font-weight: bold;
         }
-
         textarea {
             width: 100%;
             height: 110px;
@@ -301,7 +432,6 @@
             font-family: monospace;
             margin: 8px 0;
         }
-
         .copy-btn, .checkout {
             margin-top: 8px;
             width: 100%;
@@ -309,36 +439,24 @@
             border-radius: 60px;
             font-weight: bold;
         }
-        .copy-btn { background: var(--mahogany-red); color: var(--white); margin-bottom: 10px; }
-        .checkout { background: var(--dark-garnet); color: var(--white-smoke); border: 1px solid var(--silver);}
-        .checkout:hover { background: var(--mahogany-red-2);}
+        .copy-btn { background: var(--mahogany-red); margin-bottom: 10px; }
+        .checkout { background: var(--dark-garnet); border: 1px solid var(--silver);}
         .close-cart {
-            position: absolute;
-            top: 18px;
-            left: 22px;
             background: none;
             font-size: 26px;
+            width: 38px;
             cursor: pointer;
             color: var(--strawberry-red);
             font-weight: bold;
         }
-        .discord-note {
+        .discord-note, .payment-info {
             background: var(--carbon-black);
             border-radius: 28px;
             padding: 10px;
             font-size: 0.7rem;
             text-align: center;
-            margin-top: 14px;
-            border: 1px dashed var(--strawberry-red);
-        }
-        .payment-info {
-            background: #1e162e;
-            border-radius: 28px;
-            padding: 10px;
-            font-size: 0.7rem;
-            text-align: center;
             margin-top: 12px;
-            border: 1px solid var(--mahogany-red);
+            border: 1px dashed var(--strawberry-red);
         }
         .toast {
             position: fixed;
@@ -369,39 +487,49 @@
             margin-top: 10px;
             border: none;
         }
-        .join-discord:hover { background: #4752c4; }
-        
         @media (max-width: 640px) {
             .container { padding: 16px; }
             .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));}
             .cart-btn { top: 100px; padding: 6px 14px; right: 12px;}
-            .currency-bar { flex-direction: column; align-items: stretch; gap: 10px; padding: 10px 16px;}
-            .payment-methods { justify-content: center; }
-            .currency-selector { justify-content: center; }
+            .currency-bar { flex-direction: column; align-items: stretch; }
+            .controls { justify-content: center; }
+            .search-box { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-<header>🍪 COOKIE'S SHOP 🔥 | Premium Keys & Accounts</header>
+<header>🍪 COOKIE'S SHOP 🔥</header>
 
 <div class="currency-bar">
     <div class="payment-methods">
         💳 PayPal | 🏦 Swedbank | ₿ Crypto
     </div>
-    <div class="currency-selector">
-        <div class="currency-option active" data-currency="eur">🇪🇺 EUR (€)</div>
-        <div class="currency-option" data-currency="usd">🇺🇸 USD ($)</div>
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search products...">
+        <select id="sortSelect" class="sort-select">
+            <option value="default">Sort by: Default</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A-Z</option>
+        </select>
+        <div class="currency-selector">
+            <div class="currency-option active" data-currency="eur">🇪🇺 EUR (€)</div>
+            <div class="currency-option" data-currency="usd">🇺🇸 USD ($)</div>
+        </div>
     </div>
 </div>
 
 <div class="cart-btn" onclick="toggleCart()">
-    🛒 <span id="cartCount">0</span> <span>⛓️</span>
+    🛒 Cart <span class="badge" id="cartCount">0</span> <span>⛓️</span>
 </div>
 
 <div class="cart" id="cart">
-    <div class="close-cart" onclick="toggleCart()">✖️</div>
-    <h3>✦ YOUR CART ✦</h3>
+    <div class="cart-header">
+        <h3>✦ YOUR CART ✦</h3>
+        <button class="clear-cart" onclick="clearCart()">Clear All</button>
+        <div class="close-cart" onclick="toggleCart()">✖️</div>
+    </div>
     <div id="cartItems"></div>
     <div class="total" id="totalBox">Total: €0.00</div>
     <textarea id="copyArea" readonly placeholder="🔥 Order summary will appear here..."></textarea>
@@ -410,16 +538,17 @@
         <button class="checkout" onclick="checkout()">💬 Go to Discord</button>
         <button class="join-discord" onclick="joinDiscord()">➕ Join Our Discord</button>
     </div>
-    <div class="discord-note">
-        ⚡ <strong>Next step:</strong> Paste this order in a <span style="color: var(--strawberry-red);">ticket</span> on Discord
-    </div>
-    <div class="payment-info">
-        💰 <strong>We accept:</strong> PayPal, Swedbank, Crypto (BTC/ETH/USDT)
-    </div>
+    <div class="discord-note">⚡ <strong>Next step:</strong> Paste this order in a <span style="color: var(--strawberry-red);">ticket</span> on Discord</div>
+    <div class="payment-info">💰 <strong>We accept:</strong> PayPal, Swedbank, Crypto (BTC/ETH/USDT)</div>
 </div>
 
 <div class="container">
-    <div class="tabs">
+    <div class="featured-section">
+        <div class="featured-title">🌟 FEATURED DEALS</div>
+        <div class="featured-grid" id="featuredGrid"></div>
+    </div>
+
+    <div class="tabs" id="tabsContainer">
         <div class="tab active" data-filter="all">✨ All</div>
         <div class="tab" data-filter="games">🎮 Games</div>
         <div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
@@ -431,107 +560,148 @@
     <div class="games" id="gamesGrid"></div>
 </div>
 <div id="toastMsg" class="toast">✨ Added to cart</div>
-<footer>🔥 Place your custom images (.png/.jpg) in the same folder as this HTML file</footer>
+<footer>🔥 Ultimate game store • Search & sort • Save cart automatically • Best prices</footer>
 
 <script>
     // ============================================================
-    // COMPLETE PRODUCT LIST - ALL FIVEM CHEATS USE "Fivem.jpg"
-    // Includes: Valk Menu, Keyser Menu, Ryven Menu
+    // ENHANCED PRODUCT LIST with discount flags for some items
     // ============================================================
-    
     const productsEUR = [
-        // ========== GAMES ==========
-        { name: "🦀 Rust", cat: "games", price: 4.99, image: "header.jpg", emoji: "🦀", defaultColor: "ff6600" },
-        { name: "🌲 The Forest", cat: "games", price: 1.99, image: "theforest.jpg", emoji: "🌲", defaultColor: "2d6a4f" },
-        { name: "⚡ Full Access Rust", cat: "games", price: 14.99, image: "header.jpg", emoji: "⚡", defaultColor: "ffaa00" },
-        { name: "🚀 Arc Raiders", cat: "games", price: 4.49, image: "images.jpg", emoji: "🚀", defaultColor: "00aaff" },
-        { name: "🧟 DayZ", cat: "games", price: 3.49, image: "dayz.jpg", emoji: "🧟", defaultColor: "663300" },
-        { name: "🏎️ GTA V Steam", cat: "games", price: 4.99, image: "gtav.jpg", emoji: "🏎️", defaultColor: "ff8800" },
-        { name: "🚗 BeamNG.drive", cat: "games", price: 3.99, image: "beamngdrive.jpg", emoji: "🚗", defaultColor: "cc3333" },
-        { name: "🏁 Forza Horizon 5", cat: "games", price: 3.49, image: "kaosk.jpg", emoji: "🏁", defaultColor: "ff3333" },
-        { name: "🌲 Sons of The Forest", cat: "games", price: 2.49, image: "sotf.jpg", emoji: "🌲", defaultColor: "3d8c40" },
-        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, image: "minecraft.png", emoji: "⛏️", defaultColor: "55aa55" },
-        { name: "🎮 Cyberpunk 2077", cat: "games", price: 2.49, image: "cyberpunk.png", emoji: "🎮", defaultColor: "ff0066" },
-        { name: "📅 Schedule I", cat: "games", price: 2.99, image: "schedule1.png", emoji: "📅", defaultColor: "ff9933" },
-        { name: "🛶 Raft", cat: "games", price: 2.49, image: "header.png", emoji: "🛶", defaultColor: "3399ff" },
-        { name: "👽 Among Us", cat: "games", price: 1.99, image: "amongus.png", emoji: "👽", defaultColor: "dd4444" },
-        { name: "🚛 Euro Truck Sim 2", cat: "games", price: 3.49, image: "maxresdefault.png", emoji: "🚛", defaultColor: "44aaff" },
-        { name: "🛒 Supermarket Simulator", cat: "games", price: 2.99, image: "headekr.png", emoji: "🛒", defaultColor: "66cc66" },
-        { name: "⚔️ Mortal Kombat 1", cat: "games", price: 2.99, image: "klll.png", emoji: "⚔️", defaultColor: "aa44ff" },
-        { name: "🔫 Rainbow Six Siege", cat: "games", price: 1.49, image: "lk.png", emoji: "🔫", defaultColor: "ffcc00" },
-        { name: "🧟 Resident Evil Village", cat: "games", price: 4.99, image: "NMu5EEmFLFUsuzOW4jGw2KOj.png", emoji: "🧟", defaultColor: "993333" },
-        { name: "⚽ FC 25", cat: "games", price: 3.49, image: "afgghj.png", emoji: "⚽", defaultColor: "2255cc" },
-        { name: "⚽ FC 26", cat: "games", price: 19.99, image: "maxresdefault__2_.png", emoji: "⚽", defaultColor: "2255cc" },
-        { name: "🦸 Marvel Rivals", cat: "games", price: 1.49, image: "images.png", emoji: "🦸", defaultColor: "dd3333" },
-        
-        // ========== SUBSCRIPTIONS ==========
-        { name: "🎮 Discord Nitro", cat: "subscriptions", price: 0.66, image: "nitro.png", emoji: "🎮", defaultColor: "5865f2" },
-        { name: "📺 Netflix Lifetime", cat: "subscriptions", price: 5.49, image: "netflix_vx8r.jpg", emoji: "📺", defaultColor: "e50914" },
-        { name: "🎵 Spotify Premium 3M", cat: "subscriptions", price: 3.99, image: "spotify-logo-zoom-s.png", emoji: "🎵", defaultColor: "1db954" },
-        { name: "📹 YouTube Premium 1M", cat: "subscriptions", price: 5.99, image: "YTP.png", emoji: "📹", defaultColor: "ff0000" },
-        { name: "🤖 ChatGPT Plus", cat: "subscriptions", price: 2.99, image: "Chat-GPT-logo.png", emoji: "🤖", defaultColor: "10a37f" },
-        { name: "📺 Disney+ Lifetime", cat: "subscriptions", price: 4.99, image: "asdasdasd.png", emoji: "📺", defaultColor: "0066cc" },
-        { name: "🔒 NordVPN Lifetime", cat: "subscriptions", price: 2.49, image: "imajjhges.png", emoji: "🔒", defaultColor: "4d8cff" },
-        { name: "✂️ CapCut Pro Lifetime", cat: "subscriptions", price: 1.99, image: "capcut-pro-12-men-3362289.png", emoji: "✂️", defaultColor: "00cc99" },
-        
-        // ========== ROBUX ==========
-        { name: "💰 Robux 2,500-5,000", cat: "robux", price: 8.49, image: "public.png", emoji: "💰", defaultColor: "00aa66" },
-        { name: "💰 Robux 5,000-10,000", cat: "robux", price: 10.99, image: "public.png", emoji: "💰", defaultColor: "00aa66" },
-        { name: "💰 Robux 10,000-15,000", cat: "robux", price: 15.99, image: "public.png", emoji: "💰", defaultColor: "00aa66" },
-        { name: "💰 Robux 15,000-30,000", cat: "robux", price: 18.49, image: "public.png", emoji: "💰", defaultColor: "00aa66" },
-        { name: "💰 Robux 50,000+", cat: "robux", price: 35.99, image: "public.png", emoji: "💰", defaultColor: "00aa66" },
-        
-        // ========== FIVEM CHEATS - ALL USE "Fivem.jpg" ==========
-        // FiveM Ready Account & Bundle
-        { name: "⚙️ FiveM Ready Account", cat: "fivem", price: 0.99, image: "Fivem.jpg", emoji: "⚙️", defaultColor: "ff8844" },
-        { name: "📦 FiveM Bundle", cat: "fivem", price: 2.49, image: "Fivem.jpg", emoji: "📦", defaultColor: "ff8844" },
-        { name: "🎮 Rockstar Activation Code", cat: "fivem", price: 0.99, image: "Fivem.jpg", emoji: "🎮", defaultColor: "ffaa33" },
-        { name: "🛠️ Rockstar Tool", cat: "fivem", price: 19.99, image: "Fivem.jpg", emoji: "🛠️", defaultColor: "ffaa33" },
-        
-        // Valk FiveM Menu
-        { name: "👑 Valk FiveM Menu (3 Days)", cat: "fivem", price: 3.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
-        { name: "👑 Valk FiveM Menu (1 Week)", cat: "fivem", price: 6.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
-        { name: "👑 Valk FiveM Menu (1 Month)", cat: "fivem", price: 13.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
-        { name: "👑 Valk FiveM Menu (Lifetime)", cat: "fivem", price: 26.49, image: "Fivem.jpg", emoji: "👑", defaultColor: "aa66ff" },
-        
-        // Keyser FiveM Menu
-        { name: "🔑 Keyser FiveM (3 Days)", cat: "fivem", price: 6.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
-        { name: "🔑 Keyser FiveM (1 Week)", cat: "fivem", price: 11.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
-        { name: "🔑 Keyser FiveM (1 Month)", cat: "fivem", price: 15.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
-        { name: "🔑 Keyser FiveM (Lifetime)", cat: "fivem", price: 36.49, image: "Fivem.jpg", emoji: "🔑", defaultColor: "ff6666" },
-        
-        // Ryven FiveM Menu (NEW)
-        { name: "⚡ Ryven FiveM (3 Days)", cat: "fivem", price: 8.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
-        { name: "⚡ Ryven FiveM (1 Month)", cat: "fivem", price: 11.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
-        { name: "⚡ Ryven FiveM (3 Months)", cat: "fivem", price: 19.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
-        { name: "⚡ Ryven FiveM (Lifetime)", cat: "fivem", price: 31.49, image: "Fivem.jpg", emoji: "⚡", defaultColor: "ffaa44" },
-        
-        // ========== BUNDLES ==========
-        { name: "📦 Epic Bundle (20-50 Games)", cat: "bundles", price: 0.99, image: "sdfgfgsdfgd.png", emoji: "📦", defaultColor: "ff66cc" },
-        { name: "📦 Epic Bundle (50-100 Games)", cat: "bundles", price: 1.49, image: "sdfgfgsdfgd.png", emoji: "📦", defaultColor: "ff66cc" },
-        { name: "📦 Epic Bundle (350+ Games)", cat: "bundles", price: 4.99, image: "sdfgfgsdfgd.png", emoji: "📦", defaultColor: "ff66cc" },
-        { name: "🎲 Mystery Steam Account", cat: "bundles", price: 0.49, image: "image.png", emoji: "🎲", defaultColor: "66ccff" },
-        { name: "🍩 Dr Donut Money 1M", cat: "other", price: 0.09, image: "channels4_profile.jpg", emoji: "🍩", defaultColor: "ffaa88" }
+        // GAMES (some with discount)
+        { name: "🦀 Rust", cat: "games", price: 4.99, image: "header.jpg", emoji: "🦀", discount: 15 },
+        { name: "🌲 The Forest", cat: "games", price: 1.99, image: "theforest.jpg", emoji: "🌲" },
+        { name: "⚡ Full Access Rust", cat: "games", price: 14.99, image: "header.jpg", emoji: "⚡" },
+        { name: "🚀 Arc Raiders", cat: "games", price: 4.49, image: "images.png", emoji: "🚀" },
+        { name: "🧟 DayZ", cat: "games", price: 3.49, image: "dayz.jpg", emoji: "🧟" },
+        { name: "🏎️ GTA V Steam", cat: "games", price: 4.99, image: "gtav.jpg", emoji: "🏎️", discount: 10 },
+        { name: "🚗 BeamNG.drive", cat: "games", price: 3.99, image: "beamngdrive.jpg", emoji: "🚗" },
+        { name: "🏁 Forza Horizon 5", cat: "games", price: 3.49, image: "kaosk.jpg", emoji: "🏁" },
+        { name: "🌲 Sons of The Forest", cat: "games", price: 2.49, image: "sotf.jpg", emoji: "🌲" },
+        { name: "⛏️ Minecraft Java", cat: "games", price: 7.99, image: "minecraft.png", emoji: "⛏️" },
+        { name: "🎮 Cyberpunk 2077", cat: "games", price: 2.49, image: "cyberpunk.png", emoji: "🎮", discount: 20 },
+        { name: "📅 Schedule I", cat: "games", price: 2.99, image: "schedule1.png", emoji: "📅" },
+        { name: "🛶 Raft", cat: "games", price: 2.49, image: "header.png", emoji: "🛶" },
+        { name: "👽 Among Us", cat: "games", price: 1.99, image: "amongus.png", emoji: "👽" },
+        { name: "🚛 Euro Truck Sim 2", cat: "games", price: 3.49, image: "maxresdefault.png", emoji: "🚛" },
+        { name: "🛒 Supermarket Simulator", cat: "games", price: 2.99, image: "headekr.png", emoji: "🛒" },
+        { name: "⚔️ Mortal Kombat 1", cat: "games", price: 2.99, image: "klll.png", emoji: "⚔️" },
+        { name: "🔫 Rainbow Six Siege", cat: "games", price: 1.49, image: "lk.png", emoji: "🔫" },
+        { name: "🧟 Resident Evil Village", cat: "games", price: 4.99, image: "NMu5EEmFLFUsuzOW4jGw2KOj.png", emoji: "🧟" },
+        { name: "⚽ FC 25", cat: "games", price: 3.49, image: "afgghj.png", emoji: "⚽", discount: 5 },
+        { name: "⚽ FC 26", cat: "games", price: 19.99, image: "maxresdefault__2_.png", emoji: "⚽" },
+        { name: "🦸 Marvel Rivals", cat: "games", price: 1.49, image: "images.png", emoji: "🦸" },
+        // SUBSCRIPTIONS
+        { name: "🎮 Discord Nitro", cat: "subscriptions", price: 0.66, image: "nitro.png", emoji: "🎮" },
+        { name: "📺 Netflix Lifetime", cat: "subscriptions", price: 5.49, image: "netflix_vx8r.jpg", emoji: "📺", discount: 10 },
+        { name: "🎵 Spotify Premium 3M", cat: "subscriptions", price: 3.99, image: "spotify-logo-zoom-s.png", emoji: "🎵" },
+        { name: "📹 YouTube Premium 1M", cat: "subscriptions", price: 5.99, image: "YTP.png", emoji: "📹" },
+        { name: "🤖 ChatGPT Plus", cat: "subscriptions", price: 2.99, image: "Chat-GPT-logo.png", emoji: "🤖" },
+        { name: "📺 Disney+ Lifetime", cat: "subscriptions", price: 4.99, image: "asdasdasd.png", emoji: "📺" },
+        { name: "🔒 NordVPN Lifetime", cat: "subscriptions", price: 2.49, image: "imajjhges.png", emoji: "🔒", discount: 15 },
+        { name: "✂️ CapCut Pro Lifetime", cat: "subscriptions", price: 1.99, image: "capcut-pro-12-men-3362289.png", emoji: "✂️" },
+        // ROBUX
+        { name: "💰 Robux 2.5k-5k", cat: "robux", price: 8.49, image: "public.png", emoji: "💰" },
+        { name: "💰 Robux 5k-10k", cat: "robux", price: 10.99, image: "public.png", emoji: "💰" },
+        { name: "💰 Robux 10k-15k", cat: "robux", price: 15.99, image: "public.png", emoji: "💰" },
+        { name: "💰 Robux 15k-30k", cat: "robux", price: 18.49, image: "public.png", emoji: "💰" },
+        { name: "💰 Robux 50k+", cat: "robux", price: 35.99, image: "public.png", emoji: "💰", discount: 8 },
+        // FIVEM
+        { name: "⚙️ FiveM Ready Account", cat: "fivem", price: 0.99, image: "Fivem.jpg", emoji: "⚙️" },
+        { name: "📦 FiveM Bundle", cat: "fivem", price: 2.49, image: "Fivem.jpg", emoji: "📦" },
+        { name: "🎮 Rockstar Activation", cat: "fivem", price: 0.99, image: "Fivem.jpg", emoji: "🎮" },
+        { name: "🛠️ Rockstar Tool", cat: "fivem", price: 19.99, image: "Fivem.jpg", emoji: "🛠️" },
+        { name: "👑 Valk Menu (3D)", cat: "fivem", price: 3.49, image: "Fivem.jpg", emoji: "👑" },
+        { name: "👑 Valk Menu (1W)", cat: "fivem", price: 6.49, image: "Fivem.jpg", emoji: "👑" },
+        { name: "👑 Valk Menu (1M)", cat: "fivem", price: 13.49, image: "Fivem.jpg", emoji: "👑" },
+        { name: "👑 Valk Menu (Lifetime)", cat: "fivem", price: 26.49, image: "Fivem.jpg", emoji: "👑" },
+        { name: "🔑 Keyser (3D)", cat: "fivem", price: 6.49, image: "Fivem.jpg", emoji: "🔑" },
+        { name: "🔑 Keyser (1W)", cat: "fivem", price: 11.49, image: "Fivem.jpg", emoji: "🔑" },
+        { name: "🔑 Keyser (1M)", cat: "fivem", price: 15.49, image: "Fivem.jpg", emoji: "🔑" },
+        { name: "🔑 Keyser (Lifetime)", cat: "fivem", price: 36.49, image: "Fivem.jpg", emoji: "🔑" },
+        { name: "⚡ Ryven (3D)", cat: "fivem", price: 8.49, image: "Fivem.jpg", emoji: "⚡" },
+        { name: "⚡ Ryven (1M)", cat: "fivem", price: 11.49, image: "Fivem.jpg", emoji: "⚡" },
+        { name: "⚡ Ryven (3M)", cat: "fivem", price: 19.49, image: "Fivem.jpg", emoji: "⚡" },
+        { name: "⚡ Ryven (Lifetime)", cat: "fivem", price: 31.49, image: "Fivem.jpg", emoji: "⚡" },
+        // BUNDLES
+        { name: "📦 Epic Bundle (20-50)", cat: "bundles", price: 0.99, image: "sdfgfgsdfgd.png", emoji: "📦" },
+        { name: "📦 Epic Bundle (50-100)", cat: "bundles", price: 1.49, image: "sdfgfgsdfgd.png", emoji: "📦" },
+        { name: "📦 Epic Bundle (350+)", cat: "bundles", price: 4.99, image: "sdfgfgsdfgd.png", emoji: "📦", discount: 12 },
+        { name: "🎲 Mystery Steam Acc", cat: "bundles", price: 0.49, image: "image.png", emoji: "🎲" },
+        { name: "🍩 Dr Donut Money", cat: "other", price: 0.09, image: "channels4_profile.jpg", emoji: "🍩" }
     ];
 
-    // USD prices with conversion rate (1€ ≈ 1.173$)
     const productsUSD = productsEUR.map(p => ({ ...p, price: Math.round((p.price * 1.173) * 100) / 100 }));
 
     let currentCurrency = "eur";
-    let cart = [];
+    let cart = []; // each item: { name, price, quantity }
+    let currentFilter = "all";
+    let currentSearch = "";
+    let currentSort = "default";
 
+    // DOM elements
     const cartContainer = document.getElementById("cartItems");
     const cartCountSpan = document.getElementById("cartCount");
     const copyArea = document.getElementById("copyArea");
     const totalBox = document.getElementById("totalBox");
     const gamesGrid = document.getElementById("gamesGrid");
+    const featuredGrid = document.getElementById("featuredGrid");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
 
-    function getCurrentProducts() {
-        return currentCurrency === "eur" ? productsEUR : productsUSD;
+    // Load cart from localStorage
+    function loadCart() {
+        const saved = localStorage.getItem("cookieShopCart");
+        if (saved) {
+            try {
+                cart = JSON.parse(saved);
+                updateCartUI();
+            } catch(e) {}
+        }
+    }
+    function saveCart() {
+        localStorage.setItem("cookieShopCart", JSON.stringify(cart));
     }
 
-    function getCurrencySymbol() {
-        return currentCurrency === "eur" ? "€" : "$";
+    function getCurrentProducts() {
+        let prods = currentCurrency === "eur" ? productsEUR : productsUSD;
+        // search filter
+        if (currentSearch) {
+            prods = prods.filter(p => p.name.toLowerCase().includes(currentSearch.toLowerCase()));
+        }
+        // category filter
+        if (currentFilter !== "all") {
+            prods = prods.filter(p => p.cat === currentFilter);
+        }
+        // sorting
+        if (currentSort === "price-asc") prods.sort((a,b) => a.price - b.price);
+        else if (currentSort === "price-desc") prods.sort((a,b) => b.price - a.price);
+        else if (currentSort === "name-asc") prods.sort((a,b) => a.name.localeCompare(b.name));
+        return prods;
+    }
+
+    function getFeaturedProducts() {
+        let prods = currentCurrency === "eur" ? productsEUR : productsUSD;
+        return prods.filter(p => p.discount && p.discount > 0).slice(0, 4);
+    }
+
+    function renderFeatured() {
+        const featured = getFeaturedProducts();
+        featuredGrid.innerHTML = "";
+        featured.forEach(prod => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+                ${prod.discount ? `<div class="discount-badge">-${prod.discount}%</div>` : ""}
+                <img class="card-img" src="${prod.image}" onerror="this.parentElement.innerHTML='<div class=\'card-img\' style=\'background: linear-gradient(135deg, #${prod.defaultColor || '660708'}55, #${prod.defaultColor || '660708'}cc); display: flex; align-items: center; justify-content: center; font-size: 4rem;\'>${prod.emoji}</div>'">
+                <div class="card-content">
+                    <div class="title">${prod.name}</div>
+                    <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>
+                    <button class="add-btn" data-name="${prod.name}" data-price="${prod.price}">➕ Add to Cart</button>
+                </div>
+            `;
+            featuredGrid.appendChild(card);
+        });
+        bindAddButtonsOnGrid(featuredGrid);
     }
 
     function renderShop() {
@@ -541,11 +711,9 @@
             const card = document.createElement("div");
             card.className = "card";
             card.setAttribute("data-cat", prod.cat);
-            
-            const imgHtml = `<img class="card-img" src="${prod.image}" alt="${prod.name}" onerror="this.parentElement.innerHTML='<div class=\'card-img\' style=\'background: linear-gradient(135deg, #${prod.defaultColor}55, #${prod.defaultColor}cc); display: flex; align-items: center; justify-content: center; font-size: 4rem;\'>${prod.emoji}</div>'">`;
-            
             card.innerHTML = `
-                ${imgHtml}
+                ${prod.discount ? `<div class="discount-badge">🔥 -${prod.discount}%</div>` : ""}
+                <img class="card-img" src="${prod.image}" alt="${prod.name}" onerror="this.parentElement.innerHTML='<div class=\'card-img\' style=\'background: linear-gradient(135deg, #${prod.defaultColor || '660708'}55, #${prod.defaultColor || '660708'}cc); display: flex; align-items: center; justify-content: center; font-size: 4rem;\'>${prod.emoji}</div>'">
                 <div class="card-content">
                     <div class="title">${prod.name}</div>
                     <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>
@@ -554,136 +722,11 @@
             `;
             gamesGrid.appendChild(card);
         });
-        bindAddButtons();
-        const activeTab = document.querySelector(".tab.active");
-        if (activeTab) applyFilter(activeTab.getAttribute("data-filter"));
-        else applyFilter("all");
+        bindAddButtonsOnGrid(gamesGrid);
     }
 
-    function applyFilter(category) {
-        const allCards = document.querySelectorAll(".card");
-        allCards.forEach(card => {
-            const cardCat = card.getAttribute("data-cat");
-            if (category === "all" || cardCat === category) card.style.display = "block";
-            else card.style.display = "none";
-        });
-    }
-
-    function updateCartUI() {
-        if (!cartContainer) return;
-        cartContainer.innerHTML = "";
-        const symbol = getCurrencySymbol();
-        if (cart.length === 0) {
-            cartContainer.innerHTML = `<div style="text-align:center; opacity:0.8; padding:30px 0;">🛒 Cart empty<br>✨ add items from the shop ✨</div>`;
-            copyArea.value = "🍪 COOKIE'S SHOP ORDER LIST\n━━━━━━━━━━━━━━━━━━━━━━━━━━\nNo items yet.\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord\n\n💳 Payment methods: PayPal, Swedbank, Crypto";
-            totalBox.textContent = `Total: ${symbol}0.00`;
-            cartCountSpan.textContent = "0";
-            return;
-        }
-
-        let total = 0;
-        let orderText = `🍪 COOKIE'S SHOP - ORDER LIST (${symbol.toUpperCase()})\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
-        
-        cart.forEach((item, idx) => {
-            total += item.price;
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "cart-item";
-            itemDiv.innerHTML = `
-                <span><strong>${escapeHtml(item.name)}</strong>  —  ${symbol}${item.price.toFixed(2)}</span>
-                <button class="remove" data-index="${idx}">🗑️</button>
-            `;
-            cartContainer.appendChild(itemDiv);
-            orderText += `◆ ${item.name}  •  ${symbol}${item.price.toFixed(2)}\n`;
-        });
-
-        orderText += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL: ${symbol}${total.toFixed(2)}\n✨ Thank you for shopping at Cookie's Shop! ✨\n\n📌 NEXT STEP: Copy this order and paste it in a ticket on Discord\n💳 Payment methods: PayPal, Swedbank, Crypto (BTC/ETH/USDT)`;
-        copyArea.value = orderText;
-        totalBox.textContent = `Total: ${symbol}${total.toFixed(2)}`;
-        cartCountSpan.textContent = cart.length;
-
-        document.querySelectorAll(".remove").forEach(btn => {
-            btn.removeEventListener("click", removeHandler);
-            btn.addEventListener("click", removeHandler);
-        });
-    }
-
-    function removeHandler(e) {
-        const idx = e.currentTarget.getAttribute("data-index");
-        if (idx !== null) removeItem(parseInt(idx));
-        e.stopPropagation();
-    }
-
-    function removeItem(index) {
-        if (index >= 0 && index < cart.length) {
-            cart.splice(index, 1);
-            updateCartUI();
-            showToast("🗑️ Removed");
-        }
-    }
-
-    function addToCart(name, price) {
-        cart.push({ name: name, price: price });
-        updateCartUI();
-        showToast(`➕ ${name} added • ${getCurrencySymbol()}${price.toFixed(2)}`);
-        const cartBtn = document.querySelector(".cart-btn");
-        if(cartBtn) {
-            cartBtn.style.transform = "scale(1.06)";
-            setTimeout(() => { if(cartBtn) cartBtn.style.transform = ""; }, 150);
-        }
-    }
-
-    function showToast(msg) {
-        const toast = document.getElementById("toastMsg");
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.classList.add("show");
-        setTimeout(() => { toast.classList.remove("show"); }, 1800);
-    }
-
-    function manualCopy() {
-        if (!copyArea) return;
-        copyArea.select();
-        copyArea.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(copyArea.value).then(() => {
-            showToast("📋 Order copied! Now paste it in a ticket on Discord");
-        }).catch(() => {
-            document.execCommand("copy");
-            showToast("📋 Copied! Now paste it in a ticket");
-        });
-    }
-
-    function checkout() {
-        if (cart.length === 0) {
-            showToast("❌ Cart empty! Add items first.");
-            return;
-        }
-        manualCopy();
-        setTimeout(() => {
-            window.open("https://discord.gg/49cwUj62aC", "_blank");
-            showToast("✨ Discord opened — create a ticket and paste your order there");
-        }, 200);
-    }
-
-    function joinDiscord() {
-        window.open("https://discord.gg/49cwUj62aC", "_blank");
-        showToast("✨ Join our Discord for support and orders!");
-    }
-
-    function toggleCart() {
-        document.getElementById("cart").classList.toggle("active");
-    }
-
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    function bindAddButtons() {
-        document.querySelectorAll(".add-btn").forEach(btn => {
+    function bindAddButtonsOnGrid(grid) {
+        grid.querySelectorAll(".add-btn").forEach(btn => {
             btn.removeEventListener("click", addHandler);
             btn.addEventListener("click", addHandler);
         });
@@ -697,64 +740,201 @@
         if (name && !isNaN(price)) addToCart(name, price);
     }
 
-    function initFilters() {
-        const tabs = document.querySelectorAll(".tab");
-        tabs.forEach(tab => {
-            tab.addEventListener("click", (e) => {
-                const filterValue = tab.getAttribute("data-filter");
-                if (!filterValue) return;
-                tabs.forEach(t => t.classList.remove("active"));
-                tab.classList.add("active");
-                applyFilter(filterValue);
+    function addToCart(name, price) {
+        const existing = cart.find(item => item.name === name);
+        if (existing) {
+            existing.quantity = (existing.quantity || 1) + 1;
+        } else {
+            cart.push({ name: name, price: price, quantity: 1 });
+        }
+        updateCartUI();
+        saveCart();
+        showToast(`➕ ${name} added • ${getCurrencySymbol()}${price.toFixed(2)}`);
+        animateCartBadge();
+    }
+
+    function updateCartUI() {
+        const symbol = getCurrencySymbol();
+        if (cart.length === 0) {
+            cartContainer.innerHTML = `<div style="text-align:center; padding:30px;">🛒 Cart empty<br>✨ add items ✨</div>`;
+            copyArea.value = "🍪 COOKIE'S SHOP ORDER LIST\n━━━━━━━━━━━━━━━━━━━━━━━━━━\nNo items yet.";
+            totalBox.textContent = `Total: ${symbol}0.00`;
+            cartCountSpan.textContent = "0";
+            return;
+        }
+
+        let total = 0;
+        let orderText = `🍪 COOKIE'S SHOP ORDER LIST (${symbol.toUpperCase()})\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+        cartContainer.innerHTML = "";
+        cart.forEach((item, idx) => {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "cart-item";
+            itemDiv.innerHTML = `
+                <div class="cart-item-info">
+                    <strong>${escapeHtml(item.name)}</strong><br>
+                    ${symbol}${item.price.toFixed(2)} each
+                </div>
+                <div class="cart-item-controls">
+                    <button class="qty-btn" data-index="${idx}" data-delta="-1">-</button>
+                    <span class="item-qty">${item.quantity}</span>
+                    <button class="qty-btn" data-index="${idx}" data-delta="1">+</button>
+                    <button class="remove" data-index="${idx}">🗑️</button>
+                </div>
+            `;
+            cartContainer.appendChild(itemDiv);
+            orderText += `◆ ${item.name} x${item.quantity}  •  ${symbol}${itemTotal.toFixed(2)}\n`;
+        });
+        orderText += `\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n💰 TOTAL: ${symbol}${total.toFixed(2)}\n✨ Thank you!\n\n📌 Paste this in a ticket on Discord\n💳 Payments: PayPal, Swedbank, Crypto`;
+        copyArea.value = orderText;
+        totalBox.textContent = `Total: ${symbol}${total.toFixed(2)}`;
+        cartCountSpan.textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+
+        // attach quantity and remove events
+        document.querySelectorAll(".qty-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const idx = parseInt(btn.dataset.index);
+                const delta = parseInt(btn.dataset.delta);
+                if (cart[idx]) {
+                    const newQty = cart[idx].quantity + delta;
+                    if (newQty <= 0) {
+                        cart.splice(idx, 1);
+                    } else {
+                        cart[idx].quantity = newQty;
+                    }
+                    updateCartUI();
+                    saveCart();
+                }
+                e.stopPropagation();
+            });
+        });
+        document.querySelectorAll(".remove").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                const idx = parseInt(btn.dataset.index);
+                cart.splice(idx, 1);
+                updateCartUI();
+                saveCart();
+                showToast("🗑️ Item removed");
+                e.stopPropagation();
             });
         });
     }
 
-    function setupCartClose() {
-        const cartPanel = document.getElementById("cart");
-        document.addEventListener("click", (e) => {
-            if (cartPanel?.classList.contains("active")) {
-                if (!e.target.closest(".cart-btn") && !e.target.closest(".cart")) {
-                    cartPanel.classList.remove("active");
-                }
-            }
+    function clearCart() {
+        if (cart.length === 0) return;
+        if (confirm("Clear entire cart?")) {
+            cart = [];
+            updateCartUI();
+            saveCart();
+            showToast("🛒 Cart cleared");
+        }
+    }
+
+    function animateCartBadge() {
+        const badge = document.querySelector(".badge");
+        badge.style.animation = "none";
+        badge.offsetHeight;
+        badge.style.animation = "pulse 0.5s ease";
+    }
+
+    function getCurrencySymbol() {
+        return currentCurrency === "eur" ? "€" : "$";
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById("toastMsg");
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function manualCopy() {
+        copyArea.select();
+        copyArea.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyArea.value).then(() => showToast("📋 Copied! Paste in ticket")).catch(() => showToast("📋 Copied!"));
+    }
+
+    function checkout() {
+        if (cart.length === 0) { showToast("❌ Cart empty!"); return; }
+        manualCopy();
+        setTimeout(() => window.open("https://discord.gg/49cwUj62aC", "_blank"), 200);
+    }
+
+    function joinDiscord() { window.open("https://discord.gg/49cwUj62aC", "_blank"); showToast("✨ Join our Discord!"); }
+    function toggleCart() { document.getElementById("cart").classList.toggle("active"); }
+
+    function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    function applyFiltersAndRender() {
+        renderShop();
+        renderFeatured();
+        const activeTab = document.querySelector(".tab.active");
+        if (activeTab) currentFilter = activeTab.dataset.filter;
+        else currentFilter = "all";
+        renderShop();
+    }
+
+    // Event listeners
+    searchInput.addEventListener("input", (e) => { currentSearch = e.target.value; renderShop(); });
+    sortSelect.addEventListener("change", (e) => { currentSort = e.target.value; renderShop(); });
+
+    function initFilters() {
+        const tabs = document.querySelectorAll(".tab");
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                currentFilter = tab.dataset.filter;
+                renderShop();
+            });
         });
     }
 
     function setupCurrencySwitcher() {
         const eurBtn = document.querySelector(".currency-option[data-currency='eur']");
         const usdBtn = document.querySelector(".currency-option[data-currency='usd']");
-        
-        if (eurBtn && usdBtn) {
-            eurBtn.addEventListener("click", () => {
-                if (currentCurrency === "eur") return;
-                currentCurrency = "eur";
-                eurBtn.classList.add("active");
-                usdBtn.classList.remove("active");
-                cart = [];
-                renderShop();
-                updateCartUI();
-                showToast("💰 Currency switched to EUR (€)");
-            });
-            
-            usdBtn.addEventListener("click", () => {
-                if (currentCurrency === "usd") return;
-                currentCurrency = "usd";
-                usdBtn.classList.add("active");
-                eurBtn.classList.remove("active");
-                cart = [];
-                renderShop();
-                updateCartUI();
-                showToast("💵 Currency switched to USD ($)");
-            });
-        }
+        eurBtn.addEventListener("click", () => {
+            if (currentCurrency === "eur") return;
+            currentCurrency = "eur";
+            eurBtn.classList.add("active");
+            usdBtn.classList.remove("active");
+            cart = [];
+            renderShop();
+            renderFeatured();
+            updateCartUI();
+            saveCart();
+            showToast("💰 Currency: EUR (€)");
+        });
+        usdBtn.addEventListener("click", () => {
+            if (currentCurrency === "usd") return;
+            currentCurrency = "usd";
+            usdBtn.classList.add("active");
+            eurBtn.classList.remove("active");
+            cart = [];
+            renderShop();
+            renderFeatured();
+            updateCartUI();
+            saveCart();
+            showToast("💵 Currency: USD ($)");
+        });
+    }
+
+    function setupCartClose() {
+        const cartPanel = document.getElementById("cart");
+        document.addEventListener("click", (e) => {
+            if (cartPanel.classList.contains("active") && !e.target.closest(".cart") && !e.target.closest(".cart-btn"))
+                cartPanel.classList.remove("active");
+        });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        renderShop();
+        loadCart();
         initFilters();
-        setupCartClose();
         setupCurrencySwitcher();
+        setupCartClose();
+        renderShop();
+        renderFeatured();
         updateCartUI();
     });
 </script>

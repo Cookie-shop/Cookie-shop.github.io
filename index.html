@@ -173,8 +173,8 @@
 <script>
   // ==================== BACKEND URL ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // Use your own Cloudflare Worker endpoint (no CORS issues)
-  const API_ENDPOINT = '/api';
+  // Use your Cloudflare Worker URL directly (no /api)
+  const WORKER_URL = 'https://cookieshop.jokubassakal1s2.workers.dev';
 
   let currentUser = null, currentToken = null;
 
@@ -206,7 +206,7 @@
   // ==================== BALANCE SYSTEM (via Cloudflare Worker) ====================
   async function apiCall(action, data) {
     try {
-      const res = await fetch(API_ENDPOINT, {
+      const res = await fetch(WORKER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -215,12 +215,11 @@
         })
       });
       const json = await res.json();
-      // If we get a response (any), hide the warning box
       document.getElementById("warningBox").style.display = "none";
       return json;
     } catch (err) {
       document.getElementById("warningBox").style.display = "flex";
-      document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please ensure the Cloudflare Worker is deployed.<br>If the problem persists, wait 1 minute and refresh.";
+      document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please refresh or try again later.";
       showToastMsg('Network error: ' + err.message, true);
       return { success: false, message: 'Network error' };
     }

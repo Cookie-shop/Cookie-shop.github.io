@@ -172,9 +172,9 @@
 <script>
   // ==================== BACKEND URL (use reliable CORS proxy) ====================
   const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyUkPGwm_4Vp_CIBqOn1eyokWIZkgNMXav_OcM82cFz9Diz8XWhDh1ljhLEXVfCzOn5yA/exec';
-  // Use multiple proxy fallbacks (try primary, if fails, fallback)
-  const PROXY = 'https://api.allorigins.win/raw?url=';
-  const BACKEND = PROXY + encodeURIComponent(BACKEND_URL);
+  // Using cors.bridged.cc which handles POST and preserves JSON
+  const PROXY = 'https://cors.bridged.cc/';
+  const BACKEND = PROXY + BACKEND_URL;
 
   let currentUser = null, currentToken = null;
 
@@ -204,56 +204,80 @@
   function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
   function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
-  // ==================== BALANCE SYSTEM (reliable proxy + cache buster) ====================
+  // ==================== BALANCE SYSTEM (fixed proxy) ====================
   async function apiCall(action, data) { 
-    const url = BACKEND + '&_=' + Date.now();
+    const url = BACKEND + '?_=' + Date.now();
     try { 
-      const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action,...data}) }); 
-      const text = await res.text();
-      // allorigins.win returns the response inside a 'contents' property? Actually it returns raw response, but let's handle.
-      // If it's a string that looks like JSON, parse it.
-      let json;
-      try {
-        json = JSON.parse(text);
-      } catch(e) {
-        // If proxy returns something wrapped, try to extract
-        if (text.includes('"success"')) {
-          json = JSON.parse(text);
-        } else {
-          throw new Error('Invalid JSON');
-        }
-      }
+      const res = await fetch(url, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ action, ...data }) 
+      }); 
+      const json = await res.json();
       return json;
     } catch(err) { 
-      document.getElementById("warningBox").style.display="flex"; 
-      showToastMsg('Network error - open in real browser', true); 
-      return {success:false, message:'Network error'}; 
+      document.getElementById("warningBox").style.display = "flex"; 
+      showToastMsg('Network error: ' + err.message, true); 
+      return { success: false, message: 'Network error' }; 
     } 
   }
   
-  async function modalRegister() { let u=document.getElementById('modalRegUsername').value.trim(), p=document.getElementById('modalRegPassword').value.trim(); if(!u||!p){ showToastMsg('Fill all fields',true); return; } let res=await apiCall('register',{username:u,password:p}); if(res.success){ showToastMsg('Registered! Please login.'); closeLoginModal(); } else showToastMsg(res.message,true); }
+  async function modalRegister() { 
+    let u = document.getElementById('modalRegUsername').value.trim(); 
+    let p = document.getElementById('modalRegPassword').value.trim(); 
+    if (!u || !p) { showToastMsg('Fill all fields', true); return; } 
+    let res = await apiCall('register', { username: u, password: p }); 
+    if (res.success) { showToastMsg('Registered! Please login.'); closeLoginModal(); } 
+    else showToastMsg(res.message, true); 
+  }
   
-  async function modalLogin() { let u=document.getElementById('modalUsername').value.trim(), p=document.getElementById('modalPassword').value.trim(); if(!u||!p){ showToastMsg('Enter credentials',true); return; } let res=await apiCall('login',{username:u,password:p}); if(res.success){ currentUser=u; currentToken=res.data.token; localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken})); document.getElementById('userBar').style.display='flex'; document.getElementById('loginPromptBar').style.display='none'; await updateBalanceDisplay(); showToastMsg(`Welcome ${u}!`); closeLoginModal(); } else showToastMsg(res.message,true); }
+  async function modalLogin() { 
+    let u = document.getElementById('modalUsername').value.trim(); 
+    let p = document.getElementById('modalPassword').value.trim(); 
+    if (!u || !p) { showToastMsg('Enter credentials', true); return; } 
+    let res = await apiCall('login', { username: u, password: p }); 
+    if (res.success) { 
+      currentUser = u; 
+      currentToken = res.data.token; 
+      localStorage.setItem('shopUser', JSON.stringify({ username: u, token: currentToken })); 
+      document.getElementById('userBar').style.display = 'flex'; 
+      document.getElementById('loginPromptBar').style.display = 'none'; 
+      await updateBalanceDisplay(); 
+      showToastMsg(`Welcome ${u}!`); 
+      closeLoginModal(); 
+    } else showToastMsg(res.message, true); 
+  }
   
-  function logout() { currentUser=null; currentToken=null; localStorage.removeItem('shopUser'); document.getElementById('userBar').style.display='none'; document.getElementById('loginPromptBar').style.display='flex'; showToastMsg('Logged out'); }
+  function logout() { 
+    currentUser = null; 
+    currentToken = null; 
+    localStorage.removeItem('shopUser'); 
+    document.getElementById('userBar').style.display = 'none'; 
+    document.getElementById('loginPromptBar').style.display = 'flex'; 
+    showToastMsg('Logged out'); 
+  }
   
   async function updateBalanceDisplay() { 
-    if(!currentUser) return; 
-    let res=await apiCall('getBalance',{username:currentUser,token:currentToken}); 
-    if(res.success) document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`; 
-    else { logout(); showToastMsg('Session expired, please login again', true); } 
+    if (!currentUser) return; 
+    let res = await apiCall('getBalance', { username: currentUser, token: currentToken }); 
+    if (res.success) { 
+      document.getElementById('balanceDisplay').innerHTML = `💰 Balance: €${res.data.balance.toFixed(2)}`; 
+    } else { 
+      logout(); 
+      showToastMsg('Session expired, please login again', true); 
+    } 
   }
   
   async function addFunds() { 
-    if(!currentUser){ openLoginModal(); return; } 
-    let amount=parseFloat(prompt('Amount in EUR (min 5€):')); 
-    if(isNaN(amount)||amount<5){ showToastMsg('Minimum 5€',true); return; } 
-    let res=await apiCall('generateCode',{username:currentUser,token:currentToken,amount}); 
-    if(res.success){ 
-      let code=res.data.code; 
+    if (!currentUser) { openLoginModal(); return; } 
+    let amount = parseFloat(prompt('Amount in EUR (min 5€):')); 
+    if (isNaN(amount) || amount < 5) { showToastMsg('Minimum 5€', true); return; } 
+    let res = await apiCall('generateCode', { username: currentUser, token: currentToken, amount: amount }); 
+    if (res.success) { 
+      let code = res.data.code; 
       alert(`🧾 YOUR PAYMENT CODE: ${code}\n\n📌 INSTRUCTIONS:\n1️⃣ Send €${amount} via PayPal / Swedbank / SEB / Luminor\n2️⃣ Use this code as payment reference\n3️⃣ Open a Discord ticket and provide the code\n4️⃣ After admin verification, your balance will be added.`); 
       showToastMsg(`Code ${code} generated`); 
-    } else showToastMsg(res.message,true); 
+    } else showToastMsg(res.message, true); 
   }
   
   async function payWithBalance() {
@@ -274,8 +298,8 @@
     }
   }
 
-  function openLoginModal() { document.getElementById('loginModal').style.display='flex'; }
-  function closeLoginModal() { document.getElementById('loginModal').style.display='none'; document.getElementById('modalUsername').value=''; document.getElementById('modalPassword').value=''; document.getElementById('modalRegUsername').value=''; document.getElementById('modalRegPassword').value=''; }
+  function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+  function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 
   // ==================== PRODUCTS (54 items) ====================
   const productsEUR = [

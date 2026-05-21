@@ -77,7 +77,7 @@
     footer { text-align: center; margin-top: 50px; font-size: 0.7rem; color: var(--silver); }
     .join-discord { background: #5865F2; margin-top: 10px; border: none; }
     .user-bar { background: #1e1a2a; border-radius: 28px; padding: 8px 20px; margin: 10px 0 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
-    .warning { background: #442a2a; border-left: 4px solid #ffaa00; padding: 10px 15px; border-radius: 16px; margin-bottom: 20px; font-size: 0.8rem; display: flex; align-items: center; gap: 12px; }
+    .warning { background: #442a2a; border-left: 4px solid #ffaa00; padding: 10px 15px; border-radius: 16px; margin-bottom: 20px; font-size: 0.8rem; display: none; align-items: center; gap: 12px; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; justify-content: center; align-items: center; }
     .modal-content { background: #1a1a2e; border-radius: 32px; padding: 30px; width: 90%; max-width: 400px; border: 1px solid var(--strawberry-red); }
     .modal-content h2 { margin-bottom: 20px; text-align: center; }
@@ -87,6 +87,19 @@
     @media (max-width: 640px) { .container { padding: 16px; } .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } .cart-btn { top: 100px; padding: 8px 16px; right: 12px; } .controls { justify-content: center; } .search-box { width: 100%; } .user-bar { flex-direction: column; align-items: stretch; } }
     .checkout-options { display: flex; gap: 10px; margin-top: 10px; }
     .checkout-options button { flex: 1; margin-top: 0; }
+    .wheel-section { margin: 30px 0; background: #1a1a2e; border-radius: 28px; padding: 20px; display: flex; flex-wrap: wrap; gap: 30px; align-items: center; justify-content: center; }
+    .wheel-container { position: relative; width: 280px; height: 280px; }
+    canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 5px #a4161a, 0 0 0 10px #2a1a2a; transition: transform 0.3s; }
+    .wheel-info { flex: 1; min-width: 200px; text-align: center; }
+    .spin-btn { background: #e5383b; font-size: 1.2rem; padding: 12px 24px; width: auto; margin-top: 15px; }
+    .result-area { margin-top: 15px; font-size: 1.1rem; font-weight: bold; color: var(--gold); }
+    .orders-panel { background: #1e1a2a; border-radius: 28px; padding: 15px 20px; margin-top: 20px; max-height: 300px; overflow-y: auto; }
+    .orders-title { font-size: 1.3rem; margin-bottom: 10px; border-left: 4px solid var(--strawberry-red); padding-left: 12px; }
+    .order-item { background: #2a203a; margin-bottom: 10px; padding: 10px; border-radius: 20px; border-left: 3px solid var(--gold); }
+    .order-game { font-weight: bold; }
+    .order-code { font-family: monospace; color: #ffaa88; margin-top: 4px; font-size: 0.8rem; }
+    .no-orders { text-align: center; padding: 20px; opacity: 0.7; }
+    .payment-details { background: #2a203a; border-radius: 20px; padding: 12px; margin: 10px 0; font-size: 0.85rem; text-align: left; border-left: 4px solid var(--gold); }
   </style>
 </head>
 <body>
@@ -157,6 +170,19 @@
 </div>
 
 <div class="container">
+  <!-- Wheel of Fortune -->
+  <div class="wheel-section">
+    <div class="wheel-container">
+      <canvas id="wheelCanvas" width="500" height="500"></canvas>
+    </div>
+    <div class="wheel-info">
+      <h3>🎡 LUCKY WHEEL 🎡</h3>
+      <p>Spin for 0.20€ and win amazing games!</p>
+      <button class="spin-btn" onclick="spinWheel()">🎲 SPIN (0.20€) 🎲</button>
+      <div id="spinResult" class="result-area"></div>
+    </div>
+  </div>
+
   <div class="discount-banner"><span>🎁 <strong>SPECIAL OFFER:</strong> Get <strong>8% INSTANT DISCOUNT</strong> when you spend <strong id="thresholdAmount">€50</strong> or more!</span><div class="badge-glow">✨ SAVE 8% ✨</div></div>
   <div class="featured-section"><div class="featured-title">🌟 FEATURED DEALS</div><div class="featured-grid" id="featuredGrid"></div></div>
   <div class="tabs" id="tabsContainer">
@@ -165,22 +191,189 @@
   </div>
   <div class="games" id="gamesGrid"></div>
   <div id="loadMoreBtn" style="text-align:center; margin-top:30px;"><button onclick="loadMore()" style="width:auto; padding:8px 30px;">Load More ➕</button></div>
+
+  <!-- Orders History Panel -->
+  <div class="orders-panel" id="ordersPanel">
+    <div class="orders-title">📋 YOUR PURCHASED ITEMS</div>
+    <div id="ordersList"></div>
+  </div>
 </div>
 <div id="toastMsg" class="toast">✨ Added to cart</div>
-<footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance</footer>
+<footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance • Lucky Wheel</footer>
 
 <script>
   // ==================== BACKEND URL ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // Multiple reliable CORS proxies (fallback)
-  const PROXIES = [
-    'https://corsproxy.io/?url=',
-    'https://api.allorigins.win/raw?url=',
-    'https://cors.bridged.cc/'
-  ];
-  let currentProxyIndex = 0;
+  const PROXY = 'https://corsproxy.io/?url=';
+  const BACKEND_URL = PROXY + encodeURIComponent(TARGET_URL);
 
   let currentUser = null, currentToken = null;
+
+  // Purchase history (stored in localStorage)
+  let purchaseHistory = [];
+
+  function loadPurchaseHistory() {
+    const stored = localStorage.getItem('purchaseHistory_' + (currentUser || 'guest'));
+    if (stored) purchaseHistory = JSON.parse(stored);
+    else purchaseHistory = [];
+    renderOrdersPanel();
+  }
+
+  function savePurchaseHistory() {
+    if (currentUser) {
+      localStorage.setItem('purchaseHistory_' + currentUser, JSON.stringify(purchaseHistory));
+    }
+  }
+
+  function addToPurchaseHistory(gameName, code) {
+    purchaseHistory.unshift({ game: gameName, code: code, date: new Date().toLocaleString() });
+    if (purchaseHistory.length > 50) purchaseHistory.pop();
+    savePurchaseHistory();
+    renderOrdersPanel();
+  }
+
+  function renderOrdersPanel() {
+    const container = document.getElementById('ordersList');
+    if (!container) return;
+    if (!purchaseHistory.length) {
+      container.innerHTML = '<div class="no-orders">No purchases yet. Spin the wheel or buy games!</div>';
+      return;
+    }
+    container.innerHTML = purchaseHistory.map(order => `
+      <div class="order-item">
+        <div class="order-game">🎮 ${order.game}</div>
+        <div class="order-code">📦 Code: ${order.code}</div>
+        <div style="font-size:0.7rem; opacity:0.6;">${order.date}</div>
+      </div>
+    `).join('');
+  }
+
+  // ==================== WHEEL ====================
+  const wheelSegments = [
+    { label: '❌ LOSE', value: 'nothing', chance: 65, color: '#444', prize: null },
+    { label: '🌲 The Forest', value: 'the forest', chance: 20, color: '#2d6a4f', prize: 'The Forest' },
+    { label: '🌲 Sons of Forest', value: 'sons of forest', chance: 14, color: '#1b4d3e', prize: 'Sons of The Forest' },
+    { label: '📅 Schedule I', value: 'schedule', chance: 1, color: '#ffaa33', prize: 'Schedule I' }
+  ];
+  let wheelCanvas = null;
+  let wheelCtx = null;
+  let wheelAngles = [];
+  let currentRotation = 0;
+  let spinning = false;
+
+  function initWheel() {
+    wheelCanvas = document.getElementById('wheelCanvas');
+    if (!wheelCanvas) return;
+    wheelCtx = wheelCanvas.getContext('2d');
+    let startAngle = 0;
+    wheelAngles = [];
+    for (let i = 0; i < wheelSegments.length; i++) {
+      const segAngle = (wheelSegments[i].chance / 100) * Math.PI * 2;
+      wheelAngles.push({ start: startAngle, end: startAngle + segAngle, index: i });
+      startAngle += segAngle;
+    }
+    drawWheel();
+  }
+
+  function drawWheel() {
+    if (!wheelCtx) return;
+    const width = wheelCanvas.width, height = wheelCanvas.height;
+    const centerX = width/2, centerY = height/2, radius = width/2 - 10;
+    wheelCtx.clearRect(0, 0, width, height);
+    for (let i = 0; i < wheelSegments.length; i++) {
+      const angle = wheelAngles[i];
+      const start = angle.start + currentRotation;
+      const end = angle.end + currentRotation;
+      wheelCtx.beginPath();
+      wheelCtx.moveTo(centerX, centerY);
+      wheelCtx.arc(centerX, centerY, radius, start, end);
+      wheelCtx.fillStyle = wheelSegments[i].color;
+      wheelCtx.fill();
+      wheelCtx.save();
+      wheelCtx.translate(centerX, centerY);
+      wheelCtx.rotate(start + (end - start)/2);
+      wheelCtx.textAlign = "center";
+      wheelCtx.fillStyle = "#fff";
+      wheelCtx.font = "bold 14px 'Inter'";
+      const label = wheelSegments[i].label.length > 12 ? wheelSegments[i].label.slice(0,10)+".." : wheelSegments[i].label;
+      wheelCtx.fillText(label, radius * 0.7, 5);
+      wheelCtx.restore();
+    }
+    // draw center circle
+    wheelCtx.beginPath();
+    wheelCtx.arc(centerX, centerY, 20, 0, Math.PI*2);
+    wheelCtx.fillStyle = '#a4161a';
+    wheelCtx.fill();
+    wheelCtx.fillStyle = '#fff';
+    wheelCtx.font = "bold 18px 'Inter'";
+    wheelCtx.fillText("🎲", centerX-10, centerY+8);
+  }
+
+  function getSpinResult() {
+    const random = Math.random() * 100;
+    let cumulative = 0;
+    for (let i = 0; i < wheelSegments.length; i++) {
+      cumulative += wheelSegments[i].chance;
+      if (random <= cumulative) {
+        return wheelSegments[i];
+      }
+    }
+    return wheelSegments[0];
+  }
+
+  async function spinWheel() {
+    if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
+    if (spinning) return;
+    const spinCost = 0.20;
+    let balanceRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
+    if (!balanceRes.success || balanceRes.data.balance < spinCost) {
+      showToastMsg('Insufficient balance! Need 0.20€ to spin.', true);
+      return;
+    }
+    // deduct balance
+    const deductRes = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Wheel Spin', price: spinCost });
+    if (!deductRes.success) {
+      showToastMsg('Failed to deduct balance: ' + deductRes.message, true);
+      return;
+    }
+    await updateBalanceDisplay();
+    const result = getSpinResult();
+    spinning = true;
+    const extraSpins = Math.floor(Math.random() * 10) + 15;
+    const targetRotation = currentRotation + (Math.PI * 2 * extraSpins) + (Math.random() * Math.PI * 2);
+    const startRot = currentRotation;
+    const duration = 2000;
+    const startTime = performance.now();
+    function animate(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / duration);
+      const ease = 1 - Math.pow(1 - t, 3);
+      currentRotation = startRot + (targetRotation - startRot) * ease;
+      drawWheel();
+      if (t < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        spinning = false;
+        if (result.prize) {
+          // Generate a random code for the prize
+          const prizeCode = Math.random().toString(36).substring(2, 12).toUpperCase();
+          addToPurchaseHistory(result.prize, prizeCode);
+          // Also send to Discord webhook (optional)
+          fetch(BACKEND_URL + '&_=' + Date.now(), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'spinWin', username: currentUser, prize: result.prize, code: prizeCode })
+          }).catch(e=>console.log);
+          document.getElementById('spinResult').innerHTML = `🎉 YOU WON: ${result.prize}! Code: ${prizeCode} 🎉`;
+          showToastMsg(`🎉 Won ${result.prize}! Code saved in Orders.`);
+        } else {
+          document.getElementById('spinResult').innerHTML = `😢 No prize this time. Try again!`;
+          showToastMsg(`😢 No win. Better luck next spin!`);
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
 
   // ==================== CART & UI ====================
   let cart = [], currentCurrency = "eur", currentFilter = "all", currentSearch = "", currentSort = "default", displayedCount = 24;
@@ -207,40 +400,24 @@
   function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
   function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
-  // ==================== BALANCE SYSTEM (with proxy fallback) ====================
+  // ==================== BALANCE SYSTEM ====================
   async function apiCall(action, data) {
-    // Try each proxy until one works
-    for (let attempt = 0; attempt < PROXIES.length; attempt++) {
-      const proxy = PROXIES[attempt];
-      let url;
-      if (proxy.includes('allorigins')) {
-        url = proxy + encodeURIComponent(TARGET_URL + '?_=' + Date.now());
-      } else if (proxy.includes('corsproxy.io')) {
-        url = proxy + encodeURIComponent(TARGET_URL + '?_=' + Date.now());
-      } else {
-        // cors.bridged.cc – append directly
-        url = proxy + TARGET_URL + '?_=' + Date.now();
-      }
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, ...data })
-        });
-        const json = await res.json();
-        // Success
-        document.getElementById("warningBox").style.display = "none";
-        return json;
-      } catch (err) {
-        console.warn(`Proxy ${proxy} failed:`, err);
-        // Continue to next proxy
-      }
+    const url = BACKEND_URL + '&_=' + Date.now();
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...data })
+      });
+      const json = await res.json();
+      document.getElementById("warningBox").style.display = "none";
+      return json;
+    } catch (err) {
+      document.getElementById("warningBox").style.display = "flex";
+      document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please refresh the page. If problem persists, try opening in a different browser.";
+      showToastMsg('Network error: ' + err.message, true);
+      return { success: false, message: 'Network error' };
     }
-    // All proxies failed
-    document.getElementById("warningBox").style.display = "flex";
-    document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please refresh the page. If the problem persists, try opening in a different browser or check your internet connection.";
-    showToastMsg('Network error – all proxies failed', true);
-    return { success: false, message: 'Network error' };
   }
 
   async function modalRegister() {
@@ -264,6 +441,7 @@
       document.getElementById('userBar').style.display = 'flex';
       document.getElementById('loginPromptBar').style.display = 'none';
       await updateBalanceDisplay();
+      loadPurchaseHistory();
       showToastMsg(`Welcome ${u}!`);
       closeLoginModal();
     } else showToastMsg(res.message, true);
@@ -275,6 +453,8 @@
     localStorage.removeItem('shopUser');
     document.getElementById('userBar').style.display = 'none';
     document.getElementById('loginPromptBar').style.display = 'flex';
+    purchaseHistory = [];
+    renderOrdersPanel();
     showToastMsg('Logged out');
   }
 
@@ -291,12 +471,12 @@
 
   async function addFunds() {
     if (!currentUser) { openLoginModal(); return; }
-    let amount = parseFloat(prompt('Amount in EUR (min 5€):'));
-    if (isNaN(amount) || amount < 5) { showToastMsg('Minimum 5€', true); return; }
+    let amount = parseFloat(prompt('Amount in EUR (minimum 0.20€):'));
+    if (isNaN(amount) || amount < 0.20) { showToastMsg('Minimum amount is 0.20€', true); return; }
     let res = await apiCall('generateCode', { username: currentUser, token: currentToken, amount: amount });
     if (res.success) {
       let code = res.data.code;
-      alert(`🧾 YOUR PAYMENT CODE: ${code}\n\n📌 INSTRUCTIONS:\n1️⃣ Send €${amount} via PayPal / Swedbank / SEB / Luminor\n2️⃣ Use this code as payment reference\n3️⃣ Open a Discord ticket and provide the code\n4️⃣ After admin verification, your balance will be added.`);
+      alert(`🧾 YOUR PAYMENT CODE: ${code}\n\n📌 PAYMENT INSTRUCTIONS:\n\n💳 PayPal: Send to @NeipasBananavicius (include the code in payment note)\n\n🏦 Bank Transfer:\nAccount Number: LT127300010194085006\nRecipient: TŪSKA NEIDAS\nAmount: €${amount}\nReference / Payment purpose: ${code}\n\nAfter sending payment, open a Discord ticket with the code. Your balance will be added manually.\n\nThank you!`);
       showToastMsg(`Code ${code} generated`);
     } else showToastMsg(res.message, true);
   }
@@ -305,11 +485,24 @@
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
     if (cart.length === 0) { showToastMsg('Cart is empty', true); return; }
     let totalInCurrentCurrency = 0;
-    for (let item of cart) totalInCurrentCurrency += item.price * item.quantity;
+    let productList = [];
+    for (let item of cart) {
+      totalInCurrentCurrency += item.price * item.quantity;
+      productList.push(`${item.name} x${item.quantity}`);
+    }
     const totalEUR = totalInCurrentCurrency / rates[currentCurrency];
     const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Cart total', price: totalEUR });
     if (res.success) {
-      showToastMsg(`✅ Payment successful! Code: ${res.data.code} (sent to Discord)`);
+      const purchaseCode = res.data.code;
+      const productNames = productList.join(', ');
+      addToPurchaseHistory(`Cart: ${productNames}`, purchaseCode);
+      // Send webhook with all products
+      fetch(BACKEND_URL + '&_=' + Date.now(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'webhook', username: currentUser, products: productNames, total: totalEUR, code: purchaseCode })
+      }).catch(e=>console.log);
+      showToastMsg(`✅ Payment successful! Code: ${purchaseCode} (sent to Discord)`);
       cart = [];
       updateCartUI();
       saveCart();
@@ -391,14 +584,15 @@
     if(saved){
       try{
         let {username,token}=JSON.parse(saved);
-        apiCall('getBalance',{username,token}).then(res=>{ if(res.success){ currentUser=username; currentToken=token; document.getElementById('userBar').style.display='flex'; document.getElementById('loginPromptBar').style.display='none'; updateBalanceDisplay(); showToastMsg(`Welcome back ${username}!`); } else { localStorage.removeItem('shopUser'); } });
+        apiCall('getBalance',{username,token}).then(res=>{ if(res.success){ currentUser=username; currentToken=token; document.getElementById('userBar').style.display='flex'; document.getElementById('loginPromptBar').style.display='none'; updateBalanceDisplay(); showToastMsg(`Welcome back ${username}!`); loadPurchaseHistory(); } else { localStorage.removeItem('shopUser'); } });
       }catch(e){}
     }
     renderShop(); renderFeatured();
     for(let i=0;i<50;i++){ let p=document.createElement("div"); p.className="particle"; p.style.width=Math.random()*8+3+"px"; p.style.height=p.style.width; p.style.left=Math.random()*100+"%"; p.style.top=Math.random()*100+"%"; p.style.animationDelay=Math.random()*10+"s"; p.style.animationDuration=Math.random()*8+5+"s"; document.getElementById("particles").appendChild(p); }
+    initWheel();
   }
   init();
-  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay;
+  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay; window.spinWheel = spinWheel;
 </script>
 </body>
 </html>

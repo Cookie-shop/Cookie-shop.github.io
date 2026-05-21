@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>🍪 Cookie's Shop | Ultimate Gaming Store</title>
   <style>
+    /* ========== COMPLETE CSS (same as before – kept compact) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     :root {
       --onyx: #0b090aff; --carbon-black: #161a1dff; --dark-garnet: #660708ff;
@@ -87,24 +88,11 @@
     @media (max-width: 640px) { .container { padding: 16px; } .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } .cart-btn { top: 100px; padding: 8px 16px; right: 12px; } .controls { justify-content: center; } .search-box { width: 100%; } .user-bar { flex-direction: column; align-items: stretch; } }
     .checkout-options { display: flex; gap: 10px; margin-top: 10px; }
     .checkout-options button { flex: 1; margin-top: 0; }
-    /* Wheel styles */
     .wheel-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
     .wheel-modal-content { background: #1a1a2e; border-radius: 40px; padding: 25px; width: 90%; max-width: 500px; border: 2px solid var(--strawberry-red); text-align: center; position: relative; }
     .wheel-container { position: relative; width: 280px; height: 280px; margin: 10px auto; }
     canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 5px #a4161a, 0 0 0 10px #2a1a2a; }
-    .wheel-pointer {
-      position: absolute;
-      top: -18px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-top: 30px solid var(--gold);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-      z-index: 10;
-    }
+    .wheel-pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--gold); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); z-index: 10; }
     .spin-btn { background: #e5383b; font-size: 1.2rem; padding: 10px 24px; width: auto; margin: 15px auto 10px; display: inline-block; }
     .result-area { margin-top: 15px; font-size: 1rem; font-weight: bold; color: var(--gold); }
     .wheel-modal-close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--silver); }
@@ -173,7 +161,6 @@
   </div>
 </div>
 
-<!-- Cart sidebar -->
 <div class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="badge" id="cartCount">0</span> ⛓️</div>
 <div class="cart" id="cart">
   <div class="cart-header"><h3>✦ YOUR CART ✦</h3><button class="clear-cart" onclick="clearCart()">Clear All</button><div class="close-cart" onclick="toggleCart()">✖️</div></div>
@@ -190,7 +177,6 @@
   <div class="payment-info" style="background:#1e162e; border-radius:28px; padding:10px; font-size:0.7rem; text-align:center; margin-top:12px;">💰 <strong>We accept:</strong> PayPal, Swedbank, SEB, Luminor, Bitcoin, Ethereum</div>
 </div>
 
-<!-- Wheel popup -->
 <div id="wheelModal" class="wheel-modal">
   <div class="wheel-modal-content">
     <span class="wheel-modal-close" onclick="closeWheelModal()">&times;</span>
@@ -204,7 +190,6 @@
   </div>
 </div>
 
-<!-- Wheel open button -->
 <div class="wheel-open-btn" onclick="openWheelModal()">🎡 LUCKY WHEEL 🎡</div>
 
 <div class="container">
@@ -216,8 +201,6 @@
   </div>
   <div class="games" id="gamesGrid"></div>
   <div id="loadMoreBtn" style="text-align:center; margin-top:30px;"><button onclick="loadMore()" style="width:auto; padding:8px 30px;">Load More ➕</button></div>
-
-  <!-- Orders History -->
   <div class="orders-panel" id="ordersPanel">
     <div class="orders-title">📋 YOUR PURCHASED ITEMS</div>
     <div id="ordersList"></div>
@@ -227,16 +210,14 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance • Lucky Wheel</footer>
 
 <script>
-  // ==================== BACKEND & WEBHOOK ====================
+  // ==================== BACKEND & PROXY (using a reliable one) ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // Use multiple proxies with fallback
-  const PROXIES = [
-    'https://corsproxy.io/?url=',
-    'https://api.allorigins.win/raw?url=',
-    'https://cors.bridged.cc/'
-  ];
-  let currentProxyIndex = 0;
-
+  // Use a simple, free CORS proxy that works
+  const PROXY = 'https://cors-anywhere.herokuapp.com/';
+  // Note: cors-anywhere requires a one-time visit to https://cors-anywhere.herokuapp.com/corsdemo to enable.
+  // But we'll provide a fallback if it fails.
+  const BACKEND_URL = PROXY + TARGET_URL;
+  
   const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;
@@ -255,17 +236,9 @@
     return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
   }
 
-  // ==================== API Call with fallback proxies ====================
-  async function apiCall(action, data, retry = true) {
-    let proxy = PROXIES[currentProxyIndex];
-    let url;
-    if (proxy.includes('allorigins')) {
-      url = proxy + encodeURIComponent(TARGET_URL + '&_=' + Date.now());
-    } else if (proxy.includes('cors.bridged.cc')) {
-      url = proxy + TARGET_URL + '&_=' + Date.now();
-    } else {
-      url = proxy + encodeURIComponent(TARGET_URL + '&_=' + Date.now());
-    }
+  // ==================== API Call ====================
+  async function apiCall(action, data) {
+    const url = BACKEND_URL + '?_=' + Date.now();
     try {
       const res = await fetch(url, {
         method: 'POST',
@@ -273,18 +246,13 @@
         body: JSON.stringify({ action, ...data })
       });
       const json = await res.json();
-      // If we get a response, hide warning
       document.getElementById('warningBox').style.display = 'none';
       return json;
     } catch (err) {
-      console.warn(`Proxy ${proxy} failed:`, err);
-      if (retry && currentProxyIndex < PROXIES.length - 1) {
-        currentProxyIndex++;
-        return apiCall(action, data, true);
-      }
+      console.error('API call error:', err);
       document.getElementById('warningBox').style.display = 'flex';
-      document.getElementById('warningBox').innerHTML = '⚠️ Cannot reach server. Please refresh or try again later.';
-      showToastMsg('Network error - please refresh', true);
+      document.getElementById('warningBox').innerHTML = '⚠️ Cannot reach server. Please ensure you have visited <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank">https://cors-anywhere.herokuapp.com/corsdemo</a> and clicked "Request temporary access". Then refresh.';
+      showToastMsg('Network error - please enable CORS proxy (see warning)', true);
       return { success: false, message: 'Network error' };
     }
   }
@@ -386,13 +354,11 @@
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); closeWheelModal(); return; }
     if (spinning) return;
     const spinCost = 0.20;
-    // Check balance
     let balanceRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
     if (!balanceRes.success || balanceRes.data.balance < spinCost) {
       showToastMsg('Insufficient balance! Need 0.20€ to spin.', true);
       return;
     }
-    // Deduct
     const deductRes = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Wheel Spin', price: spinCost });
     if (!deductRes.success) {
       showToastMsg('Failed to deduct balance: ' + deductRes.message, true);
@@ -428,7 +394,7 @@
           fetch(DISCORD_WEBHOOK, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: `🎡 **WHEEL WIN!**\nUser: ${currentUser}\nPrize: ${result.prize}\nCode: ${prizeCode}\n🎉 Congratulations! **Please paste this code in a Discord ticket for delivery.**` })
+            body: JSON.stringify({ content: `🎡 **WHEEL WIN!**\nUser: ${currentUser}\nPrize: ${result.prize}\nCode: ${prizeCode}\n🎉 Please paste this code in a Discord ticket for delivery.` })
           }).catch(e=>console.log);
           document.getElementById('spinResult').innerHTML = `🎉 YOU WON: ${result.prize}! Code: ${prizeCode} <br>📌 Copy this code and paste it in a Discord ticket.`;
           showToastMsg(`🎉 Won ${result.prize}! Code saved in Orders.`);

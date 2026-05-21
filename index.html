@@ -87,19 +87,22 @@
     @media (max-width: 640px) { .container { padding: 16px; } .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } .cart-btn { top: 100px; padding: 8px 16px; right: 12px; } .controls { justify-content: center; } .search-box { width: 100%; } .user-bar { flex-direction: column; align-items: stretch; } }
     .checkout-options { display: flex; gap: 10px; margin-top: 10px; }
     .checkout-options button { flex: 1; margin-top: 0; }
-    .wheel-section { margin: 30px 0; background: #1a1a2e; border-radius: 28px; padding: 20px; display: flex; flex-wrap: wrap; gap: 30px; align-items: center; justify-content: center; }
-    .wheel-container { position: relative; width: 280px; height: 280px; }
-    canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 5px #a4161a, 0 0 0 10px #2a1a2a; transition: transform 0.3s; }
-    .wheel-info { flex: 1; min-width: 200px; text-align: center; }
-    .spin-btn { background: #e5383b; font-size: 1.2rem; padding: 12px 24px; width: auto; margin-top: 15px; }
-    .result-area { margin-top: 15px; font-size: 1.1rem; font-weight: bold; color: var(--gold); }
+    /* Wheel popup modal */
+    .wheel-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
+    .wheel-modal-content { background: #1a1a2e; border-radius: 40px; padding: 25px; width: 90%; max-width: 500px; border: 2px solid var(--strawberry-red); text-align: center; }
+    .wheel-container { position: relative; width: 280px; height: 280px; margin: 10px auto; }
+    canvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 5px #a4161a, 0 0 0 10px #2a1a2a; }
+    .spin-btn { background: #e5383b; font-size: 1.2rem; padding: 10px 24px; width: auto; margin: 15px auto 10px; display: inline-block; }
+    .result-area { margin-top: 15px; font-size: 1rem; font-weight: bold; color: var(--gold); }
+    .wheel-modal-close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--silver); }
+    .wheel-open-btn { position: fixed; bottom: 30px; left: 22px; background: var(--onyx); backdrop-filter: blur(14px); padding: 12px 20px; border-radius: 60px; cursor: pointer; z-index: 1100; font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 8px; border: 1px solid var(--strawberry-red); transition: 0.25s; box-shadow: 0 8px 18px rgba(0,0,0,0.5); color: var(--white-smoke); }
+    .wheel-open-btn:hover { background: var(--mahogany-red); transform: scale(1.02); }
     .orders-panel { background: #1e1a2a; border-radius: 28px; padding: 15px 20px; margin-top: 20px; max-height: 300px; overflow-y: auto; }
     .orders-title { font-size: 1.3rem; margin-bottom: 10px; border-left: 4px solid var(--strawberry-red); padding-left: 12px; }
     .order-item { background: #2a203a; margin-bottom: 10px; padding: 10px; border-radius: 20px; border-left: 3px solid var(--gold); }
     .order-game { font-weight: bold; }
     .order-code { font-family: monospace; color: #ffaa88; margin-top: 4px; font-size: 0.8rem; }
     .no-orders { text-align: center; padding: 20px; opacity: 0.7; }
-    .payment-details { background: #2a203a; border-radius: 20px; padding: 12px; margin: 10px 0; font-size: 0.85rem; text-align: left; border-left: 4px solid var(--gold); }
   </style>
 </head>
 <body>
@@ -153,6 +156,7 @@
   </div>
 </div>
 
+<!-- Cart sidebar (right) -->
 <div class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="badge" id="cartCount">0</span> ⛓️</div>
 <div class="cart" id="cart">
   <div class="cart-header"><h3>✦ YOUR CART ✦</h3><button class="clear-cart" onclick="clearCart()">Clear All</button><div class="close-cart" onclick="toggleCart()">✖️</div></div>
@@ -169,20 +173,25 @@
   <div class="payment-info" style="background:#1e162e; border-radius:28px; padding:10px; font-size:0.7rem; text-align:center; margin-top:12px;">💰 <strong>We accept:</strong> PayPal, Swedbank, SEB, Luminor, Bitcoin, Ethereum</div>
 </div>
 
-<div class="container">
-  <!-- Wheel of Fortune -->
-  <div class="wheel-section">
+<!-- Wheel popup (centered) -->
+<div id="wheelModal" class="wheel-modal">
+  <div class="wheel-modal-content">
+    <span class="wheel-modal-close" onclick="closeWheelModal()">&times;</span>
+    <h3>🎡 LUCKY WHEEL 🎡</h3>
     <div class="wheel-container">
       <canvas id="wheelCanvas" width="500" height="500"></canvas>
     </div>
-    <div class="wheel-info">
-      <h3>🎡 LUCKY WHEEL 🎡</h3>
-      <p>Spin for 0.20€ and win amazing games!</p>
-      <button class="spin-btn" onclick="spinWheel()">🎲 SPIN (0.20€) 🎲</button>
-      <div id="spinResult" class="result-area"></div>
-    </div>
+    <button class="spin-btn" onclick="spinWheel()">🎲 SPIN (0.20€) 🎲</button>
+    <div id="spinResult" class="result-area"></div>
   </div>
+</div>
 
+<!-- Wheel open button (bottom left) -->
+<div class="wheel-open-btn" onclick="openWheelModal()">
+  🎡 LUCKY WHEEL 🎡
+</div>
+
+<div class="container">
   <div class="discount-banner"><span>🎁 <strong>SPECIAL OFFER:</strong> Get <strong>8% INSTANT DISCOUNT</strong> when you spend <strong id="thresholdAmount">€50</strong> or more!</span><div class="badge-glow">✨ SAVE 8% ✨</div></div>
   <div class="featured-section"><div class="featured-title">🌟 FEATURED DEALS</div><div class="featured-grid" id="featuredGrid"></div></div>
   <div class="tabs" id="tabsContainer">
@@ -202,10 +211,11 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance • Lucky Wheel</footer>
 
 <script>
-  // ==================== BACKEND URL ====================
+  // ==================== BACKEND & WEBHOOK ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
   const PROXY = 'https://corsproxy.io/?url=';
   const BACKEND_URL = PROXY + encodeURIComponent(TARGET_URL);
+  const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;
 
@@ -299,7 +309,6 @@
       wheelCtx.fillText(label, radius * 0.7, 5);
       wheelCtx.restore();
     }
-    // draw center circle
     wheelCtx.beginPath();
     wheelCtx.arc(centerX, centerY, 20, 0, Math.PI*2);
     wheelCtx.fillStyle = '#a4161a';
@@ -322,15 +331,16 @@
   }
 
   async function spinWheel() {
-    if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
+    if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); closeWheelModal(); return; }
     if (spinning) return;
     const spinCost = 0.20;
+    // Check balance
     let balanceRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
     if (!balanceRes.success || balanceRes.data.balance < spinCost) {
       showToastMsg('Insufficient balance! Need 0.20€ to spin.', true);
       return;
     }
-    // deduct balance
+    // Deduct balance via purchase call
     const deductRes = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Wheel Spin', price: spinCost });
     if (!deductRes.success) {
       showToastMsg('Failed to deduct balance: ' + deductRes.message, true);
@@ -355,25 +365,38 @@
       } else {
         spinning = false;
         if (result.prize) {
-          // Generate a random code for the prize
           const prizeCode = Math.random().toString(36).substring(2, 12).toUpperCase();
           addToPurchaseHistory(result.prize, prizeCode);
-          // Also send to Discord webhook (optional)
-          fetch(BACKEND_URL + '&_=' + Date.now(), {
+          // Send Discord webhook for win
+          fetch(DISCORD_WEBHOOK, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'spinWin', username: currentUser, prize: result.prize, code: prizeCode })
+            body: JSON.stringify({ content: `🎡 **WHEEL WIN!**\nUser: ${currentUser}\nPrize: ${result.prize}\nCode: ${prizeCode}\n🎉 Congratulations!` })
           }).catch(e=>console.log);
           document.getElementById('spinResult').innerHTML = `🎉 YOU WON: ${result.prize}! Code: ${prizeCode} 🎉`;
           showToastMsg(`🎉 Won ${result.prize}! Code saved in Orders.`);
         } else {
+          // Send Discord webhook for loss
+          fetch(DISCORD_WEBHOOK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: `🎡 **WHEEL LOSS**\nUser: ${currentUser}\nResult: No prize\n😢 Better luck next time!` })
+          }).catch(e=>console.log);
           document.getElementById('spinResult').innerHTML = `😢 No prize this time. Try again!`;
           showToastMsg(`😢 No win. Better luck next spin!`);
         }
+        setTimeout(() => { document.getElementById('spinResult').innerHTML = ''; }, 3000);
       }
     }
     requestAnimationFrame(animate);
   }
+
+  function openWheelModal() {
+    if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
+    document.getElementById('wheelModal').style.display = 'flex';
+    initWheel();
+  }
+  function closeWheelModal() { document.getElementById('wheelModal').style.display = 'none'; }
 
   // ==================== CART & UI ====================
   let cart = [], currentCurrency = "eur", currentFilter = "all", currentSearch = "", currentSort = "default", displayedCount = 24;
@@ -491,16 +514,16 @@
       productList.push(`${item.name} x${item.quantity}`);
     }
     const totalEUR = totalInCurrentCurrency / rates[currentCurrency];
-    const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Cart total', price: totalEUR });
+    const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: productList.join(', '), price: totalEUR });
     if (res.success) {
       const purchaseCode = res.data.code;
       const productNames = productList.join(', ');
       addToPurchaseHistory(`Cart: ${productNames}`, purchaseCode);
-      // Send webhook with all products
-      fetch(BACKEND_URL + '&_=' + Date.now(), {
+      // Send Discord webhook manually as well (the backend also sends one)
+      fetch(DISCORD_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'webhook', username: currentUser, products: productNames, total: totalEUR, code: purchaseCode })
+        body: JSON.stringify({ content: `🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productNames}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**` })
       }).catch(e=>console.log);
       showToastMsg(`✅ Payment successful! Code: ${purchaseCode} (sent to Discord)`);
       cart = [];
@@ -592,7 +615,7 @@
     initWheel();
   }
   init();
-  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay; window.spinWheel = spinWheel;
+  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay; window.spinWheel = spinWheel; window.openWheelModal = openWheelModal; window.closeWheelModal = closeWheelModal;
 </script>
 </body>
 </html>

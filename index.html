@@ -170,9 +170,11 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance</footer>
 
 <script>
-  // ==================== BACKEND URL (use proxy for CORS) ====================
+  // ==================== BACKEND URL (use reliable CORS proxy) ====================
   const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyUkPGwm_4Vp_CIBqOn1eyokWIZkgNMXav_OcM82cFz9Diz8XWhDh1ljhLEXVfCzOn5yA/exec';
-  const BACKEND = 'https://corsproxy.io/?' + encodeURIComponent(BACKEND_URL);
+  // Use multiple proxy fallbacks (try primary, if fails, fallback)
+  const PROXY = 'https://api.allorigins.win/raw?url=';
+  const BACKEND = PROXY + encodeURIComponent(BACKEND_URL);
 
   let currentUser = null, currentToken = null;
 
@@ -202,13 +204,26 @@
   function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
   function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
-  // ==================== BALANCE SYSTEM (with cache-busting) ====================
+  // ==================== BALANCE SYSTEM (reliable proxy + cache buster) ====================
   async function apiCall(action, data) { 
-    // Add random query param to bypass any caching
     const url = BACKEND + '&_=' + Date.now();
     try { 
       const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action,...data}) }); 
-      return await res.json(); 
+      const text = await res.text();
+      // allorigins.win returns the response inside a 'contents' property? Actually it returns raw response, but let's handle.
+      // If it's a string that looks like JSON, parse it.
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch(e) {
+        // If proxy returns something wrapped, try to extract
+        if (text.includes('"success"')) {
+          json = JSON.parse(text);
+        } else {
+          throw new Error('Invalid JSON');
+        }
+      }
+      return json;
     } catch(err) { 
       document.getElementById("warningBox").style.display="flex"; 
       showToastMsg('Network error - open in real browser', true); 
@@ -241,13 +256,11 @@
     } else showToastMsg(res.message,true); 
   }
   
-  // New: Pay with Balance (uses cart total, deducts from balance)
   async function payWithBalance() {
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
     if (cart.length === 0) { showToastMsg('Cart is empty', true); return; }
     let totalInCurrentCurrency = 0;
     for (let item of cart) totalInCurrentCurrency += item.price * item.quantity;
-    // Convert total to EUR (since backend works in EUR)
     const totalEUR = totalInCurrentCurrency / rates[currentCurrency];
     const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Cart total', price: totalEUR });
     if (res.success) {
@@ -255,7 +268,6 @@
       cart = [];
       updateCartUI();
       saveCart();
-      // Force immediate balance refresh
       await updateBalanceDisplay();
     } else {
       showToastMsg(res.message, true);

@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>🍪 Cookie's Shop | Ultimate Gaming Store</title>
   <style>
-    /* ========== COMPLETE CSS (same as before – kept compact) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     :root {
       --onyx: #0b090aff; --carbon-black: #161a1dff; --dark-garnet: #660708ff;
@@ -210,18 +209,16 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance • Lucky Wheel</footer>
 
 <script>
-  // ==================== BACKEND & PROXY (using a reliable one) ====================
+  // ==================== BACKEND & PROXY ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // Use a simple, free CORS proxy that works
   const PROXY = 'https://cors-anywhere.herokuapp.com/';
-  // Note: cors-anywhere requires a one-time visit to https://cors-anywhere.herokuapp.com/corsdemo to enable.
-  // But we'll provide a fallback if it fails.
   const BACKEND_URL = PROXY + TARGET_URL;
   
   const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;
   let purchaseHistory = [];
+  let payCooldown = false;  // cooldown flag for purchase button
 
   // ==================== Helper Functions ====================
   function showToastMsg(msg, isError = false) {
@@ -288,7 +285,7 @@
     `).join('');
   }
 
-  // ==================== Wheel ====================
+  // ==================== Wheel (unchanged, already has spinning cooldown) ====================
   const wheelSegments = [
     { label: '❌ LOSE', chance: 65, color: '#444', prize: null },
     { label: '🌲 The Forest', chance: 20, color: '#2d6a4f', prize: 'The Forest' },
@@ -500,33 +497,65 @@
       showToastMsg(`Code ${code} generated`);
     } else showToastMsg(res.message, true);
   }
+
+  // ========== PAY WITH BALANCE WITH 30-SECOND COOLDOWN ==========
   async function payWithBalance() {
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
     if (cart.length === 0) { showToastMsg('Cart is empty', true); return; }
-    let totalCurr = 0, productList = [];
-    for (let item of cart) {
-      totalCurr += item.price * item.quantity;
-      productList.push(`${item.name} x${item.quantity}`);
+    if (payCooldown) {
+      showToastMsg('Please wait 30 seconds before making another purchase.', true);
+      return;
     }
-    const totalEUR = totalCurr / rates[currentCurrency];
-    const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: productList.join(', '), price: totalEUR });
-    if (res.success) {
-      const purchaseCode = res.data.code;
-      addToPurchaseHistory(`Cart: ${productList.join(', ')}`, purchaseCode);
-      fetch(DISCORD_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: `🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**\n📌 Please paste this code in a Discord ticket for delivery.` })
-      }).catch(e=>console.log);
-      showToastMsg(`✅ Payment successful! Code: ${purchaseCode} (sent to Discord). Paste code in a ticket.`);
-      cart = [];
-      updateCartUI();
-      saveCart();
-      await updateBalanceDisplay();
-    } else {
-      showToastMsg(res.message, true);
+    const payBtn = document.getElementById('payWithBalanceBtn');
+    payBtn.disabled = true;
+    payCooldown = true;
+    let secondsLeft = 30;
+    const originalText = payBtn.innerHTML;
+    payBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+    const interval = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft <= 0) {
+        clearInterval(interval);
+        payBtn.innerHTML = originalText;
+        payBtn.disabled = false;
+        payCooldown = false;
+      } else {
+        payBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+      }
+    }, 1000);
+
+    try {
+      let totalCurr = 0, productList = [];
+      for (let item of cart) {
+        totalCurr += item.price * item.quantity;
+        productList.push(`${item.name} x${item.quantity}`);
+      }
+      const totalEUR = totalCurr / rates[currentCurrency];
+      const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: productList.join(', '), price: totalEUR });
+      if (res.success) {
+        const purchaseCode = res.data.code;
+        addToPurchaseHistory(`Cart: ${productList.join(', ')}`, purchaseCode);
+        fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: `🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**\n📌 Please paste this code in a Discord ticket for delivery.` })
+        }).catch(e=>console.log);
+        showToastMsg(`✅ Payment successful! Code: ${purchaseCode} (sent to Discord). Paste code in a ticket.`);
+        cart = [];
+        updateCartUI();
+        saveCart();
+        await updateBalanceDisplay();
+      } else {
+        showToastMsg(res.message, true);
+      }
+    } catch (err) {
+      showToastMsg('Error processing payment: ' + err.message, true);
+    } finally {
+      // The cooldown already runs its course; the button will be re-enabled after 30 seconds.
+      // We don't disable the interval here because it's already set.
     }
   }
+
   function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
   function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 

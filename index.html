@@ -85,6 +85,8 @@
     .modal-content button { width: 100%; margin-top: 10px; }
     .modal-close { float: right; font-size: 28px; cursor: pointer; color: var(--silver); }
     @media (max-width: 640px) { .container { padding: 16px; } .games { gap: 16px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); } .cart-btn { top: 100px; padding: 8px 16px; right: 12px; } .controls { justify-content: center; } .search-box { width: 100%; } .user-bar { flex-direction: column; align-items: stretch; } }
+    .checkout-options { display: flex; gap: 10px; margin-top: 10px; }
+    .checkout-options button { flex: 1; margin-top: 0; }
   </style>
 </head>
 <body>
@@ -144,9 +146,13 @@
   <div class="progress-container"><div class="progress-bar" id="cartProgress"></div></div>
   <div id="cartItems"></div>
   <div class="total" id="totalBox">Total: €0.00</div>
+  <div class="checkout-options">
+    <button id="payWithBalanceBtn" onclick="payWithBalance()" style="background: #2a9d8f;">💳 Pay with Balance</button>
+    <button id="copyOrderBtn" onclick="manualCopy()" style="background: #5865F2;">📋 Copy Order to Discord</button>
+  </div>
   <textarea id="copyArea" readonly placeholder="🔥 Order summary..."></textarea>
-  <div class="cart-actions"><button class="copy-btn" onclick="manualCopy()">📋 Copy Order</button><button class="checkout" onclick="checkout()">💬 Go to Discord</button><button class="join-discord" onclick="joinDiscord()">➕ Join Our Discord</button></div>
-  <div class="discord-note" style="background:var(--carbon-black); border-radius:28px; padding:10px; font-size:0.7rem; text-align:center; margin-top:12px;">⚡ <strong>Next step:</strong> Paste order in a <span style="color: var(--strawberry-red);">ticket</span></div>
+  <div class="cart-actions"><button class="join-discord" onclick="joinDiscord()">➕ Join Our Discord</button></div>
+  <div class="discord-note" style="background:var(--carbon-black); border-radius:28px; padding:10px; font-size:0.7rem; text-align:center; margin-top:12px;">⚡ <strong>Next step:</strong> Paste order in a <span style="color: var(--strawberry-red);">ticket</span> after copying</div>
   <div class="payment-info" style="background:#1e162e; border-radius:28px; padding:10px; font-size:0.7rem; text-align:center; margin-top:12px;">💰 <strong>We accept:</strong> PayPal, Swedbank, SEB, Luminor, Bitcoin, Ethereum</div>
 </div>
 
@@ -164,8 +170,9 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance</footer>
 
 <script>
-  // ==================== BACKEND URL ====================
-  const BACKEND = 'https://corsproxy.io/?' + encodeURIComponent('https://script.google.com/macros/s/AKfycbyUkPGwm_4Vp_CIBqOn1eyokWIZkgNMXav_OcM82cFz9Diz8XWhDh1ljhLEXVfCzOn5yA/exec');
+  // ==================== BACKEND URL (use proxy for CORS) ====================
+  const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyUkPGwm_4Vp_CIBqOn1eyokWIZkgNMXav_OcM82cFz9Diz8XWhDh1ljhLEXVfCzOn5yA/exec';
+  const BACKEND = 'https://corsproxy.io/?' + encodeURIComponent(BACKEND_URL);
 
   let currentUser = null, currentToken = null;
 
@@ -182,8 +189,7 @@
   function updateCartUI() { let total=0, itemCount=0, html=""; cart.forEach((item,idx)=>{ let itemTotal=item.price*item.quantity; total+=itemTotal; itemCount+=item.quantity; html+=`<div class="cart-item"><div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong><br>${getCurrencySymbol()}${item.price.toFixed(2)} each</div><div class="cart-item-controls"><button class="qty-btn" data-index="${idx}" data-delta="-1">-</button><span class="item-qty">${item.quantity}</span><button class="qty-btn" data-index="${idx}" data-delta="1">+</button><button class="remove-item-btn" data-index="${idx}">🗑️</button></div></div>`; }); document.getElementById("cartItems").innerHTML = html || "<div style='padding:20px;text-align:center'>Cart empty</div>"; document.getElementById("totalBox").textContent = `Total: ${getCurrencySymbol()}${total.toFixed(2)}`; document.getElementById("cartCount").textContent = itemCount; let progress = document.getElementById("cartProgress"); if(progress) progress.style.width = Math.min(100, (total/200)*100) + "%"; let orderText = "🍪 COOKIE'S SHOP ORDER\n━━━━━━━━━━━━━━━━━━\n"; cart.forEach(i=>orderText+=`${i.name} x${i.quantity} — ${getCurrencySymbol()}${(i.price*i.quantity).toFixed(2)}\n`); orderText+=`\nTOTAL: ${getCurrencySymbol()}${total.toFixed(2)}\n💳 Payment: PayPal/Swedbank/SEB/Luminor/Bitcoin/Ethereum\n📌 Paste in Discord ticket`; document.getElementById("copyArea").value = orderText; attachCartEvents(); }
   function attachCartEvents() { document.querySelectorAll(".qty-btn").forEach(btn=>{ btn.addEventListener("click",(e)=>{ let idx=parseInt(btn.dataset.index), delta=parseInt(btn.dataset.delta); if(cart[idx]){ let newQty=cart[idx].quantity+delta; if(newQty<=0) cart.splice(idx,1); else cart[idx].quantity=newQty; updateCartUI(); saveCart(); } e.stopPropagation(); }); }); document.querySelectorAll(".remove-item-btn").forEach(btn=>{ btn.addEventListener("click",(e)=>{ cart.splice(parseInt(btn.dataset.index),1); updateCartUI(); saveCart(); showToastMsg("Removed"); e.stopPropagation(); }); }); }
   function clearCart() { if(confirm("Clear cart?")){ cart=[]; updateCartUI(); saveCart(); showToastMsg("Cart cleared"); } }
-  function manualCopy() { let ta=document.getElementById("copyArea"); ta.select(); navigator.clipboard.writeText(ta.value); showToastMsg("Copied!"); }
-  function checkout() { if(cart.length===0){ showToastMsg("Empty cart"); return; } manualCopy(); window.open("https://discord.gg/49cwUj62aC","_blank"); }
+  function manualCopy() { let ta=document.getElementById("copyArea"); ta.select(); navigator.clipboard.writeText(ta.value); showToastMsg("Order copied! Paste in Discord ticket."); }
   function joinDiscord() { window.open("https://discord.gg/49cwUj62aC","_blank"); showToastMsg("Join our Discord!"); }
   function toggleCart() { document.getElementById("cart").classList.toggle("active"); }
   function animateCartBtn() { let btn=document.querySelector(".cart-btn"); btn.style.transform="scale(1.05)"; setTimeout(()=>btn.style.transform="",200); }
@@ -191,18 +197,38 @@
   function escapeHtml(str) { return str.replace(/[&<>]/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
   function loadMore() { displayedCount += 24; renderShop(); }
 
+  // ==================== SHOP RENDERING ====================
   function filterAndSort() { let prods = getCurrentProducts(); if(currentSearch) prods = prods.filter(p=>p.name.toLowerCase().includes(currentSearch.toLowerCase())); if(currentFilter!=="all") prods = prods.filter(p=>p.cat===currentFilter); if(currentSort==="price-asc") prods.sort((a,b)=>a.price-b.price); else if(currentSort==="price-desc") prods.sort((a,b)=>b.price-a.price); else if(currentSort==="name-asc") prods.sort((a,b)=>a.name.localeCompare(b.name)); return prods; }
-  function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button><button class="balance-buy-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">💰 Buy with Balance</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); document.querySelectorAll(".balance-buy-btn").forEach(btn=>btn.addEventListener("click",(e)=>purchaseWithBalance(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
-  function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button><button class="featured-balance-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">💰 Balance</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); document.querySelectorAll(".featured-balance-btn").forEach(btn=>btn.addEventListener("click",(e)=>purchaseWithBalance(btn.dataset.name,parseFloat(btn.dataset.price)))); }
+  function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
+  function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
   // ==================== BALANCE SYSTEM ====================
   async function apiCall(action, data) { try { const res = await fetch(BACKEND, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({action,...data}) }); return await res.json(); } catch(err) { document.getElementById("warningBox").style.display="flex"; showToastMsg('Network error - open in real browser', true); return {success:false, message:'Network error'}; } }
   async function modalRegister() { let u=document.getElementById('modalRegUsername').value.trim(), p=document.getElementById('modalRegPassword').value.trim(); if(!u||!p){ showToastMsg('Fill all fields',true); return; } let res=await apiCall('register',{username:u,password:p}); if(res.success){ showToastMsg('Registered! Please login.'); closeLoginModal(); } else showToastMsg(res.message,true); }
   async function modalLogin() { let u=document.getElementById('modalUsername').value.trim(), p=document.getElementById('modalPassword').value.trim(); if(!u||!p){ showToastMsg('Enter credentials',true); return; } let res=await apiCall('login',{username:u,password:p}); if(res.success){ currentUser=u; currentToken=res.data.token; localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken})); document.getElementById('userBar').style.display='flex'; document.getElementById('loginPromptBar').style.display='none'; await updateBalanceDisplay(); showToastMsg(`Welcome ${u}!`); closeLoginModal(); } else showToastMsg(res.message,true); }
   function logout() { currentUser=null; currentToken=null; localStorage.removeItem('shopUser'); document.getElementById('userBar').style.display='none'; document.getElementById('loginPromptBar').style.display='flex'; showToastMsg('Logged out'); }
-  async function updateBalanceDisplay() { if(!currentUser) return; let res=await apiCall('getBalance',{username:currentUser,token:currentToken}); if(res.success) document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`; else if(res.message.includes('Network')) { /* warning already shown */ } else logout(); }
+  async function updateBalanceDisplay() { if(!currentUser) return; let res=await apiCall('getBalance',{username:currentUser,token:currentToken}); if(res.success) document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`; else { logout(); showToastMsg('Session expired, please login again', true); } }
   async function addFunds() { if(!currentUser){ openLoginModal(); return; } let amount=parseFloat(prompt('Amount in EUR (min 5€):')); if(isNaN(amount)||amount<5){ showToastMsg('Minimum 5€',true); return; } let res=await apiCall('generateCode',{username:currentUser,token:currentToken,amount}); if(res.success){ let code=res.data.code; alert(`🧾 YOUR PAYMENT CODE: ${code}\n\n📌 INSTRUCTIONS:\n1️⃣ Send €${amount} via PayPal / Swedbank / SEB / Luminor\n2️⃣ Use this code as payment reference\n3️⃣ Open a Discord ticket and provide the code\n4️⃣ After admin verification, your balance will be added.`); showToastMsg(`Code ${code} generated`); } else showToastMsg(res.message,true); }
-  async function purchaseWithBalance(productName, price) { if(!currentUser){ openLoginModal(); return; } let res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productName,price}); if(res.success){ showToastMsg(`✅ Purchased ${productName}! Code: ${res.data.code} (sent to Discord)`); updateBalanceDisplay(); } else showToastMsg(res.message,true); }
+  
+  // New: Pay with Balance (uses cart total, deducts from balance)
+  async function payWithBalance() {
+    if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
+    if (cart.length === 0) { showToastMsg('Cart is empty', true); return; }
+    let total = 0;
+    for (let item of cart) total += item.price * item.quantity;
+    // Convert total to EUR (since prices are in current currency, need to convert back to EUR for backend)
+    const totalEUR = total / rates[currentCurrency];
+    const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: 'Cart total', price: totalEUR });
+    if (res.success) {
+      showToastMsg(`✅ Payment successful! Code: ${res.data.code} (sent to Discord)`);
+      cart = [];
+      updateCartUI();
+      saveCart();
+      await updateBalanceDisplay();
+    } else {
+      showToastMsg(res.message, true);
+    }
+  }
 
   function openLoginModal() { document.getElementById('loginModal').style.display='flex'; }
   function closeLoginModal() { document.getElementById('loginModal').style.display='none'; document.getElementById('modalUsername').value=''; document.getElementById('modalPassword').value=''; document.getElementById('modalRegUsername').value=''; document.getElementById('modalRegPassword').value=''; }
@@ -271,19 +297,19 @@
     document.getElementById("searchInput").addEventListener("input", e=>{ currentSearch=e.target.value; displayedCount=24; renderShop(); renderFeatured(); });
     document.getElementById("sortSelect").addEventListener("change", e=>{ currentSort=e.target.value; renderShop(); renderFeatured(); });
     document.querySelectorAll(".tab").forEach(tab=>{ tab.addEventListener("click",()=>{ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); tab.classList.add("active"); currentFilter=tab.dataset.filter; displayedCount=24; renderShop(); renderFeatured(); }); });
-    document.querySelectorAll(".currency-option").forEach(opt=>{ opt.addEventListener("click",()=>{ let cur=opt.dataset.currency; if(!cur) return; currentCurrency=cur; document.querySelectorAll(".currency-option").forEach(o=>o.classList.remove("active")); opt.classList.add("active"); cart=[]; renderShop(); renderFeatured(); updateCartUI(); saveCart(); showToastMsg(`Currency: ${cur.toUpperCase()}`); }); });
+    document.querySelectorAll(".currency-option").forEach(opt=>{ opt.addEventListener("click",()=>{ let cur=opt.dataset.currency; if(!cur) return; currentCurrency=cur; document.querySelectorAll(".currency-option").forEach(o=>o.classList.remove("active")); opt.classList.add("active"); renderShop(); renderFeatured(); updateCartUI(); showToastMsg(`Currency: ${cur.toUpperCase()}`); }); });
     let saved = localStorage.getItem('shopUser');
     if(saved){
       try{
         let {username,token}=JSON.parse(saved);
-        apiCall('getBalance',{username,token}).then(res=>{ if(res.success){ currentUser=username; currentToken=token; document.getElementById('userBar').style.display='flex'; document.getElementById('loginPromptBar').style.display='none'; updateBalanceDisplay(); showToastMsg(`Welcome back ${username}!`); } });
+        apiCall('getBalance',{username,token}).then(res=>{ if(res.success){ currentUser=username; currentToken=token; document.getElementById('userBar').style.display='flex'; document.getElementById('loginPromptBar').style.display='none'; updateBalanceDisplay(); showToastMsg(`Welcome back ${username}!`); } else { localStorage.removeItem('shopUser'); } });
       }catch(e){}
     }
     renderShop(); renderFeatured();
     for(let i=0;i<50;i++){ let p=document.createElement("div"); p.className="particle"; p.style.width=Math.random()*8+3+"px"; p.style.height=p.style.width; p.style.left=Math.random()*100+"%"; p.style.top=Math.random()*100+"%"; p.style.animationDelay=Math.random()*10+"s"; p.style.animationDuration=Math.random()*8+5+"s"; document.getElementById("particles").appendChild(p); }
   }
   init();
-  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.checkout = checkout; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.purchaseWithBalance = purchaseWithBalance; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister;
+  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay;
 </script>
 </body>
 </html>

@@ -111,7 +111,7 @@
   </div>
 </div>
 
-<div id="warningBox" class="warning">⚠️ Network error: If you see this, your browser may be blocking the connection. Try opening in a different browser or check your internet.</div>
+<div id="warningBox" class="warning">⚠️ Network error: If you see this, your browser may be blocking the connection. Try refreshing or using a different browser.</div>
 
 <div id="userBar" class="user-bar" style="display: none;">
   <span id="balanceDisplay">💰 Balance: €0.00</span>
@@ -172,9 +172,8 @@
 <script>
   // ==================== BACKEND URL (your Apps Script) ====================
   const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // Use a reliable CORS proxy to avoid network errors
-  const PROXY = 'https://cors.bridged.cc/';
-  const BACKEND = PROXY + BACKEND_URL;
+  // No proxy – we use text/plain to avoid CORS preflight
+  const BACKEND = BACKEND_URL;
 
   let currentUser = null, currentToken = null;
 
@@ -203,13 +202,13 @@
   function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
   function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
-  // ==================== BALANCE SYSTEM ====================
+  // ==================== BALANCE SYSTEM (CORS fix: text/plain) ====================
   async function apiCall(action, data) {
     const url = BACKEND + '?_=' + Date.now();
     try {
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },  // avoids preflight CORS
         body: JSON.stringify({ action, ...data })
       });
       const json = await res.json();

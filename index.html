@@ -184,7 +184,7 @@
       <div class="wheel-pointer"></div>
       <canvas id="wheelCanvas" width="500" height="500"></canvas>
     </div>
-    <button class="spin-btn" onclick="spinWheel()">🎲 SPIN (0.20€) 🎲</button>
+    <button id="spinWheelBtn" class="spin-btn" onclick="spinWheel()">🎲 SPIN (0.20€) 🎲</button>
     <div id="spinResult" class="result-area"></div>
   </div>
 </div>
@@ -218,7 +218,8 @@
 
   let currentUser = null, currentToken = null;
   let purchaseHistory = [];
-  let payCooldown = false;  // cooldown flag for purchase button
+  let payCooldown = false;      // cooldown for purchase button
+  let spinCooldown = false;     // cooldown for spin button
 
   // ==================== Helper Functions ====================
   function showToastMsg(msg, isError = false) {
@@ -285,7 +286,7 @@
     `).join('');
   }
 
-  // ==================== Wheel (unchanged, already has spinning cooldown) ====================
+  // ==================== Wheel ====================
   const wheelSegments = [
     { label: '❌ LOSE', chance: 65, color: '#444', prize: null },
     { label: '🌲 The Forest', chance: 20, color: '#2d6a4f', prize: 'The Forest' },
@@ -349,7 +350,8 @@
   }
   async function spinWheel() {
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); closeWheelModal(); return; }
-    if (spinning) return;
+    if (spinning) { showToastMsg('Wheel is already spinning', true); return; }
+    if (spinCooldown) { showToastMsg('Please wait 30 seconds before spinning again.', true); return; }
     const spinCost = 0.20;
     let balanceRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
     if (!balanceRes.success || balanceRes.data.balance < spinCost) {
@@ -364,7 +366,7 @@
     await updateBalanceDisplay();
     const result = getSpinResult();
     spinning = true;
-    const spinBtn = document.querySelector('.spin-btn');
+    const spinBtn = document.getElementById('spinWheelBtn');
     const originalText = spinBtn.innerHTML;
     spinBtn.innerHTML = '<span class="spinner"></span> Spinning...';
     spinBtn.disabled = true;
@@ -383,8 +385,21 @@
         requestAnimationFrame(animate);
       } else {
         spinning = false;
-        spinBtn.innerHTML = originalText;
-        spinBtn.disabled = false;
+        // Start 30-second cooldown after spin finishes
+        spinCooldown = true;
+        let secondsLeft = 30;
+        spinBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+        const cooldownInterval = setInterval(() => {
+          secondsLeft--;
+          if (secondsLeft <= 0) {
+            clearInterval(cooldownInterval);
+            spinBtn.innerHTML = originalText;
+            spinBtn.disabled = false;
+            spinCooldown = false;
+          } else {
+            spinBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+          }
+        }, 1000);
         if (result.prize) {
           const prizeCode = Math.random().toString(36).substring(2, 12).toUpperCase();
           addToPurchaseHistory(result.prize, prizeCode);
@@ -550,9 +565,6 @@
       }
     } catch (err) {
       showToastMsg('Error processing payment: ' + err.message, true);
-    } finally {
-      // The cooldown already runs its course; the button will be re-enabled after 30 seconds.
-      // We don't disable the interval here because it's already set.
     }
   }
 

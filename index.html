@@ -173,8 +173,9 @@
 <script>
   // ==================== BACKEND URL ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // Use your Cloudflare Worker URL directly (no /api)
-  const WORKER_URL = 'https://cookieshop.jokubassakal1s2.workers.dev';
+  // Use a reliable public CORS proxy that works immediately
+  const PROXY = 'https://corsproxy.io/?url=';
+  const BACKEND_URL = PROXY + encodeURIComponent(TARGET_URL);
 
   let currentUser = null, currentToken = null;
 
@@ -203,23 +204,21 @@
   function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
   function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
-  // ==================== BALANCE SYSTEM (via Cloudflare Worker) ====================
+  // ==================== BALANCE SYSTEM (reliable proxy) ====================
   async function apiCall(action, data) {
+    const url = BACKEND_URL + '&_=' + Date.now();
     try {
-      const res = await fetch(WORKER_URL, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          targetUrl: TARGET_URL + '?_=' + Date.now(),
-          data: { action, ...data }
-        })
+        body: JSON.stringify({ action, ...data })
       });
       const json = await res.json();
       document.getElementById("warningBox").style.display = "none";
       return json;
     } catch (err) {
       document.getElementById("warningBox").style.display = "flex";
-      document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please refresh or try again later.";
+      document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please refresh the page. If problem persists, try opening in a different browser.";
       showToastMsg('Network error: ' + err.message, true);
       return { success: false, message: 'Network error' };
     }

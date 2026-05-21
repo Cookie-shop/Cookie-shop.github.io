@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>🍪 Cookie's Shop | Ultimate Gaming Store</title>
   <style>
-    /* ========== YOUR FULL CSS (exactly the same as before – kept intact) ========== */
+    /* ========== FULL CSS (same as before – kept intact) ========== */
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     :root {
       --onyx: #0b090aff; --carbon-black: #161a1dff; --dark-garnet: #660708ff;
@@ -171,15 +171,10 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance</footer>
 
 <script>
-  // ==================== BACKEND URL (your Apps Script) ====================
+  // ==================== BACKEND URL ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  // List of reliable CORS proxies (fallback if one fails)
-  const PROXIES = [
-    'https://cors.bridged.cc/',
-    'https://api.allorigins.win/raw?url=',
-    'https://corsproxy.io/?url='
-  ];
-  let currentProxyIndex = 0;
+  // Use your own Cloudflare Worker endpoint (no CORS issues)
+  const API_ENDPOINT = '/api';
 
   let currentUser = null, currentToken = null;
 
@@ -208,41 +203,27 @@
   function renderShop() { let prods=filterAndSort(), limited=prods.slice(0,displayedCount); let grid=document.getElementById("gamesGrid"); if(!grid) return; grid.innerHTML=""; limited.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending">🔥 TRENDING</div>`:""}<img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".add-to-cart-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); let loadMoreBtn = document.getElementById("loadMoreBtn"); if(loadMoreBtn) loadMoreBtn.style.display = prods.length > displayedCount ? "block" : "none"; }
   function renderFeatured() { let featured=getCurrentProducts().filter(p=>p.discount>0||p.trending).slice(0,6); let grid=document.getElementById("featuredGrid"); if(!grid) return; grid.innerHTML=""; featured.forEach(prod=>{ let card=document.createElement("div"); card.className="card"; card.innerHTML=`<div class="discount-badge">🔥 SALE</div><img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'"><div class="card-content"><div class="title">${prod.name}</div><div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div><button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button></div>`; grid.appendChild(card); }); document.querySelectorAll(".featured-add-btn").forEach(btn=>btn.addEventListener("click",(e)=>addToCart(btn.dataset.name,parseFloat(btn.dataset.price)))); }
 
-  // ==================== BALANCE SYSTEM (with proxy fallback) ====================
+  // ==================== BALANCE SYSTEM (via Cloudflare Worker) ====================
   async function apiCall(action, data) {
-    // Try each proxy until one works
-    for (let attempt = 0; attempt < PROXIES.length; attempt++) {
-      const proxy = PROXIES[attempt];
-      let url;
-      if (proxy.includes('allorigins')) {
-        // allorigins.win expects the URL as query param
-        url = proxy + encodeURIComponent(TARGET_URL + '?_=' + Date.now());
-      } else if (proxy.includes('corsproxy.io')) {
-        url = proxy + encodeURIComponent(TARGET_URL + '?_=' + Date.now());
-      } else {
-        // cors.bridged.cc works by appending the URL directly
-        url = proxy + TARGET_URL + '?_=' + Date.now();
-      }
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action, ...data })
-        });
-        const json = await res.json();
-        // Success – return result
-        document.getElementById("warningBox").style.display = "none";
-        return json;
-      } catch (err) {
-        console.warn(`Proxy ${proxy} failed:`, err);
-        // Continue to next proxy
-      }
+    try {
+      const res = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetUrl: TARGET_URL + '?_=' + Date.now(),
+          data: { action, ...data }
+        })
+      });
+      const json = await res.json();
+      // If we get a response (any), hide the warning box
+      document.getElementById("warningBox").style.display = "none";
+      return json;
+    } catch (err) {
+      document.getElementById("warningBox").style.display = "flex";
+      document.getElementById("warningBox").innerHTML = "⚠️ Cannot reach server. Please ensure the Cloudflare Worker is deployed.<br>If the problem persists, wait 1 minute and refresh.";
+      showToastMsg('Network error: ' + err.message, true);
+      return { success: false, message: 'Network error' };
     }
-    // All proxies failed
-    document.getElementById("warningBox").style.display = "flex";
-    document.getElementById("warningBox").innerHTML = "⚠️ Cannot connect to server. Please refresh the page or try again later.<br>If the problem persists, open this page in a different browser (Chrome, Edge, Firefox).";
-    showToastMsg('Network error - please refresh', true);
-    return { success: false, message: 'Network error' };
   }
 
   async function modalRegister() {

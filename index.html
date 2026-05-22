@@ -108,7 +108,6 @@
     .back-to-top:hover { background: var(--accent-light); }
 
     .container { max-width: 1400px; margin: 0 auto; padding: 20px 24px; }
-
     .featured-section { margin-bottom: 40px; }
     .featured-title { font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--accent); padding-left: 16px; }
     .featured-grid, .games { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 24px; }
@@ -148,6 +147,8 @@
     .toast.show { opacity: 1; }
     footer { text-align: center; margin-top: 50px; font-size: 0.8rem; color: var(--text-secondary); }
     .join-discord { background: #5865F2; margin-top: 10px; border: none; }
+    .help-note { background: var(--surface2); border-radius: 16px; padding: 12px; text-align: center; font-size: 0.8rem; margin-top: 12px; }
+    .help-note a { color: var(--accent); text-decoration: none; font-weight: bold; }
 
     .user-bar { background: var(--surface2); border-radius: 28px; padding: 8px 20px; margin: 10px 0 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
     .warning { background: #442a2a; border-left: 4px solid #ffaa00; padding: 10px 15px; border-radius: 16px; margin-bottom: 20px; font-size: 0.8rem; display: none; align-items: center; gap: 12px; }
@@ -196,9 +197,6 @@
     /* Confetti */
     .confetti { position: fixed; top: -10px; width: 10px; height: 10px; background: var(--accent); z-index: 9999; animation: confetti-fall 2s ease-out forwards; pointer-events: none; }
     @keyframes confetti-fall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
-
-    .help-note { background: var(--surface2); border-radius: 16px; padding: 12px; text-align: center; font-size: 0.8rem; margin-top: 12px; }
-    .help-note a { color: var(--accent); text-decoration: none; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -346,17 +344,12 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-  }
+  function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
   async function apiCall(action, data) {
     const url = BACKEND_URL + '?_=' + Date.now();
     try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...data })
-      });
+      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...data }) });
       const json = await res.json();
       document.getElementById('warningBox').style.display = 'none';
       return json;
@@ -414,10 +407,7 @@
   }
 
   // Clock
-  function updateClock() {
-    const now = new Date();
-    document.getElementById('liveClock').textContent = now.toLocaleTimeString();
-  }
+  function updateClock() { document.getElementById('liveClock').textContent = new Date().toLocaleTimeString(); }
   setInterval(updateClock, 1000);
   updateClock();
 
@@ -479,7 +469,38 @@
     { name: "🍩 Dr Donut Money 1M", cat:"bundles", price:0.09, img:"channels4_profile.jpg", emoji:"🍩", rating:4.3 }
   ];
 
-  // ==================== Cart & Shop ====================
+  // Purchase History
+  function loadPurchaseHistory() {
+    const stored = localStorage.getItem('purchaseHistory_' + (currentUser || 'guest'));
+    purchaseHistory = stored ? JSON.parse(stored) : [];
+    renderOrdersPanel();
+  }
+  function savePurchaseHistory() {
+    if (currentUser) localStorage.setItem('purchaseHistory_' + currentUser, JSON.stringify(purchaseHistory));
+  }
+  function addToPurchaseHistory(gameName, code) {
+    purchaseHistory.unshift({ game: gameName, code, date: new Date().toLocaleString() });
+    if (purchaseHistory.length > 50) purchaseHistory.pop();
+    savePurchaseHistory();
+    renderOrdersPanel();
+  }
+  function renderOrdersPanel() {
+    const container = document.getElementById('ordersList');
+    if (!container) return;
+    if (!purchaseHistory.length) {
+      container.innerHTML = '<div class="no-orders">No purchases yet. Buy games to see them here!</div>';
+      return;
+    }
+    container.innerHTML = purchaseHistory.map(order => `
+      <div class="order-item">
+        <div class="order-game">🎮 ${escapeHtml(order.game)}</div>
+        <div class="order-code">📦 Code: ${escapeHtml(order.code)}</div>
+        <div style="font-size:0.7rem; opacity:0.6;">${order.date}</div>
+      </div>
+    `).join('');
+  }
+
+  // Cart
   let cart = [], currentCurrency = "eur", currentFilter = "all", currentSearch = "", currentSort = "default", displayedCount = 24;
   const rates = { eur:1, usd:1.173, gbp:0.85 };
   function getCurrencySymbol() { return currentCurrency === "eur" ? "€" : currentCurrency === "usd" ? "$" : "£"; }
@@ -495,13 +516,48 @@
     updateCartUI(); saveCart();
     showToastMsg(`➕ ${name} added`);
     const cartBtn = document.querySelector('.cart-btn');
-    if (cartBtn) {
-      cartBtn.classList.add('cart-animation');
-      setTimeout(() => cartBtn.classList.remove('cart-animation'), 600);
-    }
+    if (cartBtn) { cartBtn.classList.add('cart-animation'); setTimeout(() => cartBtn.classList.remove('cart-animation'), 600); }
   }
-  function updateCartUI() { /* same as before */ }
-  function attachCartEvents() { /* same */ }
+  function updateCartUI() {
+    let total=0, itemCount=0, html="";
+    cart.forEach((item,idx) => {
+      let itemTotal=item.price*item.quantity;
+      total+=itemTotal; itemCount+=item.quantity;
+      html+=`<div class="cart-item">
+        <div class="cart-item-info"><strong>${escapeHtml(item.name)}</strong><br>${getCurrencySymbol()}${item.price.toFixed(2)} each</div>
+        <div class="cart-item-controls">
+          <button class="qty-btn" data-index="${idx}" data-delta="-1">-</button><span class="item-qty">${item.quantity}</span><button class="qty-btn" data-index="${idx}" data-delta="1">+</button>
+          <button class="remove-item-btn" data-index="${idx}">🗑️</button>
+        </div>
+      </div>`;
+    });
+    document.getElementById("cartItems").innerHTML = html || "<div style='padding:20px;text-align:center'>Cart empty</div>";
+    document.getElementById("totalBox").textContent = `Total: ${getCurrencySymbol()}${total.toFixed(2)}`;
+    document.getElementById("cartCount").textContent = itemCount;
+    const progress = document.getElementById("cartProgress");
+    if(progress) progress.style.width = Math.min(100, (total/50)*100) + "%";
+    let orderText = "🍪 COOKIE'S SHOP ORDER\n━━━━━━━━━━━━━━━━━━\n";
+    cart.forEach(i => orderText += `${i.name} x${i.quantity} — ${getCurrencySymbol()}${(i.price*i.quantity).toFixed(2)}\n`);
+    orderText += `\nTOTAL: ${getCurrencySymbol()}${total.toFixed(2)}\n💳 Payment: PayPal/Swedbank/SEB/Luminor/Bitcoin/Ethereum\n📌 Paste in Discord ticket`;
+    document.getElementById("copyArea").value = orderText;
+    attachCartEvents();
+  }
+  function attachCartEvents() {
+    document.querySelectorAll(".qty-btn").forEach(btn => {
+      btn.onclick = (e) => {
+        let idx = parseInt(btn.dataset.index), delta = parseInt(btn.dataset.delta);
+        if (cart[idx]) {
+          let newQty = cart[idx].quantity + delta;
+          if (newQty <= 0) cart.splice(idx,1); else cart[idx].quantity = newQty;
+          updateCartUI(); saveCart();
+        }
+        e.stopPropagation();
+      };
+    });
+    document.querySelectorAll(".remove-item-btn").forEach(btn => {
+      btn.onclick = (e) => { cart.splice(parseInt(btn.dataset.index),1); updateCartUI(); saveCart(); showToastMsg("Removed"); e.stopPropagation(); };
+    });
+  }
   function clearCart() { if(confirm("Clear cart?")){ cart=[]; updateCartUI(); saveCart(); showToastMsg("Cart cleared"); } }
   function manualCopy() { let ta=document.getElementById("copyArea"); ta.select(); navigator.clipboard.writeText(ta.value); showToastMsg("Order copied! Paste in Discord ticket."); }
   function joinDiscord() { window.open("https://discord.gg/49cwUj62aC","_blank"); showToastMsg("Join our Discord!"); }
@@ -519,42 +575,226 @@
     return prods;
   }
 
-  function renderShop() { /* same as previous version */ }
-  function renderFeatured() { /* same as previous version */ }
+  function renderShop() {
+    let prods = filterAndSort(), limited = prods.slice(0, displayedCount);
+    let grid = document.getElementById("gamesGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    limited.forEach(prod => {
+      let card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `${prod.discount ? `<div class="discount-badge">-${prod.discount}%</div>` : ""}
+      ${prod.trending ? `<div class="trending">🔥 TRENDING</div>` : ""}
+      <img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'">
+      <div class="card-content">
+        <div class="title">${prod.name}</div>
+        <div class="stars">${'⭐'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div>
+        <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>
+        <button class="add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add to Cart</button>
+      </div>`;
+      grid.appendChild(card);
+    });
+    document.querySelectorAll(".add-to-cart-btn").forEach(btn =>
+      btn.addEventListener("click", () => addToCart(btn.dataset.name, parseFloat(btn.dataset.price)))
+    );
+    document.getElementById("loadMoreBtn").style.display = prods.length > displayedCount ? "block" : "none";
+  }
+  function renderFeatured() {
+    let featured = getCurrentProducts().filter(p => p.discount > 0 || p.trending).slice(0,6);
+    let grid = document.getElementById("featuredGrid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    featured.forEach(prod => {
+      let card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `<div class="discount-badge">🔥 SALE</div>
+      <img class="card-img" src="${prod.img}" onerror="this.src='https://placehold.co/400x200/660708/fff?text=${prod.emoji}'">
+      <div class="card-content">
+        <div class="title">${prod.name}</div>
+        <div class="price">${getCurrencySymbol()}${prod.price.toFixed(2)}</div>
+        <button class="featured-add-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add</button>
+      </div>`;
+      grid.appendChild(card);
+    });
+    document.querySelectorAll(".featured-add-btn").forEach(btn =>
+      btn.addEventListener("click", () => addToCart(btn.dataset.name, parseFloat(btn.dataset.price)))
+    );
+  }
 
-  // ========== Balance & Auth ==========
-  async function updateBalanceDisplay() { /* same */ }
-  async function refreshBalance() { await updateBalanceDisplay(); showToastMsg('Balance refreshed'); }
-  async function modalRegister() { /* same spinner logic */ }
-  async function modalLogin() { /* same spinner logic */ }
-  function logout() { /* same */ }
-
+  // Auth & Balance
   function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
   function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+  async function modalRegister() {
+    const u = document.getElementById('modalRegUsername').value.trim();
+    const p = document.getElementById('modalRegPassword').value.trim();
+    if (!u || !p) { showToastMsg('Fill all fields', true); return; }
+    const btn = document.getElementById('registerSubmitBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Registering...';
+    const res = await apiCall('register', { username: u, password: p });
+    btn.disabled = false; btn.innerHTML = 'Create Account';
+    if (res.success) { showToastMsg('Registered! Please login.'); closeLoginModal(); }
+    else showToastMsg(res.message, true);
+  }
+  async function modalLogin() {
+    const u = document.getElementById('modalUsername').value.trim();
+    const p = document.getElementById('modalPassword').value.trim();
+    if (!u || !p) { showToastMsg('Enter credentials', true); return; }
+    const btn = document.getElementById('loginSubmitBtn');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Logging in...';
+    const res = await apiCall('login', { username: u, password: p });
+    if (res.success) {
+      currentUser = u; currentToken = res.data.token;
+      localStorage.setItem('shopUser', JSON.stringify({ username: u, token: currentToken }));
+      document.getElementById('userBar').style.display = 'flex';
+      document.getElementById('loginPromptBar').style.display = 'none';
+      document.getElementById('balanceDisplay').innerHTML = '💰 Loading account...';
+      await updateBalanceDisplay();
+      loadPurchaseHistory();
+      showToastMsg(`Welcome ${u}!`);
+      closeLoginModal();
+    } else showToastMsg(res.message, true);
+    btn.disabled = false; btn.innerHTML = 'Login';
+  }
+  function logout() {
+    currentUser = null; currentToken = null;
+    localStorage.removeItem('shopUser');
+    document.getElementById('userBar').style.display = 'none';
+    document.getElementById('loginPromptBar').style.display = 'flex';
+    purchaseHistory = [];
+    renderOrdersPanel();
+    showToastMsg('Logged out');
+  }
+  async function updateBalanceDisplay() {
+    if (!currentUser) return;
+    const res = await apiCall('getBalance', { username: currentUser, token: currentToken });
+    if (res.success) document.getElementById('balanceDisplay').innerHTML = `💰 Balance: €${res.data.balance.toFixed(2)}`;
+    else { logout(); showToastMsg('Session expired, please login again', true); }
+  }
+  async function refreshBalance() { await updateBalanceDisplay(); showToastMsg('Balance refreshed'); }
 
-  // ========== PAY WITH BALANCE ==========
-  async function payWithBalance() { /* same with cooldown + confetti */ }
-  function launchConfetti() { /* same */ }
+  // Payment with cooldown & confetti
+  function launchConfetti() {
+    for (let i=0;i<60;i++) {
+      const confetti = document.createElement('div');
+      confetti.className='confetti'; confetti.style.left=Math.random()*100+'%';
+      confetti.style.animationDelay=Math.random()*0.5+'s';
+      confetti.style.background=['#e5383b','#ffd700','#39ff14','#5865F2'][Math.floor(Math.random()*4)];
+      document.body.appendChild(confetti);
+      setTimeout(()=>confetti.remove(),2500);
+    }
+  }
+  async function payWithBalance() {
+    if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
+    if (cart.length===0) { showToastMsg('Cart is empty', true); return; }
+    const payBtn=document.getElementById('payWithBalanceBtn');
+    if (!payBtn) return;
+    if (payCooldown) { showToastMsg('Please wait 30 seconds before making another purchase.', true); return; }
+    payBtn.disabled=true; payCooldown=true; payBtn.classList.add('btn-cooling');
+    const originalText=payBtn.innerHTML;
+    let secondsLeft=30;
+    const updateDisplay=()=>{ payBtn.innerHTML=`⏳ Wait ${secondsLeft}s...`; }; updateDisplay();
+    const interval=setInterval(()=>{
+      secondsLeft--;
+      if(secondsLeft<=0){
+        clearInterval(interval); payBtn.innerHTML=originalText; payBtn.disabled=false; payCooldown=false; payBtn.classList.remove('btn-cooling');
+      } else updateDisplay();
+    },1000);
+    try {
+      let totalCurr=0, productList=[];
+      for(let item of cart){ totalCurr+=item.price*item.quantity; productList.push(`${item.name} x${item.quantity}`); }
+      const totalEUR=totalCurr/rates[currentCurrency];
+      const res=await apiCall('purchase',{ username:currentUser, token:currentToken, product:productList.join(', '), price:totalEUR });
+      if(res.success){
+        const purchaseCode=res.data.code;
+        addToPurchaseHistory(`Cart: ${productList.join(', ')}`, purchaseCode);
+        fetch(DISCORD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ content:`🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**\n📌 Please paste this code in a Discord ticket for delivery.` })}).catch(()=>{});
+        showToastMsg(`✅ Payment successful! Code: ${purchaseCode}`);
+        launchConfetti();
+        cart=[]; updateCartUI(); saveCart(); await updateBalanceDisplay();
+      } else {
+        showToastMsg(res.message, true);
+        clearInterval(interval); payBtn.innerHTML=originalText; payBtn.disabled=false; payCooldown=false; payBtn.classList.remove('btn-cooling');
+      }
+    } catch(err){
+      showToastMsg('Error processing payment: '+err.message, true);
+      clearInterval(interval); payBtn.innerHTML=originalText; payBtn.disabled=false; payCooldown=false; payBtn.classList.remove('btn-cooling');
+    }
+  }
 
-  // ==================== Init ====================
+  // Init
   function init() {
     applySettings();
     loadCart();
-    // (search, sort, tabs, currency, back-to-top, session restore, particles)
+    const searchInput=document.getElementById("searchInput");
+    const clearBtn=document.getElementById("clearSearchBtn");
+    searchInput.addEventListener("input",e=>{
+      currentSearch=e.target.value; displayedCount=24;
+      clearBtn.style.display=currentSearch?'inline-block':'none';
+      renderShop(); renderFeatured();
+    });
+    clearBtn.addEventListener("click",()=>{
+      searchInput.value=''; currentSearch=''; displayedCount=24;
+      clearBtn.style.display='none'; renderShop(); renderFeatured(); searchInput.focus();
+    });
+    document.getElementById("sortSelect").addEventListener("change",e=>{ currentSort=e.target.value; renderShop(); renderFeatured(); });
+    document.querySelectorAll(".tab").forEach(tab=>{
+      tab.addEventListener("click",()=>{
+        document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+        tab.classList.add("active");
+        currentFilter=tab.dataset.filter; displayedCount=24; renderShop(); renderFeatured();
+      });
+    });
+    document.querySelectorAll(".currency-option").forEach(opt=>{
+      opt.addEventListener("click",()=>{
+        let cur=opt.dataset.currency;
+        if(!cur) return;
+        currentCurrency=cur;
+        document.querySelectorAll(".currency-option").forEach(o=>o.classList.remove("active"));
+        opt.classList.add("active");
+        renderShop(); renderFeatured(); updateCartUI();
+        showToastMsg(`Currency: ${cur.toUpperCase()}`);
+      });
+    });
+    window.addEventListener("scroll",()=>{
+      const btn=document.getElementById("backToTopBtn");
+      if(window.scrollY>400) btn.classList.add("show"); else btn.classList.remove("show");
+    });
+    let saved=localStorage.getItem('shopUser');
+    if(saved){
+      try{
+        let {username,token}=JSON.parse(saved);
+        apiCall('getBalance',{username,token}).then(res=>{
+          if(res.success){
+            currentUser=username; currentToken=token;
+            document.getElementById('userBar').style.display='flex';
+            document.getElementById('loginPromptBar').style.display='none';
+            updateBalanceDisplay();
+            showToastMsg(`Welcome back ${username}!`);
+            loadPurchaseHistory();
+          } else { localStorage.removeItem('shopUser'); }
+        });
+      }catch(e){}
+    }
     renderShop(); renderFeatured();
-    for(let i=0;i<50;i++){ /* particles */ }
+    for(let i=0;i<50;i++){
+      let p=document.createElement("div"); p.className="particle";
+      p.style.width=Math.random()*8+3+"px"; p.style.height=p.style.width;
+      p.style.left=Math.random()*100+"%"; p.style.top=Math.random()*100+"%";
+      p.style.animationDelay=Math.random()*10+"s"; p.style.animationDuration=Math.random()*8+5+"s";
+      document.getElementById("particles").appendChild(p);
+    }
   }
   init();
 
-  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy;
-  window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart;
-  window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal;
-  window.modalLogin = modalLogin; window.modalRegister = modalRegister;
-  window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay;
-  window.refreshBalance = refreshBalance;
-  window.openSettingsModal = openSettingsModal; window.closeSettingsModal = closeSettingsModal;
-  window.toggleDarkMode = toggleDarkMode; window.toggleParticles = toggleParticles;
-  window.toggleAnimations = toggleAnimations; window.resetSettings = resetSettings;
+  window.loadMore=loadMore; window.clearCart=clearCart; window.manualCopy=manualCopy;
+  window.joinDiscord=joinDiscord; window.toggleCart=toggleCart; window.addToCart=addToCart;
+  window.logout=logout; window.openLoginModal=openLoginModal; window.closeLoginModal=closeLoginModal;
+  window.modalLogin=modalLogin; window.modalRegister=modalRegister;
+  window.payWithBalance=payWithBalance; window.updateBalanceDisplay=updateBalanceDisplay;
+  window.refreshBalance=refreshBalance;
+  window.openSettingsModal=openSettingsModal; window.closeSettingsModal=closeSettingsModal;
+  window.toggleDarkMode=toggleDarkMode; window.toggleParticles=toggleParticles;
+  window.toggleAnimations=toggleAnimations; window.resetSettings=resetSettings;
 </script>
 </body>
 </html>

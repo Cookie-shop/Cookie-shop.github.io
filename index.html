@@ -106,6 +106,12 @@
     .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
+    /* Cooldown visual class – completely prevents clicks */
+    .btn-cooling {
+      opacity: 0.5 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
   </style>
 </head>
 <body>
@@ -513,20 +519,31 @@
     } else showToastMsg(res.message, true);
   }
 
-  // ========== PAY WITH BALANCE WITH 30-SECOND COOLDOWN ==========
+  // ========== PAY WITH BALANCE (fixed cooldown – truly unclickable) ==========
   async function payWithBalance() {
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
     if (cart.length === 0) { showToastMsg('Cart is empty', true); return; }
+
+    const payBtn = document.getElementById('payWithBalanceBtn');
+    if (!payBtn) return;
+
     if (payCooldown) {
       showToastMsg('Please wait 30 seconds before making another purchase.', true);
       return;
     }
-    const payBtn = document.getElementById('payWithBalanceBtn');
+
+    // Lock the button immediately
     payBtn.disabled = true;
     payCooldown = true;
-    let secondsLeft = 30;
+    payBtn.classList.add('btn-cooling');   // visual + pointer-events: none
     const originalText = payBtn.innerHTML;
-    payBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+
+    let secondsLeft = 30;
+    const updateDisplay = () => {
+      payBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+    };
+    updateDisplay();
+
     const interval = setInterval(() => {
       secondsLeft--;
       if (secondsLeft <= 0) {
@@ -534,8 +551,9 @@
         payBtn.innerHTML = originalText;
         payBtn.disabled = false;
         payCooldown = false;
+        payBtn.classList.remove('btn-cooling');
       } else {
-        payBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
+        updateDisplay();
       }
     }, 1000);
 
@@ -562,9 +580,20 @@
         await updateBalanceDisplay();
       } else {
         showToastMsg(res.message, true);
+        // On failure, manually end cooldown to allow retry
+        clearInterval(interval);
+        payBtn.innerHTML = originalText;
+        payBtn.disabled = false;
+        payCooldown = false;
+        payBtn.classList.remove('btn-cooling');
       }
     } catch (err) {
       showToastMsg('Error processing payment: ' + err.message, true);
+      clearInterval(interval);
+      payBtn.innerHTML = originalText;
+      payBtn.disabled = false;
+      payCooldown = false;
+      payBtn.classList.remove('btn-cooling');
     }
   }
 

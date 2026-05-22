@@ -136,13 +136,12 @@
   </div>
 </div>
 
-<div id="warningBox" class="warning">⚠️ Connecting to server...</div>
+<div id="warningBox" class="warning">⚠️ Cannot connect to server. Please check your internet and try again.</div>
 
 <div id="userBar" class="user-bar" style="display: none;">
   <span id="balanceDisplay">💰 Balance: €0.00</span>
   <div style="display: flex; gap: 10px;">
     <button onclick="refreshBalance()" style="width: auto; padding: 6px 12px; background: #2a9d8f;">🔄 Refresh</button>
-    <button onclick="addFunds()" style="width: auto; padding: 6px 18px;">➕ Add Funds</button>
     <button onclick="logout()" style="width: auto; padding: 6px 18px;">🚪 Logout</button>
   </div>
 </div>
@@ -215,19 +214,16 @@
 <footer>🔥 54 premium products • 8% discount on orders ≥€50 • Live currency • Cart auto-save • Login & Balance • Lucky Wheel</footer>
 
 <script>
-  // ==================== BACKEND & PROXY ====================
+  // ==================== BACKEND & PROXY (no demo needed) ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  const PROXY = 'https://cors-anywhere.herokuapp.com/';
-  const BACKEND_URL = PROXY + TARGET_URL;
-  
+  const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(TARGET_URL);
   const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;
   let purchaseHistory = [];
-  let payCooldown = false;      // cooldown for purchase button
-  let spinCooldown = false;     // cooldown for spin button
+  let payCooldown = false;
+  let spinCooldown = false;
 
-  // ==================== Helper Functions ====================
   function showToastMsg(msg, isError = false) {
     const toast = document.getElementById('toastMsg');
     toast.textContent = msg;
@@ -240,7 +236,6 @@
     return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
   }
 
-  // ==================== API Call ====================
   async function apiCall(action, data) {
     const url = BACKEND_URL + '?_=' + Date.now();
     try {
@@ -255,13 +250,12 @@
     } catch (err) {
       console.error('API call error:', err);
       document.getElementById('warningBox').style.display = 'flex';
-      document.getElementById('warningBox').innerHTML = '⚠️ Cannot reach server. Please ensure you have visited <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank">https://cors-anywhere.herokuapp.com/corsdemo</a> and clicked "Request temporary access". Then refresh.';
-      showToastMsg('Network error - please enable CORS proxy (see warning)', true);
+      document.getElementById('warningBox').innerHTML = '⚠️ Cannot reach server. Please check your internet connection and try again later.';
+      showToastMsg('Network error – could not connect to server', true);
       return { success: false, message: 'Network error' };
     }
   }
 
-  // ==================== Purchase History ====================
   function loadPurchaseHistory() {
     const stored = localStorage.getItem('purchaseHistory_' + (currentUser || 'guest'));
     purchaseHistory = stored ? JSON.parse(stored) : [];
@@ -292,7 +286,7 @@
     `).join('');
   }
 
-  // ==================== Wheel ====================
+  // ==================== Wheel (unchanged) ====================
   const wheelSegments = [
     { label: '❌ LOSE', chance: 65, color: '#444', prize: null },
     { label: '🌲 The Forest', chance: 20, color: '#2d6a4f', prize: 'The Forest' },
@@ -391,7 +385,6 @@
         requestAnimationFrame(animate);
       } else {
         spinning = false;
-        // Start 30-second cooldown after spin finishes
         spinCooldown = true;
         let secondsLeft = 30;
         spinBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`;
@@ -506,17 +499,6 @@
     purchaseHistory = [];
     renderOrdersPanel();
     showToastMsg('Logged out');
-  }
-  async function addFunds() {
-    if (!currentUser) { openLoginModal(); return; }
-    let amount = parseFloat(prompt('Amount in EUR (minimum 0.20€):'));
-    if (isNaN(amount) || amount < 0.20) { showToastMsg('Minimum 0.20€', true); return; }
-    let res = await apiCall('generateCode', { username: currentUser, token: currentToken, amount: amount });
-    if (res.success) {
-      let code = res.data.code;
-      alert(`🧾 YOUR PAYMENT CODE: ${code}\n\n📌 PAYMENT INSTRUCTIONS:\n\n💳 PayPal: Send to @NeipasBananavicius (include the code in payment note)\n\n🏦 Bank Transfer:\nAccount Number: LT127300010194085006\nRecipient: TŪSKA NEIDAS\nAmount: €${amount}\nReference / Payment purpose: ${code}\n\nAfter sending payment, open a Discord ticket with the code. Your balance will be added manually.\n\nThank you!`);
-      showToastMsg(`Code ${code} generated`);
-    } else showToastMsg(res.message, true);
   }
 
   // ========== PAY WITH BALANCE (fixed cooldown – truly unclickable) ==========
@@ -677,7 +659,7 @@
     initWheel();
   }
   init();
-  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.addFunds = addFunds; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay; window.refreshBalance = refreshBalance; window.spinWheel = spinWheel; window.openWheelModal = openWheelModal; window.closeWheelModal = closeWheelModal;
+  window.loadMore = loadMore; window.clearCart = clearCart; window.manualCopy = manualCopy; window.joinDiscord = joinDiscord; window.toggleCart = toggleCart; window.addToCart = addToCart; window.logout = logout; window.openLoginModal = openLoginModal; window.closeLoginModal = closeLoginModal; window.modalLogin = modalLogin; window.modalRegister = modalRegister; window.payWithBalance = payWithBalance; window.updateBalanceDisplay = updateBalanceDisplay; window.refreshBalance = refreshBalance; window.spinWheel = spinWheel; window.openWheelModal = openWheelModal; window.closeWheelModal = closeWheelModal;
 </script>
 </body>
 </html>

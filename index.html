@@ -329,9 +329,9 @@
 </footer>
 
 <script>
-  // ==================== YOUR RENDER PROXY ====================
+  // ==================== WORKING PROXY (cors-anywhere) ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  const BACKEND_URL = 'https://cookie-shop-github-io.onrender.com/proxy?url=' + encodeURIComponent(TARGET_URL);
+  const BACKEND_URL = 'https://cors-anywhere.herokuapp.com/' + TARGET_URL;
   const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;

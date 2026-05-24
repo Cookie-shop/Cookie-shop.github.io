@@ -332,7 +332,8 @@
   // ==================== WORKING PROXY (cors-anywhere) ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
   const BACKEND_URL = 'https://cors-anywhere.herokuapp.com/' + TARGET_URL;
-  const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
+  // Discord webhook removed from frontend to avoid double-send & 429 errors.
+  // The backend handles the Discord notification.
 
   let currentUser = null, currentToken = null;
   let purchaseHistory = [];
@@ -425,7 +426,7 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  // Products
+  // Products (unchanged)
   const productsEUR = [
     { name: "🦀 Rust", cat:"games", price:4.99, img:"header.jpg", emoji:"🦀", discount:15, trending:true, rating:4.8 },
     { name: "🌲 The Forest", cat:"games", price:1.99, img:"theforest.jpg", emoji:"🌲", rating:4.5 },
@@ -686,7 +687,7 @@
   }
   async function refreshBalance() { await updateBalanceDisplay(); showToastMsg('Balance refreshed'); }
 
-  // Payment with anti‑double‑charge
+  // Payment with anti‑double‑charge (Discord call removed)
   function launchConfetti() {
     for (let i=0;i<60;i++) {
       const confetti = document.createElement('div');
@@ -746,11 +747,6 @@
       if (res.success) {
         const purchaseCode = res.data.code;
         addToPurchaseHistory(`Cart: ${productList.join(', ')}`, purchaseCode);
-        fetch(DISCORD_WEBHOOK, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: `🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**\n📌 Please paste this code in a Discord ticket for delivery.` })
-        }).catch(()=>{});
         showToastMsg(`✅ Payment successful! Code: ${purchaseCode}`);
         launchConfetti();
         cart = [];
@@ -776,11 +772,6 @@
           // Purchase succeeded – fallback code
           const fallbackCode = Math.random().toString(36).substring(2, 12).toUpperCase();
           addToPurchaseHistory(`Cart: ${productList.join(', ')}`, fallbackCode);
-          fetch(DISCORD_WEBHOOK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: `🛒 **CART PURCHASE (recovered)**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${fallbackCode}**\n⚠️ Network error after purchase – balance was deducted.` })
-          }).catch(()=>{});
           showToastMsg(`⚠️ Network error, but purchase detected. Code: ${fallbackCode}`, false);
           launchConfetti();
           cart = [];

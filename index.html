@@ -329,9 +329,9 @@
 </footer>
 
 <script>
-  // ==================== STABLE PROXY ====================
+  // ==================== YOUR RENDER PROXY ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  const BACKEND_URL = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(TARGET_URL);
+  const BACKEND_URL = 'https://cookie-shop-github-io.onrender.com/proxy?url=' + encodeURIComponent(TARGET_URL);
   const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;
@@ -686,7 +686,7 @@
   }
   async function refreshBalance() { await updateBalanceDisplay(); showToastMsg('Balance refreshed'); }
 
-  // Payment with cooldown & anti‑double‑charge
+  // Payment with anti‑double‑charge
   function launchConfetti() {
     for (let i=0;i<60;i++) {
       const confetti = document.createElement('div');
@@ -744,7 +744,6 @@
       const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: productList.join(', '), price: totalEUR });
 
       if (res.success) {
-        // Normal success
         const purchaseCode = res.data.code;
         addToPurchaseHistory(`Cart: ${productList.join(', ')}`, purchaseCode);
         fetch(DISCORD_WEBHOOK, {
@@ -759,7 +758,6 @@
         saveCart();
         await updateBalanceDisplay();
       } else {
-        // Purchase failed (e.g. insufficient balance)
         showToastMsg(res.message || 'Purchase failed', true);
         clearInterval(interval);
         payBtn.innerHTML = originalText;
@@ -768,15 +766,14 @@
         payBtn.classList.remove('btn-cooling');
       }
     } catch (err) {
-      // Network error or invalid response
       console.error('Pay error:', err);
-      // 5. Check if balance actually changed
+      // 5. Check if balance changed
       const newBalRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
       if (newBalRes.success) {
         const balanceAfter = newBalRes.data.balance;
         const expected = balanceBefore - totalEUR;
         if (balanceAfter <= expected + 0.01) {
-          // Purchase most likely succeeded – generate a fallback code
+          // Purchase succeeded – fallback code
           const fallbackCode = Math.random().toString(36).substring(2, 12).toUpperCase();
           addToPurchaseHistory(`Cart: ${productList.join(', ')}`, fallbackCode);
           fetch(DISCORD_WEBHOOK, {
@@ -869,7 +866,6 @@
   }
   init();
 
-  // Exports
   window.loadMore=loadMore; window.clearCart=clearCart; window.manualCopy=manualCopy;
   window.joinDiscord=joinDiscord; window.toggleCart=toggleCart; window.addToCart=addToCart;
   window.logout=logout; window.openLoginModal=openLoginModal; window.closeLoginModal=closeLoginModal;

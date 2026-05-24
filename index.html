@@ -329,8 +329,9 @@
 </footer>
 
 <script>
+  // ==================== STABLE PROXY ====================
   const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-  const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(TARGET_URL);
+  const BACKEND_URL = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(TARGET_URL);
   const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1506707109708828743/k09wZ48gxGKNkeQwJQwB6sLReNqSYdc1o9TG8tH5HeQCcCp0T1EdhHdHYTRwjWlPXcgH';
 
   let currentUser = null, currentToken = null;
@@ -349,10 +350,23 @@
   async function apiCall(action, data) {
     const url = BACKEND_URL + '?_=' + Date.now();
     try {
-      const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, ...data }) });
-      const json = await res.json();
-      document.getElementById('warningBox').style.display = 'none';
-      return json;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...data })
+      });
+      const text = await res.text();
+      try {
+        const json = JSON.parse(text);
+        document.getElementById('warningBox').style.display = 'none';
+        return json;
+      } catch (e) {
+        console.error('Invalid JSON response:', text);
+        document.getElementById('warningBox').style.display = 'flex';
+        document.getElementById('warningBox').innerHTML = '⚠️ Server returned an invalid response. Please try again.';
+        showToastMsg('Network error – invalid response from server', true);
+        return { success: false, message: 'Invalid response' };
+      }
     } catch (err) {
       console.error('API call error:', err);
       document.getElementById('warningBox').style.display = 'flex';
@@ -672,7 +686,7 @@
   }
   async function refreshBalance() { await updateBalanceDisplay(); showToastMsg('Balance refreshed'); }
 
-  // Payment with cooldown & confetti
+  // Payment with cooldown & anti‑double‑charge
   function launchConfetti() {
     for (let i=0;i<60;i++) {
       const confetti = document.createElement('div');
@@ -683,41 +697,110 @@
       setTimeout(()=>confetti.remove(),2500);
     }
   }
+
   async function payWithBalance() {
     if (!currentUser) { showToastMsg('Please login first', true); openLoginModal(); return; }
     if (cart.length===0) { showToastMsg('Cart is empty', true); return; }
-    const payBtn=document.getElementById('payWithBalanceBtn');
+
+    const payBtn = document.getElementById('payWithBalanceBtn');
     if (!payBtn) return;
     if (payCooldown) { showToastMsg('Please wait 30 seconds before making another purchase.', true); return; }
-    payBtn.disabled=true; payCooldown=true; payBtn.classList.add('btn-cooling');
-    const originalText=payBtn.innerHTML;
-    let secondsLeft=30;
-    const updateDisplay=()=>{ payBtn.innerHTML=`⏳ Wait ${secondsLeft}s...`; }; updateDisplay();
-    const interval=setInterval(()=>{
+
+    // 1. Fetch current balance
+    let balanceBefore = 0;
+    const balRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
+    if (!balRes.success) { showToastMsg('Could not verify balance. Try again.', true); return; }
+    balanceBefore = balRes.data.balance;
+
+    // 2. Calculate total in EUR
+    let totalCurr = 0, productList = [];
+    for (let item of cart) {
+      totalCurr += item.price * item.quantity;
+      productList.push(`${item.name} x${item.quantity}`);
+    }
+    const totalEUR = totalCurr / rates[currentCurrency];
+
+    // 3. Start cooldown
+    payBtn.disabled = true;
+    payCooldown = true;
+    payBtn.classList.add('btn-cooling');
+    const originalText = payBtn.innerHTML;
+    let secondsLeft = 30;
+    const updateDisplay = () => { payBtn.innerHTML = `⏳ Wait ${secondsLeft}s...`; };
+    updateDisplay();
+    const interval = setInterval(() => {
       secondsLeft--;
-      if(secondsLeft<=0){
-        clearInterval(interval); payBtn.innerHTML=originalText; payBtn.disabled=false; payCooldown=false; payBtn.classList.remove('btn-cooling');
+      if (secondsLeft <= 0) {
+        clearInterval(interval);
+        payBtn.innerHTML = originalText;
+        payBtn.disabled = false;
+        payCooldown = false;
+        payBtn.classList.remove('btn-cooling');
       } else updateDisplay();
-    },1000);
+    }, 1000);
+
+    // 4. Attempt purchase
     try {
-      let totalCurr=0, productList=[];
-      for(let item of cart){ totalCurr+=item.price*item.quantity; productList.push(`${item.name} x${item.quantity}`); }
-      const totalEUR=totalCurr/rates[currentCurrency];
-      const res=await apiCall('purchase',{ username:currentUser, token:currentToken, product:productList.join(', '), price:totalEUR });
-      if(res.success){
-        const purchaseCode=res.data.code;
+      const res = await apiCall('purchase', { username: currentUser, token: currentToken, product: productList.join(', '), price: totalEUR });
+
+      if (res.success) {
+        // Normal success
+        const purchaseCode = res.data.code;
         addToPurchaseHistory(`Cart: ${productList.join(', ')}`, purchaseCode);
-        fetch(DISCORD_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ content:`🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**\n📌 Please paste this code in a Discord ticket for delivery.` })}).catch(()=>{});
+        fetch(DISCORD_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: `🛒 **CART PURCHASE**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${purchaseCode}**\n📌 Please paste this code in a Discord ticket for delivery.` })
+        }).catch(()=>{});
         showToastMsg(`✅ Payment successful! Code: ${purchaseCode}`);
         launchConfetti();
-        cart=[]; updateCartUI(); saveCart(); await updateBalanceDisplay();
+        cart = [];
+        updateCartUI();
+        saveCart();
+        await updateBalanceDisplay();
       } else {
-        showToastMsg(res.message, true);
-        clearInterval(interval); payBtn.innerHTML=originalText; payBtn.disabled=false; payCooldown=false; payBtn.classList.remove('btn-cooling');
+        // Purchase failed (e.g. insufficient balance)
+        showToastMsg(res.message || 'Purchase failed', true);
+        clearInterval(interval);
+        payBtn.innerHTML = originalText;
+        payBtn.disabled = false;
+        payCooldown = false;
+        payBtn.classList.remove('btn-cooling');
       }
-    } catch(err){
-      showToastMsg('Error processing payment: '+err.message, true);
-      clearInterval(interval); payBtn.innerHTML=originalText; payBtn.disabled=false; payCooldown=false; payBtn.classList.remove('btn-cooling');
+    } catch (err) {
+      // Network error or invalid response
+      console.error('Pay error:', err);
+      // 5. Check if balance actually changed
+      const newBalRes = await apiCall('getBalance', { username: currentUser, token: currentToken });
+      if (newBalRes.success) {
+        const balanceAfter = newBalRes.data.balance;
+        const expected = balanceBefore - totalEUR;
+        if (balanceAfter <= expected + 0.01) {
+          // Purchase most likely succeeded – generate a fallback code
+          const fallbackCode = Math.random().toString(36).substring(2, 12).toUpperCase();
+          addToPurchaseHistory(`Cart: ${productList.join(', ')}`, fallbackCode);
+          fetch(DISCORD_WEBHOOK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: `🛒 **CART PURCHASE (recovered)**\nUser: ${currentUser}\nProducts: ${productList.join(', ')}\nTotal: €${totalEUR.toFixed(2)}\n**CODE: ${fallbackCode}**\n⚠️ Network error after purchase – balance was deducted.` })
+          }).catch(()=>{});
+          showToastMsg(`⚠️ Network error, but purchase detected. Code: ${fallbackCode}`, false);
+          launchConfetti();
+          cart = [];
+          updateCartUI();
+          saveCart();
+          await updateBalanceDisplay();
+        } else {
+          showToastMsg('Network error – your balance was not charged. Please try again.', true);
+        }
+      } else {
+        showToastMsg('Network error – could not verify balance. Please check your balance manually.', true);
+      }
+      clearInterval(interval);
+      payBtn.innerHTML = originalText;
+      payBtn.disabled = false;
+      payCooldown = false;
+      payBtn.classList.remove('btn-cooling');
     }
   }
 
@@ -786,6 +869,7 @@
   }
   init();
 
+  // Exports
   window.loadMore=loadMore; window.clearCart=clearCart; window.manualCopy=manualCopy;
   window.joinDiscord=joinDiscord; window.toggleCart=toggleCart; window.addToCart=addToCart;
   window.logout=logout; window.openLoginModal=openLoginModal; window.closeLoginModal=closeLoginModal;

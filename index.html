@@ -366,7 +366,7 @@ function logout(){currentUser=null;currentToken=null;localStorage.removeItem('sh
 async function updateBalanceDisplay(){if(!currentUser)return;const res=await apiCall('getBalance',{username:currentUser,token:currentToken});if(res.success)document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;else{logout();showToastMsg('Session expired',true)}}
 async function refreshBalance(){await updateBalanceDisplay();showToastMsg('Balance refreshed')}
 
-// Payment
+// Payment (instant balance update)
 function launchConfetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.animationDelay=Math.random()*0.5+'s';c.style.background=['#6366f1','#facc15','#22c55e','#5865F2','#8b5cf6'][Math.floor(Math.random()*5)];document.body.appendChild(c);setTimeout(()=>c.remove(),2500)}}
 async function payWithBalance(){
     if(!currentUser){showToastMsg('Please login first',true);openLoginModal();return}if(cart.length===0){showToastMsg('Cart empty',true);return}const payBtn=document.getElementById('payWithBalanceBtn');if(!payBtn||payCooldown){showToastMsg('Wait 30 seconds',true);return}
@@ -375,7 +375,7 @@ async function payWithBalance(){
     try{const res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productList.join(', '),price:totalEUR});if(res.success){addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);launchConfetti();document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.newBalance.toFixed(2)}`;cart=[];updateCartUI();saveCart()}else{showToastMsg(res.message||'Purchase failed',true);clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}}catch(e){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true)}
 }
 
-// Feedback
+// Feedback (anti-spam, sends to Discord via script)
 async function submitFeedback(){
     if(feedbackCooldown){showToastMsg('Wait before sending again',true);return}const name=document.getElementById('feedbackName').value.trim(),msg=document.getElementById('feedbackMsg').value.trim();if(!msg){showToastMsg('Enter a message',true);return}const btn=document.getElementById('feedbackSubmitBtn');btn.disabled=true;feedbackCooldown=true;const orig=btn.innerHTML;btn.innerHTML='Sending...';let sec=60;const timer=document.getElementById('feedbackTimer');timer.textContent=`You can send again in ${sec}s`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);timer.textContent='';btn.disabled=false;feedbackCooldown=false;btn.innerHTML=orig}else timer.textContent=`You can send again in ${sec}s`},1000);
     const res=await apiCall('feedback',{name:name||'Anonymous',message:msg});if(res.success){showToastMsg('Thank you!');document.getElementById('feedbackName').value='';document.getElementById('feedbackMsg').value=''}else showToastMsg(res.message||'Failed',true)

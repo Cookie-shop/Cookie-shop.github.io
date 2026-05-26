@@ -262,7 +262,7 @@
 <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
 <script>
-// ==================== CONFIGURATION ====================
+// ==================== PURE BACKEND MODE ====================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrMtUtYUJvhOSoT6Qi4ndj3ssjsaFIjw7BXn-K8w0FRzQTuAsWBFjb3nJ930v1g20bIg/exec';
 const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
 
@@ -340,13 +340,13 @@ function renderShop(){
     document.getElementById("loadMoreBtn").style.display=prods.length>displayedCount?"block":"none";
 }
 
-// Purchase history
+// Purchase history (display only, fetched from localStorage cache)
 function loadPurchaseHistory(){const s=localStorage.getItem('purchaseHistory_'+(currentUser||'guest'));purchaseHistory=s?JSON.parse(s):[];renderOrdersPanel()}
 function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHistory_'+currentUser,JSON.stringify(purchaseHistory))}
 function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
 function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
 
-// Auth
+// Auth (always uses backend)
 function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
 function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
 async function modalRegister(){
@@ -359,26 +359,63 @@ async function modalLogin(){
     const u=document.getElementById('modalUsername').value.trim(),p=document.getElementById('modalPassword').value.trim();
     if(!u||!p){showToastMsg('Enter credentials',true);return}const btn=document.getElementById('loginSubmitBtn');btn.disabled=true;btn.innerHTML='Logging in...';
     const res=await apiCall('login',{username:u,password:p});
-    if(res.success){currentUser=u;currentToken=res.data.token;localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken}));document.getElementById('userBar').style.display='flex';document.getElementById('loginPromptBar').style.display='none';document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;loadPurchaseHistory();showToastMsg(`Welcome ${u}!`);closeLoginModal()}else showToastMsg(res.message,true);
+    if(res.success){
+        currentUser=u; currentToken=res.data.token;
+        localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken}));
+        document.getElementById('userBar').style.display='flex';
+        document.getElementById('loginPromptBar').style.display='none';
+        updateBalanceDisplay(); // fetch balance from backend
+        loadPurchaseHistory();
+        showToastMsg(`Welcome ${u}!`);
+        closeLoginModal();
+    }else showToastMsg(res.message,true);
     btn.disabled=false;btn.innerHTML='Login'
 }
-function logout(){currentUser=null;currentToken=null;localStorage.removeItem('shopUser');document.getElementById('userBar').style.display='none';document.getElementById('loginPromptBar').style.display='flex';purchaseHistory=[];renderOrdersPanel();showToastMsg('Logged out')}
-async function updateBalanceDisplay(){if(!currentUser)return;const res=await apiCall('getBalance',{username:currentUser,token:currentToken});if(res.success)document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;else{logout();showToastMsg('Session expired',true)}}
+function logout(){
+    currentUser=null;currentToken=null;
+    localStorage.removeItem('shopUser');
+    document.getElementById('userBar').style.display='none';
+    document.getElementById('loginPromptBar').style.display='flex';
+    purchaseHistory=[];renderOrdersPanel();showToastMsg('Logged out')
+}
+async function updateBalanceDisplay(){
+    if(!currentUser) return;
+    const res=await apiCall('getBalance',{username:currentUser,token:currentToken});
+    if(res.success) document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;
+    else { logout(); showToastMsg('Session expired',true); }
+}
 async function refreshBalance(){await updateBalanceDisplay();showToastMsg('Balance refreshed')}
 
-// Payment (instant balance update)
+// Payment (fully backend)
 function launchConfetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.animationDelay=Math.random()*0.5+'s';c.style.background=['#6366f1','#facc15','#22c55e','#5865F2','#8b5cf6'][Math.floor(Math.random()*5)];document.body.appendChild(c);setTimeout(()=>c.remove(),2500)}}
 async function payWithBalance(){
     if(!currentUser){showToastMsg('Please login first',true);openLoginModal();return}if(cart.length===0){showToastMsg('Cart empty',true);return}const payBtn=document.getElementById('payWithBalanceBtn');if(!payBtn||payCooldown){showToastMsg('Wait 30 seconds',true);return}
     let totalCurr=0,productList=[];for(let item of cart){totalCurr+=item.price*item.quantity;productList.push(`${item.name} x${item.quantity}`)}const totalEUR=totalCurr/rates[currentCurrency];
     payBtn.disabled=true;payCooldown=true;const orig=payBtn.innerHTML;let sec=30;payBtn.innerHTML=`⏳ Wait ${sec}s...`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}else payBtn.innerHTML=`⏳ Wait ${sec}s...`},1000);
-    try{const res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productList.join(', '),price:totalEUR});if(res.success){addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);launchConfetti();document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.newBalance.toFixed(2)}`;cart=[];updateCartUI();saveCart()}else{showToastMsg(res.message||'Purchase failed',true);clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}}catch(e){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true)}
+    try{
+        const res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productList.join(', '),price:totalEUR});
+        if(res.success){
+            addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);
+            showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);
+            launchConfetti();
+            // Update balance immediately from backend response
+            document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.newBalance.toFixed(2)}`;
+            cart=[];updateCartUI();saveCart();
+        }else{
+            showToastMsg(res.message||'Purchase failed',true);
+            clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;
+        }
+    }catch(e){
+        clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true);
+    }
 }
 
-// Feedback (anti-spam, sends to Discord via script)
+// Feedback (through backend, which sends Discord)
 async function submitFeedback(){
     if(feedbackCooldown){showToastMsg('Wait before sending again',true);return}const name=document.getElementById('feedbackName').value.trim(),msg=document.getElementById('feedbackMsg').value.trim();if(!msg){showToastMsg('Enter a message',true);return}const btn=document.getElementById('feedbackSubmitBtn');btn.disabled=true;feedbackCooldown=true;const orig=btn.innerHTML;btn.innerHTML='Sending...';let sec=60;const timer=document.getElementById('feedbackTimer');timer.textContent=`You can send again in ${sec}s`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);timer.textContent='';btn.disabled=false;feedbackCooldown=false;btn.innerHTML=orig}else timer.textContent=`You can send again in ${sec}s`},1000);
-    const res=await apiCall('feedback',{name:name||'Anonymous',message:msg});if(res.success){showToastMsg('Thank you!');document.getElementById('feedbackName').value='';document.getElementById('feedbackMsg').value=''}else showToastMsg(res.message||'Failed',true)
+    const res=await apiCall('feedback',{name:name||'Anonymous',message:msg});
+    if(res.success){showToastMsg('Thank you!');document.getElementById('feedbackName').value='';document.getElementById('feedbackMsg').value='';}
+    else showToastMsg(res.message||'Failed',true);
 }
 
 // Init
@@ -391,7 +428,7 @@ function init(){
     document.querySelectorAll(".currency-option").forEach(o=>o.addEventListener("click",()=>{const cur=o.dataset.currency;if(!cur)return;currentCurrency=cur;document.querySelectorAll(".currency-option").forEach(x=>x.classList.remove("active"));o.classList.add("active");renderShop();updateCartUI();showToastMsg(`Currency: ${cur.toUpperCase()}`)}));
     document.getElementById("openCartBtn").addEventListener("click",toggleCart);document.getElementById("closeCartBtn").addEventListener("click",toggleCart);
     window.addEventListener("scroll",()=>{const b=document.getElementById("backToTopBtn");if(window.scrollY>400)b.classList.add("show");else b.classList.remove("show")});
-    let saved=localStorage.getItem('shopUser');if(saved){try{let{username,token}=JSON.parse(saved);currentUser=username;currentToken=token;apiCall('getBalance',{username,token}).then(res=>{if(res.success){document.getElementById('userBar').style.display='flex';document.getElementById('loginPromptBar').style.display='none';updateBalanceDisplay();showToastMsg(`Welcome back ${username}!`);loadPurchaseHistory()}else{localStorage.removeItem('shopUser')}})}catch(e){}}
+    let saved=localStorage.getItem('shopUser');if(saved){try{let{username,token}=JSON.parse(saved);currentUser=username;currentToken=token;updateBalanceDisplay().then(()=>{document.getElementById('userBar').style.display='flex';document.getElementById('loginPromptBar').style.display='none';loadPurchaseHistory();showToastMsg(`Welcome back ${username}!`)}).catch(()=>{localStorage.removeItem('shopUser')})}catch(e){}}
     renderShop();loadPurchaseHistory();
     for(let i=0;i<40;i++){let p=document.createElement("div");p.className="particle";p.style.width=Math.random()*7+3+"px";p.style.height=p.style.width;p.style.left=Math.random()*100+"%";p.style.top=Math.random()*100+"%";p.style.animationDelay=Math.random()*10+"s";p.style.animationDuration=Math.random()*8+5+"s";document.getElementById("particles").appendChild(p)}
 }

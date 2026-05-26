@@ -1512,11 +1512,8 @@
     <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
     <script>
-        // ==================== BACKEND PROXY ====================
-        const TARGET_URL =
-            'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
-        // IMPORTANT: The public cors-anywhere demo is often rate-limited or offline.
-        // Replace with your own proxy or configure the Apps Script to handle CORS directly.
+        // ==================== BACKEND PROXY (same as your old code) ====================
+        const TARGET_URL = 'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
         const BACKEND_URL = 'https://cors-anywhere.herokuapp.com/' + TARGET_URL;
 
         let currentUser = null,
@@ -1560,7 +1557,7 @@
             }
         }
 
-        // ==================== PRODUCTS (original filenames) ====================
+        // ==================== PRODUCTS (unchanged) ====================
         const productsEUR = [
             { name: "🦀 Rust", cat: "games", price: 4.99, img: "header.jpg", emoji: "🦀", discount: 15, trending: true,
                 rating: 4.8, desc: "Survival game with intense PvP and base building." },
@@ -1881,7 +1878,7 @@
               `).join('');
         }
 
-        // ==================== AUTH & BALANCE ====================
+        // ==================== AUTH & BALANCE (from old code) ====================
         function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
 
         function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
@@ -1947,7 +1944,7 @@
         async function refreshBalance() { await updateBalanceDisplay();
             showToastMsg('Balance refreshed'); }
 
-        // ==================== PAYMENT ====================
+        // ==================== PAYMENT (from old code, adapted) ====================
         function launchConfetti() {
             for (let i = 0; i < 60; i++) {
                 const confetti = document.createElement('div');

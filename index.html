@@ -140,7 +140,6 @@
         .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#1e293b; backdrop-filter:blur(20px); padding:14px 28px; border-radius:80px; color:var(--text); z-index:4000; opacity:0; transition:0.25s; border:1px solid rgba(255,255,255,0.1); font-weight:500; }
         .toast.show { opacity:1; }
         .toast.error { border-left:4px solid var(--danger); }
-        .warning-box { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; padding:14px 18px; border-radius:16px; margin-bottom:20px; display:none; }
 
         .back-to-top { position:fixed; bottom:30px; right:30px; background:rgba(30,41,59,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:1500; opacity:0; visibility:hidden; transition:0.3s; }
         .back-to-top.show { opacity:1; visibility:visible; }
@@ -263,78 +262,21 @@
 <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
 <script>
-// ==================== WORKING DEMO MODE (localStorage) ====================
-// Set to false when your Google Script has CORS enabled
-const DEMO_MODE = true;
+// ==================== REAL BACKEND (WORKING) ====================
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxrMtUtYUJvhOSoT6Qi4ndj3ssjsaFIjw7BXn-K8w0FRzQTuAsWBFjb3nJ930v1g20bIg/exec';
 
 let currentUser = null, currentToken = null, purchaseHistory = [], payCooldown = false, feedbackCooldown = false;
 
 function showToastMsg(msg,isErr){ const t=document.getElementById('toastMsg'); t.textContent=msg; t.className='toast'+(isErr?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-// Demo backend functions
-function getUsersDB(){ return JSON.parse(localStorage.getItem('cookieUsers') || '{}'); }
-function saveUsersDB(db){ localStorage.setItem('cookieUsers', JSON.stringify(db)); }
-function registerUser(username, password){
-    const db = getUsersDB();
-    if(db[username]) return false;
-    db[username] = { password: password, balance: 50 };
-    saveUsersDB(db);
-    return true;
-}
-function loginUser(username, password){
-    const db = getUsersDB();
-    if(!db[username] || db[username].password !== password) return null;
-    return { token: 'local-' + username + '-' + Date.now() };
-}
-function getUserBalance(username){
-    const db = getUsersDB();
-    return db[username] ? db[username].balance : 50;
-}
-function setUserBalance(username, amount){
-    const db = getUsersDB();
-    if(!db[username]) db[username] = { password: '', balance: 50 };
-    db[username].balance = amount;
-    saveUsersDB(db);
-}
-
-async function apiCall(action, data){
-    if(DEMO_MODE){
-        await new Promise(r => setTimeout(r, 300));
-        switch(action){
-            case 'register':
-                if(registerUser(data.username, data.password)) return { success: true, message: 'Registered! Starting balance: €50' };
-                return { success: false, message: 'Username already exists.' };
-            case 'login':
-                const loginRes = loginUser(data.username, data.password);
-                if(loginRes) return { success: true, data: { token: loginRes.token } };
-                return { success: false, message: 'Invalid username or password.' };
-            case 'getBalance':
-                return { success: true, data: { balance: getUserBalance(data.username) } };
-            case 'purchase':
-                const bal = getUserBalance(data.username);
-                const total = parseFloat(data.price);
-                if(bal < total) return { success: false, message: 'Insufficient balance.' };
-                setUserBalance(data.username, bal - total);
-                const code = 'DEMO-' + Math.random().toString(36).substring(2, 10).toUpperCase();
-                return { success: true, data: { code: code } };
-            case 'feedback':
-                return { success: true, message: 'Feedback sent (demo mode).' };
-            default: return { success: false, message: 'Unknown action.' };
-        }
-    } else {
-        // Real backend (uncomment and set DEMO_MODE = false when ready)
-        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz8swctYt5OH44YjR0rqlljaclLCXenBOQCkZ_wRXB12tOLYn1JalbEbcAH_NGQHiKZ6Q/exec';
-        try{
-            const res = await fetch(BACKEND_URL+'?_='+Date.now(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
-            const text = await res.text();
-            return JSON.parse(text);
-        }catch(e){
-            console.error(e);
-            showToastMsg('Network error',true);
-            return { success: false, message: 'Network error' };
-        }
-    }
+async function apiCall(action,data){
+    try{
+        const res=await fetch(BACKEND_URL+'?_='+Date.now(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
+        const text=await res.text();
+        try{ return JSON.parse(text); }
+        catch(e){ console.error(text); showToastMsg('Server error',true); return {success:false,message:'Invalid response'}; }
+    }catch(e){ console.error(e); showToastMsg('Network error',true); return {success:false,message:'Network error'}; }
 }
 
 // Settings

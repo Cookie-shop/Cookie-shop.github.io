@@ -262,7 +262,7 @@
 <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
 <script>
-// ==================== CORS PROXY (works without script changes) ====================
+// ==================== CONFIGURATION ====================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrMtUtYUJvhOSoT6Qi4ndj3ssjsaFIjw7BXn-K8w0FRzQTuAsWBFjb3nJ930v1g20bIg/exec';
 const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
 
@@ -273,11 +273,7 @@ function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>
 
 async function apiCall(action,data){
     try{
-        const res=await fetch(BACKEND_URL,{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({action,...data})
-        });
+        const res=await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
         const text=await res.text();
         try{ return JSON.parse(text); }
         catch(e){ console.error(text); showToastMsg('Server error',true); return {success:false,message:'Invalid response'}; }
@@ -363,7 +359,7 @@ async function modalLogin(){
     const u=document.getElementById('modalUsername').value.trim(),p=document.getElementById('modalPassword').value.trim();
     if(!u||!p){showToastMsg('Enter credentials',true);return}const btn=document.getElementById('loginSubmitBtn');btn.disabled=true;btn.innerHTML='Logging in...';
     const res=await apiCall('login',{username:u,password:p});
-    if(res.success){currentUser=u;currentToken=res.data.token;localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken}));document.getElementById('userBar').style.display='flex';document.getElementById('loginPromptBar').style.display='none';document.getElementById('balanceDisplay').innerHTML='💰 Loading...';await updateBalanceDisplay();loadPurchaseHistory();showToastMsg(`Welcome ${u}!`);closeLoginModal()}else showToastMsg(res.message,true);
+    if(res.success){currentUser=u;currentToken=res.data.token;localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken}));document.getElementById('userBar').style.display='flex';document.getElementById('loginPromptBar').style.display='none';document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;loadPurchaseHistory();showToastMsg(`Welcome ${u}!`);closeLoginModal()}else showToastMsg(res.message,true);
     btn.disabled=false;btn.innerHTML='Login'
 }
 function logout(){currentUser=null;currentToken=null;localStorage.removeItem('shopUser');document.getElementById('userBar').style.display='none';document.getElementById('loginPromptBar').style.display='flex';purchaseHistory=[];renderOrdersPanel();showToastMsg('Logged out')}
@@ -376,7 +372,7 @@ async function payWithBalance(){
     if(!currentUser){showToastMsg('Please login first',true);openLoginModal();return}if(cart.length===0){showToastMsg('Cart empty',true);return}const payBtn=document.getElementById('payWithBalanceBtn');if(!payBtn||payCooldown){showToastMsg('Wait 30 seconds',true);return}
     let totalCurr=0,productList=[];for(let item of cart){totalCurr+=item.price*item.quantity;productList.push(`${item.name} x${item.quantity}`)}const totalEUR=totalCurr/rates[currentCurrency];
     payBtn.disabled=true;payCooldown=true;const orig=payBtn.innerHTML;let sec=30;payBtn.innerHTML=`⏳ Wait ${sec}s...`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}else payBtn.innerHTML=`⏳ Wait ${sec}s...`},1000);
-    try{const res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productList.join(', '),price:totalEUR});if(res.success){addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);launchConfetti();cart=[];updateCartUI();saveCart();await updateBalanceDisplay()}else{showToastMsg(res.message||'Purchase failed',true);clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}}catch(e){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true)}
+    try{const res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productList.join(', '),price:totalEUR});if(res.success){addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);launchConfetti();document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.newBalance.toFixed(2)}`;cart=[];updateCartUI();saveCart()}else{showToastMsg(res.message||'Purchase failed',true);clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}}catch(e){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true)}
 }
 
 // Feedback

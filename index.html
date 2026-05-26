@@ -17,7 +17,6 @@
         img { max-width:100%; display:block; }
         button,input,select,textarea { font-family:inherit; }
         a { text-decoration:none; color:inherit; }
-
         ::-webkit-scrollbar { width:10px; } ::-webkit-scrollbar-track { background:#111827; } ::-webkit-scrollbar-thumb { background:#374151; border-radius:999px; }
 
         #particles { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
@@ -200,7 +199,6 @@
             <div class="currency-option active" data-currency="eur">🇪🇺 EUR</div><div class="currency-option" data-currency="usd">🇺🇸 USD</div><div class="currency-option" data-currency="gbp">🇬🇧 GBP</div>
         </div>
     </div>
-    <div class="warning-box" id="warningBox">⚠️ Cannot connect to server.</div>
     <div class="user-bar" id="userBar" style="display:none;"><span class="balance-display" id="balanceDisplay">💰 Balance: €0.00</span><div><button class="btn-refresh" onclick="refreshBalance()">🔄 Refresh</button><button class="btn-logout" onclick="logout()">🚪 Logout</button></div></div>
     <div class="user-bar" id="loginPromptBar"><span>🔐 You are not logged in.</span><button class="btn-login" onclick="openLoginModal()">Login / Register</button></div>
 </div>
@@ -265,21 +263,78 @@
 <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
 <script>
-// ==================== YOUR NEW BACKEND ====================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz8swctYt5OH44YjR0rqlljaclLCXenBOQCkZ_wRXB12tOLYn1JalbEbcAH_NGQHiKZ6Q/exec';
+// ==================== WORKING DEMO MODE (localStorage) ====================
+// Set to false when your Google Script has CORS enabled
+const DEMO_MODE = true;
 
 let currentUser = null, currentToken = null, purchaseHistory = [], payCooldown = false, feedbackCooldown = false;
 
 function showToastMsg(msg,isErr){ const t=document.getElementById('toastMsg'); t.textContent=msg; t.className='toast'+(isErr?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
 
-async function apiCall(action,data){
-    try{
-        const res=await fetch(BACKEND_URL+'?_='+Date.now(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
-        const text=await res.text();
-        try{ const json=JSON.parse(text); document.getElementById('warningBox').style.display='none'; return json; }
-        catch(e){ console.error(text); document.getElementById('warningBox').style.display='flex'; showToastMsg('Server error',true); return {success:false,message:'Invalid response'}; }
-    }catch(e){ console.error(e); document.getElementById('warningBox').style.display='flex'; showToastMsg('Network error',true); return {success:false,message:'Network error'}; }
+// Demo backend functions
+function getUsersDB(){ return JSON.parse(localStorage.getItem('cookieUsers') || '{}'); }
+function saveUsersDB(db){ localStorage.setItem('cookieUsers', JSON.stringify(db)); }
+function registerUser(username, password){
+    const db = getUsersDB();
+    if(db[username]) return false;
+    db[username] = { password: password, balance: 50 };
+    saveUsersDB(db);
+    return true;
+}
+function loginUser(username, password){
+    const db = getUsersDB();
+    if(!db[username] || db[username].password !== password) return null;
+    return { token: 'local-' + username + '-' + Date.now() };
+}
+function getUserBalance(username){
+    const db = getUsersDB();
+    return db[username] ? db[username].balance : 50;
+}
+function setUserBalance(username, amount){
+    const db = getUsersDB();
+    if(!db[username]) db[username] = { password: '', balance: 50 };
+    db[username].balance = amount;
+    saveUsersDB(db);
+}
+
+async function apiCall(action, data){
+    if(DEMO_MODE){
+        await new Promise(r => setTimeout(r, 300));
+        switch(action){
+            case 'register':
+                if(registerUser(data.username, data.password)) return { success: true, message: 'Registered! Starting balance: €50' };
+                return { success: false, message: 'Username already exists.' };
+            case 'login':
+                const loginRes = loginUser(data.username, data.password);
+                if(loginRes) return { success: true, data: { token: loginRes.token } };
+                return { success: false, message: 'Invalid username or password.' };
+            case 'getBalance':
+                return { success: true, data: { balance: getUserBalance(data.username) } };
+            case 'purchase':
+                const bal = getUserBalance(data.username);
+                const total = parseFloat(data.price);
+                if(bal < total) return { success: false, message: 'Insufficient balance.' };
+                setUserBalance(data.username, bal - total);
+                const code = 'DEMO-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+                return { success: true, data: { code: code } };
+            case 'feedback':
+                return { success: true, message: 'Feedback sent (demo mode).' };
+            default: return { success: false, message: 'Unknown action.' };
+        }
+    } else {
+        // Real backend (uncomment and set DEMO_MODE = false when ready)
+        const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbz8swctYt5OH44YjR0rqlljaclLCXenBOQCkZ_wRXB12tOLYn1JalbEbcAH_NGQHiKZ6Q/exec';
+        try{
+            const res = await fetch(BACKEND_URL+'?_='+Date.now(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
+            const text = await res.text();
+            return JSON.parse(text);
+        }catch(e){
+            console.error(e);
+            showToastMsg('Network error',true);
+            return { success: false, message: 'Network error' };
+        }
+    }
 }
 
 // Settings

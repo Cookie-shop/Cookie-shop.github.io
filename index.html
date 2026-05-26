@@ -1296,7 +1296,7 @@
             </h1>
             <p>
                 Discover premium PC games, subscriptions, Robux, FiveM tools & exclusive bundles with instant digital delivery,
-                secure payments, and 24/7 support trusted by thousands of gamers worldwide.
+                secure payments, and friendly staff support.
             </p>
             <div class="hero-buttons">
                 <button class="primary-btn" onclick="document.getElementById('gamesGrid').scrollIntoView({behavior:'smooth'})">Browse Products</button>
@@ -1515,6 +1515,8 @@
         // ==================== BACKEND PROXY ====================
         const TARGET_URL =
             'https://script.google.com/macros/s/AKfycbyDbA00cdY0T63wUe63BRdyZqbTA7wUmjTncj-Kf8YTCz8M1iW7A-Xu_aaqsNdLHt17IA/exec';
+        // IMPORTANT: The public cors-anywhere demo is often rate-limited or offline.
+        // Replace with your own proxy or configure the Apps Script to handle CORS directly.
         const BACKEND_URL = 'https://cors-anywhere.herokuapp.com/' + TARGET_URL;
 
         let currentUser = null,

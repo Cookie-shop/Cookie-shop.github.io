@@ -262,8 +262,9 @@
 <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
 <script>
-// ==================== REAL BACKEND (WORKING) ====================
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbxrMtUtYUJvhOSoT6Qi4ndj3ssjsaFIjw7BXn-K8w0FRzQTuAsWBFjb3nJ930v1g20bIg/exec';
+// ==================== CORS PROXY (works without script changes) ====================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrMtUtYUJvhOSoT6Qi4ndj3ssjsaFIjw7BXn-K8w0FRzQTuAsWBFjb3nJ930v1g20bIg/exec';
+const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
 
 let currentUser = null, currentToken = null, purchaseHistory = [], payCooldown = false, feedbackCooldown = false;
 
@@ -272,7 +273,11 @@ function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>
 
 async function apiCall(action,data){
     try{
-        const res=await fetch(BACKEND_URL+'?_='+Date.now(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
+        const res=await fetch(BACKEND_URL,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({action,...data})
+        });
         const text=await res.text();
         try{ return JSON.parse(text); }
         catch(e){ console.error(text); showToastMsg('Server error',true); return {success:false,message:'Invalid response'}; }

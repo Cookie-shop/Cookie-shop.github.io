@@ -262,9 +262,8 @@
 <div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
 
 <script>
-// ==================== PURE BACKEND MODE ====================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuIemZ-d-NetFg15JfHShd8S2W8PYyYE_0dqVrmH9aiobXzOPPeIXedC_Sng6AorWJpA/exec';
-const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
+// ==================== YOUR CLOUDFLARE WORKER ====================
+const BACKEND_URL = 'https://cookieshops.jokubossl360noskope900.workers.dev';
 
 let currentUser = null, currentToken = null, purchaseHistory = [], payCooldown = false, feedbackCooldown = false;
 
@@ -273,7 +272,11 @@ function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>
 
 async function apiCall(action,data){
     try{
-        const res=await fetch(BACKEND_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...data})});
+        const res=await fetch(BACKEND_URL + '?_=' + Date.now(), {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({action,...data})
+        });
         const text=await res.text();
         try{ return JSON.parse(text); }
         catch(e){ console.error(text); showToastMsg('Server error',true); return {success:false,message:'Invalid response'}; }
@@ -346,7 +349,7 @@ function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHist
 function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
 function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
 
-// Auth (always backend)
+// Auth
 function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
 function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
 async function modalRegister(){
@@ -364,7 +367,8 @@ async function modalLogin(){
         localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken}));
         document.getElementById('userBar').style.display='flex';
         document.getElementById('loginPromptBar').style.display='none';
-        updateBalanceDisplay();
+        // Balance instantly from login response
+        document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;
         loadPurchaseHistory();
         showToastMsg(`Welcome ${u}!`);
         closeLoginModal();
@@ -386,7 +390,7 @@ async function updateBalanceDisplay(){
 }
 async function refreshBalance(){await updateBalanceDisplay();showToastMsg('Balance refreshed')}
 
-// Payment
+// Payment (instant newBalance)
 function launchConfetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.animationDelay=Math.random()*0.5+'s';c.style.background=['#6366f1','#facc15','#22c55e','#5865F2','#8b5cf6'][Math.floor(Math.random()*5)];document.body.appendChild(c);setTimeout(()=>c.remove(),2500)}}
 async function payWithBalance(){
     if(!currentUser){showToastMsg('Please login first',true);openLoginModal();return}if(cart.length===0){showToastMsg('Cart empty',true);return}const payBtn=document.getElementById('payWithBalanceBtn');if(!payBtn||payCooldown){showToastMsg('Wait 30 seconds',true);return}
@@ -398,6 +402,7 @@ async function payWithBalance(){
             addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);
             showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);
             launchConfetti();
+            // Instant balance update using newBalance from backend
             document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.newBalance.toFixed(2)}`;
             cart=[];updateCartUI();saveCart();
         }else{

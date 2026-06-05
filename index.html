@@ -39,7 +39,6 @@
 
         .trust-bar { text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); color:#cbd5e1; font-size:0.88rem; }
 
-        /* Hero – no ad space, single column */
         .hero { max-width:1400px; margin:auto; padding:60px 24px 30px; position:relative; z-index:1; }
         .hero-left { padding-top:30px; }
         .hero-tag { display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:999px; background:rgba(99,102,241,0.12); border:1px solid rgba(99,102,241,0.25); color:#c7d2fe; margin-bottom:24px; }
@@ -149,7 +148,6 @@
         .footer-column a { display:block; margin-bottom:12px; color:var(--muted); }
         .copyright { max-width:1400px; margin:60px auto 0; border-top:1px solid var(--border); padding-top:30px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; }
 
-        /* Code Modal */
         .code-modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:5000; justify-content:center; align-items:center; }
         .code-modal-overlay.active { display:flex; }
         .code-modal { background:#111827; border-radius:28px; padding:30px; width:90%; max-width:500px; border:2px solid var(--primary); text-align:center; }
@@ -158,7 +156,6 @@
         .code-modal p { color:var(--text); margin-bottom:20px; font-size:1.2rem; font-weight:700; line-height:1.6; }
         .code-modal button { padding:14px 28px; border-radius:14px; background:var(--btn-gradient); color:white; font-weight:700; border:none; cursor:pointer; font-size:1rem; }
 
-        /* ============ MOBILE ZOOM-OUT ============ */
         @media (max-width:800px) {
             html { font-size: 14px; }
             .hero { padding: 30px 16px 20px; }
@@ -218,7 +215,7 @@
 
 <section class="hero">
     <div class="hero-left">
-        <div class="hero-tag">🚀 50+ Premium Products Available Now</div>
+        <div class="hero-tag">🚀 70+ Premium Products Available Now</div>
         <h1>Level Up Your <span class="gradient-text">Gaming Library</span></h1>
         <p>Discover premium PC games, subscriptions, Robux, FiveM tools & exclusive bundles with instant digital delivery, secure payments, and friendly staff support.</p>
         <div class="hero-buttons">
@@ -232,7 +229,7 @@
     <div class="controls-bar">
         <div class="payment-methods">💳 PayPal | 🏦 Swedbank | 🏦 SEB | 🏦 Luminor | ₿ BTC | ₿ ETH</div>
         <div class="search-wrapper">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search 50+ products...">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search 70+ products...">
             <button class="clear-search" id="clearSearchBtn">✖️</button>
         </div>
         <select id="sortSelect" class="filter-select">
@@ -248,7 +245,7 @@
 
 <main class="container">
     <div class="tabs" id="tabsContainer">
-        <div class="tab active" data-filter="all">✨ All (50+)</div><div class="tab" data-filter="games">🎮 Games</div><div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
+        <div class="tab active" data-filter="all">✨ All (70+)</div><div class="tab" data-filter="games">🎮 Games</div><div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
         <div class="tab" data-filter="robux">💰 Robux</div><div class="tab" data-filter="fivem">⚙️ FiveM</div><div class="tab" data-filter="bundles">📦 Bundles</div>
     </div>
     <section id="games"><div class="section-title"><h2>All Products</h2></div><div class="games-grid" id="gamesGrid"></div><div id="loadMoreBtn" style="text-align:center;margin-top:30px;"><button class="secondary-btn" onclick="loadMore()">Load More ➕</button></div></section>
@@ -303,7 +300,6 @@
     </div>
 </div>
 
-<!-- Code Modal -->
 <div class="code-modal-overlay" id="codeModalOverlay">
     <div class="code-modal">
         <h2>✅ Purchase Successful!</h2>
@@ -346,7 +342,6 @@ async function apiCall(action,data){
     }catch(e){ console.error(e); showToastMsg('Network error',true); return {success:false,message:'Network error'}; }
 }
 
-// Settings
 function openSettingsModal(){document.getElementById('settingsModal').classList.add('active')}
 function closeSettingsModal(){document.getElementById('settingsModal').classList.remove('active')}
 function applySettings(){
@@ -362,8 +357,120 @@ function toggleAnimations(){const o=document.getElementById('animationsToggle').
 function resetSettings(){localStorage.setItem('darkMode','true');localStorage.setItem('particlesOn','true');localStorage.setItem('animationsOn','true');applySettings();closeSettingsModal();showToastMsg('Settings reset')}
 setInterval(()=>document.getElementById('liveClock').textContent=new Date().toLocaleTimeString(),1000);
 
-// Products
-const productsEUR=[{name:"🦀 Rust",cat:"games",price:4.99,img:"header.jpg",emoji:"🦀",discount:15,trending:true,rating:4.8,desc:"Survival game with intense PvP and base building."},{name:"🌲 The Forest",cat:"games",price:1.99,img:"theforest.jpg",emoji:"🌲",rating:4.5,desc:"Craft, build, and survive in a mysterious forest."},{name:"⚡ Full Access Rust",cat:"games",price:14.99,img:"header.jpg",emoji:"⚡",rating:4.9,desc:"Premium Rust account with full access and bonuses."},{name:"🚀 Arc Raiders",cat:"games",price:4.49,img:"images.jpg",emoji:"🚀",rating:4.2,desc:"Sci-fi third-person shooter with massive raids."},{name:"🧟 DayZ",cat:"games",price:3.49,img:"dayz.jpg",emoji:"🧟",rating:4.7,desc:"Hardcore zombie survival."},{name:"🏎️ GTA V Steam",cat:"games",price:4.99,img:"gtav.jpg",emoji:"🏎️",discount:10,trending:true,rating:5.0,desc:"The legendary open-world crime saga."},{name:"🚗 BeamNG.drive",cat:"games",price:3.99,img:"beamngdrive.jpg",emoji:"🚗",rating:4.6,desc:"Realistic soft-body physics driving simulator."},{name:"🏁 Forza Horizon 5",cat:"games",price:3.49,img:"kaosk.jpg",emoji:"🏁",rating:4.9,desc:"Open-world racing in vibrant Mexico."},{name:"🌲 Sons of The Forest",cat:"games",price:2.49,img:"sotf.jpg",emoji:"🌲",rating:4.8,desc:"Sequel to the hit survival horror crafting game."},{name:"⛏️ Minecraft Java",cat:"games",price:7.99,img:"minecraft.png",emoji:"⛏️",rating:5.0,desc:"The ultimate sandbox block-building adventure."},{name:"🎮 Cyberpunk 2077",cat:"games",price:2.49,img:"cyberpunk.png",emoji:"🎮",discount:20,rating:4.4,desc:"Futuristic open-world RPG."},{name:"📅 Schedule I",cat:"games",price:2.99,img:"schedule1.png",emoji:"📅",rating:4.1,desc:"Strategic scheduling simulation."},{name:"🛶 Raft",cat:"games",price:2.49,img:"header.png",emoji:"🛶",rating:4.5,desc:"Survive on a raft."},{name:"👽 Among Us",cat:"games",price:1.99,img:"amongus.png",emoji:"👽",rating:4.3,desc:"Multiplayer social deduction."},{name:"🚛 Euro Truck Sim 2",cat:"games",price:3.49,img:"maxresdefault.png",emoji:"🚛",rating:4.7,desc:"Drive across Europe."},{name:"🛒 Supermarket Simulator",cat:"games",price:2.99,img:"headekr.png",emoji:"🛒",rating:4.2,desc:"Run your own supermarket."},{name:"⚔️ Mortal Kombat 1",cat:"games",price:2.99,img:"klll.png",emoji:"⚔️",rating:4.6,desc:"Brutal fighting game."},{name:"🔫 Rainbow Six Siege",cat:"games",price:1.49,img:"lk.png",emoji:"🔫",rating:4.5,desc:"Tactical FPS."},{name:"🧟 Resident Evil Village",cat:"games",price:4.99,img:"NMu5EEmFLFUsuzOW4jGw2KOj.png",emoji:"🧟",rating:4.8,desc:"Survival horror masterpiece."},{name:"⚽ FC 25",cat:"games",price:3.49,img:"afgghj.png",emoji:"⚽",discount:5,rating:4.4,desc:"Latest football simulation."},{name:"⚽ FC 26",cat:"games",price:19.99,img:"maxresdefault__2_.png",emoji:"⚽",rating:4.7,desc:"Next-gen football."},{name:"🦸 Marvel Rivals",cat:"games",price:1.49,img:"images.png",emoji:"🦸",rating:4.3,desc:"Superhero team-based action."},{name:"🎮 Discord Nitro",cat:"subscriptions",price:0.66,img:"nitro.png",emoji:"🎮",rating:4.8,desc:"Premium Discord features."},{name:"📺 Netflix Lifetime",cat:"subscriptions",price:5.49,img:"netflix_vx8r.jpg",emoji:"📺",discount:10,rating:4.7,desc:"Lifetime Netflix access."},{name:"🎵 Spotify Premium 3M",cat:"subscriptions",price:3.99,img:"spotify-logo-zoom-s.png",emoji:"🎵",rating:4.9,desc:"3 months ad-free music."},{name:"📹 YouTube Premium 1M",cat:"subscriptions",price:5.99,img:"YTP.png",emoji:"📹",rating:4.8,desc:"1 month YouTube without ads."},{name:"🤖 ChatGPT Plus",cat:"subscriptions",price:2.99,img:"Chat-GPT-logo.png",emoji:"🤖",rating:4.9,desc:"Premium AI assistant."},{name:"📺 Disney+ Lifetime",cat:"subscriptions",price:4.99,img:"asdasdasd.png",emoji:"📺",rating:4.6,desc:"Lifetime Disney+ access."},{name:"🔒 NordVPN Lifetime",cat:"subscriptions",price:2.49,img:"imajjhges.png",emoji:"🔒",discount:15,rating:4.8,desc:"Secure VPN lifetime."},{name:"✂️ CapCut Pro",cat:"subscriptions",price:1.99,img:"capcut-pro-12-men-3362289.png",emoji:"✂️",rating:4.5,desc:"Professional video editing."},{name:"💰 Robux 2.5k-5k",cat:"robux",price:8.49,img:"public.png",emoji:"💰",rating:4.7,desc:"Roblox currency pack."},{name:"💰 Robux 5k-10k",cat:"robux",price:10.99,img:"public.png",emoji:"💰",rating:4.7,desc:"Medium Robux bundle."},{name:"💰 Robux 10k-15k",cat:"robux",price:15.99,img:"public.png",emoji:"💰",rating:4.8,desc:"Large Robux pack."},{name:"💰 Robux 15k-30k",cat:"robux",price:18.49,img:"public.png",emoji:"💰",rating:4.8,desc:"Extra-large Robux bundle."},{name:"💰 Robux 50k+",cat:"robux",price:35.99,img:"public.png",emoji:"💰",discount:8,rating:4.9,desc:"Ultimate Robux pack."},{name:"⚙️ FiveM Ready Account",cat:"fivem",price:0.99,img:"Fivem.jpg",emoji:"⚙️",rating:4.5,desc:"Pre-configured FiveM account."},{name:"📦 FiveM Bundle",cat:"fivem",price:2.49,img:"Fivem.jpg",emoji:"📦",rating:4.6,desc:"Essential FiveM scripts."},{name:"👑 Valk Menu (3D)",cat:"fivem",price:3.49,img:"Fivem.jpg",emoji:"👑",rating:4.7,desc:"Valk menu 3-day access."},{name:"👑 Valk Menu (1W)",cat:"fivem",price:6.49,img:"Fivem.jpg",emoji:"👑",rating:4.7,desc:"Valk menu 1-week access."},{name:"👑 Valk Menu (1M)",cat:"fivem",price:13.49,img:"Fivem.jpg",emoji:"👑",rating:4.8,desc:"Valk menu 1-month access."},{name:"👑 Valk Menu (Lifetime)",cat:"fivem",price:26.49,img:"Fivem.jpg",emoji:"👑",rating:4.9,desc:"Valk menu lifetime."},{name:"🔑 Keyser (3D)",cat:"fivem",price:6.49,img:"Fivem.jpg",emoji:"🔑",rating:4.6,desc:"Keyser menu 3-day."},{name:"🔑 Keyser (1W)",cat:"fivem",price:11.49,img:"Fivem.jpg",emoji:"🔑",rating:4.7,desc:"Keyser menu 1-week."},{name:"🔑 Keyser (1M)",cat:"fivem",price:15.49,img:"Fivem.jpg",emoji:"🔑",rating:4.7,desc:"Keyser menu 1-month."},{name:"🔑 Keyser (Lifetime)",cat:"fivem",price:36.49,img:"Fivem.jpg",emoji:"🔑",rating:4.8,desc:"Keyser menu lifetime."},{name:"⚡ Ryven (3D)",cat:"fivem",price:8.49,img:"Fivem.jpg",emoji:"⚡",rating:4.7,desc:"Ryven menu 3-day."},{name:"⚡ Ryven (1M)",cat:"fivem",price:11.49,img:"Fivem.jpg",emoji:"⚡",rating:4.7,desc:"Ryven menu 1-month."},{name:"⚡ Ryven (3M)",cat:"fivem",price:19.49,img:"Fivem.jpg",emoji:"⚡",rating:4.8,desc:"Ryven menu 3-month."},{name:"⚡ Ryven (Lifetime)",cat:"fivem",price:31.49,img:"Fivem.jpg",emoji:"⚡",rating:4.8,desc:"Ryven menu lifetime."},{name:"📦 Epic Bundle (20-50)",cat:"bundles",price:0.99,img:"sdfgfgsdfgd.png",emoji:"📦",rating:4.9,desc:"Curated bundle 20-50 items."},{name:"📦 Epic Bundle (50-100)",cat:"bundles",price:1.49,img:"sdfgfgsdfgd.png",emoji:"📦",rating:4.9,desc:"Curated bundle 50-100 items."},{name:"📦 Epic Bundle (350+)",cat:"bundles",price:4.99,img:"sdfgfgsdfgd.png",emoji:"📦",discount:12,rating:5.0,desc:"Massive bundle 350+ items."},{name:"🎲 Mystery Steam Acc",cat:"bundles",price:0.49,img:"image.png",emoji:"🎲",rating:4.4,desc:"Random Steam account."},{name:"🍩 Dr Donut Money 1M",cat:"bundles",price:0.09,img:"channels4_profile.jpg",emoji:"🍩",rating:4.3,desc:"In-game currency."}];
+// ========== PRODUCTS (original + newly added from images) ==========
+const productsEUR = [
+    // --- ORIGINAL PRODUCTS (keep all) ---
+    {name:"🦀 Rust",cat:"games",price:4.99,img:"header.jpg",emoji:"🦀",discount:15,trending:true,rating:4.8,desc:"Survival game with intense PvP and base building."},
+    {name:"🌲 The Forest",cat:"games",price:1.99,img:"theforest.jpg",emoji:"🌲",rating:4.5,desc:"Craft, build, and survive in a mysterious forest."},
+    {name:"⚡ Full Access Rust",cat:"games",price:14.99,img:"header.jpg",emoji:"⚡",rating:4.9,desc:"Premium Rust account with full access and bonuses."},
+    {name:"🚀 Arc Raiders",cat:"games",price:4.49,img:"images.jpg",emoji:"🚀",rating:4.2,desc:"Sci-fi third-person shooter with massive raids."},
+    {name:"🧟 DayZ",cat:"games",price:3.49,img:"dayz.jpg",emoji:"🧟",rating:4.7,desc:"Hardcore zombie survival."},
+    {name:"🏎️ GTA V Steam",cat:"games",price:4.99,img:"gtav.jpg",emoji:"🏎️",discount:10,trending:true,rating:5.0,desc:"The legendary open-world crime saga."},
+    {name:"🚗 BeamNG.drive",cat:"games",price:3.99,img:"beamngdrive.jpg",emoji:"🚗",rating:4.6,desc:"Realistic soft-body physics driving simulator."},
+    {name:"🏁 Forza Horizon 5",cat:"games",price:3.49,img:"kaosk.jpg",emoji:"🏁",rating:4.9,desc:"Open-world racing in vibrant Mexico."},
+    {name:"🌲 Sons of The Forest",cat:"games",price:2.49,img:"sotf.jpg",emoji:"🌲",rating:4.8,desc:"Sequel to the hit survival horror crafting game."},
+    {name:"⛏️ Minecraft Java",cat:"games",price:7.99,img:"minecraft.png",emoji:"⛏️",rating:5.0,desc:"The ultimate sandbox block-building adventure."},
+    {name:"🎮 Cyberpunk 2077",cat:"games",price:2.49,img:"cyberpunk.png",emoji:"🎮",discount:20,rating:4.4,desc:"Futuristic open-world RPG."},
+    {name:"📅 Schedule I",cat:"games",price:2.99,img:"schedule1.png",emoji:"📅",rating:4.1,desc:"Strategic scheduling simulation."},
+    {name:"🛶 Raft",cat:"games",price:2.49,img:"header.png",emoji:"🛶",rating:4.5,desc:"Survive on a raft."},
+    {name:"👽 Among Us",cat:"games",price:1.99,img:"amongus.png",emoji:"👽",rating:4.3,desc:"Multiplayer social deduction."},
+    {name:"🚛 Euro Truck Sim 2",cat:"games",price:3.49,img:"maxresdefault.png",emoji:"🚛",rating:4.7,desc:"Drive across Europe."},
+    {name:"🛒 Supermarket Simulator",cat:"games",price:2.99,img:"headekr.png",emoji:"🛒",rating:4.2,desc:"Run your own supermarket."},
+    {name:"⚔️ Mortal Kombat 1",cat:"games",price:2.99,img:"klll.png",emoji:"⚔️",rating:4.6,desc:"Brutal fighting game."},
+    {name:"🔫 Rainbow Six Siege",cat:"games",price:1.49,img:"lk.png",emoji:"🔫",rating:4.5,desc:"Tactical FPS."},
+    {name:"🧟 Resident Evil Village",cat:"games",price:4.99,img:"NMu5EEmFLFUsuzOW4jGw2KOj.png",emoji:"🧟",rating:4.8,desc:"Survival horror masterpiece."},
+    {name:"⚽ FC 25",cat:"games",price:3.49,img:"afgghj.png",emoji:"⚽",discount:5,rating:4.4,desc:"Latest football simulation."},
+    {name:"⚽ FC 26",cat:"games",price:19.99,img:"maxresdefault__2_.png",emoji:"⚽",rating:4.7,desc:"Next-gen football."},
+    {name:"🦸 Marvel Rivals",cat:"games",price:1.49,img:"images.png",emoji:"🦸",rating:4.3,desc:"Superhero team-based action."},
+    {name:"🎮 Discord Nitro",cat:"subscriptions",price:0.66,img:"nitro.png",emoji:"🎮",rating:4.8,desc:"Premium Discord features."},
+    {name:"📺 Netflix Lifetime",cat:"subscriptions",price:5.49,img:"netflix_vx8r.jpg",emoji:"📺",discount:10,rating:4.7,desc:"Lifetime Netflix access."},
+    {name:"🎵 Spotify Premium 3M",cat:"subscriptions",price:3.99,img:"spotify-logo-zoom-s.png",emoji:"🎵",rating:4.9,desc:"3 months ad-free music."},
+    {name:"📹 YouTube Premium 1M",cat:"subscriptions",price:5.99,img:"YTP.png",emoji:"📹",rating:4.8,desc:"1 month YouTube without ads."},
+    {name:"🤖 ChatGPT Plus",cat:"subscriptions",price:2.99,img:"Chat-GPT-logo.png",emoji:"🤖",rating:4.9,desc:"Premium AI assistant."},
+    {name:"📺 Disney+ Lifetime",cat:"subscriptions",price:4.99,img:"asdasdasd.png",emoji:"📺",rating:4.6,desc:"Lifetime Disney+ access."},
+    {name:"🔒 NordVPN Lifetime",cat:"subscriptions",price:2.49,img:"imajjhges.png",emoji:"🔒",discount:15,rating:4.8,desc:"Secure VPN lifetime."},
+    {name:"✂️ CapCut Pro",cat:"subscriptions",price:1.99,img:"capcut-pro-12-men-3362289.png",emoji:"✂️",rating:4.5,desc:"Professional video editing."},
+    {name:"💰 Robux 2.5k-5k",cat:"robux",price:8.49,img:"public.png",emoji:"💰",rating:4.7,desc:"Roblox currency pack."},
+    {name:"💰 Robux 5k-10k",cat:"robux",price:10.99,img:"public.png",emoji:"💰",rating:4.7,desc:"Medium Robux bundle."},
+    {name:"💰 Robux 10k-15k",cat:"robux",price:15.99,img:"public.png",emoji:"💰",rating:4.8,desc:"Large Robux pack."},
+    {name:"💰 Robux 15k-30k",cat:"robux",price:18.49,img:"public.png",emoji:"💰",rating:4.8,desc:"Extra-large Robux bundle."},
+    {name:"💰 Robux 50k+",cat:"robux",price:35.99,img:"public.png",emoji:"💰",discount:8,rating:4.9,desc:"Ultimate Robux pack."},
+    {name:"⚙️ FiveM Ready Account",cat:"fivem",price:0.99,img:"Fivem.jpg",emoji:"⚙️",rating:4.5,desc:"Pre-configured FiveM account."},
+    {name:"📦 FiveM Bundle",cat:"fivem",price:2.49,img:"Fivem.jpg",emoji:"📦",rating:4.6,desc:"Essential FiveM scripts."},
+    {name:"👑 Valk Menu (3D)",cat:"fivem",price:3.49,img:"Fivem.jpg",emoji:"👑",rating:4.7,desc:"Valk menu 3-day access."},
+    {name:"👑 Valk Menu (1W)",cat:"fivem",price:6.49,img:"Fivem.jpg",emoji:"👑",rating:4.7,desc:"Valk menu 1-week access."},
+    {name:"👑 Valk Menu (1M)",cat:"fivem",price:13.49,img:"Fivem.jpg",emoji:"👑",rating:4.8,desc:"Valk menu 1-month access."},
+    {name:"👑 Valk Menu (Lifetime)",cat:"fivem",price:26.49,img:"Fivem.jpg",emoji:"👑",rating:4.9,desc:"Valk menu lifetime."},
+    {name:"🔑 Keyser (3D)",cat:"fivem",price:6.49,img:"Fivem.jpg",emoji:"🔑",rating:4.6,desc:"Keyser menu 3-day."},
+    {name:"🔑 Keyser (1W)",cat:"fivem",price:11.49,img:"Fivem.jpg",emoji:"🔑",rating:4.7,desc:"Keyser menu 1-week."},
+    {name:"🔑 Keyser (1M)",cat:"fivem",price:15.49,img:"Fivem.jpg",emoji:"🔑",rating:4.7,desc:"Keyser menu 1-month."},
+    {name:"🔑 Keyser (Lifetime)",cat:"fivem",price:36.49,img:"Fivem.jpg",emoji:"🔑",rating:4.8,desc:"Keyser menu lifetime."},
+    {name:"⚡ Ryven (3D)",cat:"fivem",price:8.49,img:"Fivem.jpg",emoji:"⚡",rating:4.7,desc:"Ryven menu 3-day."},
+    {name:"⚡ Ryven (1M)",cat:"fivem",price:11.49,img:"Fivem.jpg",emoji:"⚡",rating:4.7,desc:"Ryven menu 1-month."},
+    {name:"⚡ Ryven (3M)",cat:"fivem",price:19.49,img:"Fivem.jpg",emoji:"⚡",rating:4.8,desc:"Ryven menu 3-month."},
+    {name:"⚡ Ryven (Lifetime)",cat:"fivem",price:31.49,img:"Fivem.jpg",emoji:"⚡",rating:4.8,desc:"Ryven menu lifetime."},
+    {name:"📦 Epic Bundle (20-50)",cat:"bundles",price:0.99,img:"sdfgfgsdfgd.png",emoji:"📦",rating:4.9,desc:"Curated bundle 20-50 items."},
+    {name:"📦 Epic Bundle (50-100)",cat:"bundles",price:1.49,img:"sdfgfgsdfgd.png",emoji:"📦",rating:4.9,desc:"Curated bundle 50-100 items."},
+    {name:"📦 Epic Bundle (350+)",cat:"bundles",price:4.99,img:"sdfgfgsdfgd.png",emoji:"📦",discount:12,rating:5.0,desc:"Massive bundle 350+ items."},
+    {name:"🎲 Mystery Steam Acc",cat:"bundles",price:0.49,img:"image.png",emoji:"🎲",rating:4.4,desc:"Random Steam account."},
+    {name:"🍩 Dr Donut Money 1M",cat:"bundles",price:0.09,img:"channels4_profile.jpg",emoji:"🍩",rating:4.3,desc:"In-game currency."},
+    
+    // ========== NEWLY ADDED MISSING PRODUCTS (from images) ==========
+    // Brawl Stars (multiple tiers)
+    {name:"⭐ Brawl Stars 5k-10k Trophies",cat:"games",price:7.49,img:"brawlstars.png",emoji:"⭐",rating:4.6,desc:"Brawl Stars account with 5,000–10,000 trophies."},
+    {name:"⭐ Brawl Stars 10k-18k Trophies",cat:"games",price:14.49,img:"brawlstars.png",emoji:"⭐",rating:4.7,desc:"Brawl Stars account with 10,000–18,000 trophies."},
+    {name:"⭐ Brawl Stars 20k-30k Trophies",cat:"games",price:22.49,img:"brawlstars.png",emoji:"⭐",rating:4.8,desc:"Brawl Stars account with 20,000–30,000 trophies."},
+    {name:"⭐ Brawl Stars 30k-50k Trophies",cat:"games",price:37.49,img:"brawlstars.png",emoji:"⭐",rating:4.9,desc:"Brawl Stars account with 30,000–50,000 trophies."},
+    {name:"⭐ Brawl Stars 1k-3k Trophies",cat:"games",price:5.49,img:"brawlstars.png",emoji:"⭐",rating:4.5,desc:"Brawl Stars account with 1,000–3,000 trophies."},
+    {name:"⭐ Brawl Stars 3k-5k Trophies",cat:"games",price:9.99,img:"brawlstars.png",emoji:"⭐",rating:4.5,desc:"Brawl Stars account with 3,000–5,000 trophies."},
+    {name:"⭐ Brawl Stars 5k-8k Trophies",cat:"games",price:16.99,img:"brawlstars.png",emoji:"⭐",rating:4.6,desc:"Brawl Stars account with 5,000–8,000 trophies."},
+    {name:"⭐ Brawl Stars 8k-10k Trophies",cat:"games",price:27.99,img:"brawlstars.png",emoji:"⭐",rating:4.7,desc:"Brawl Stars account with 8,000–10,000 trophies."},
+    {name:"⭐ Brawl Stars 10k-12.5k Trophies",cat:"games",price:39.99,img:"brawlstars.png",emoji:"⭐",rating:4.8,desc:"Brawl Stars account with 10,000–12,500 trophies."},
+    
+    // Valorant VP inventories
+    {name:"🔫 Valorant 1k-3k VP",cat:"games",price:23.99,img:"Valorant.jpg",emoji:"🔫",rating:4.7,desc:"Valorant account with 1,000–3,000 VP inventory."},
+    {name:"🔫 Valorant 3k-5k VP",cat:"games",price:33.99,img:"Valorant.jpg",emoji:"🔫",rating:4.7,desc:"Valorant account with 3,000–5,000 VP inventory."},
+    {name:"🔫 Valorant 5k-7k VP",cat:"games",price:49.99,img:"Valorant.jpg",emoji:"🔫",rating:4.8,desc:"Valorant account with 5,000–7,000 VP inventory."},
+    {name:"🔫 Valorant 7k-12k VP",cat:"games",price:69.99,img:"Valorant.jpg",emoji:"🔫",rating:4.8,desc:"Valorant account with 7,000–12,000 VP inventory."},
+    {name:"🔫 Valorant 15k-25k VP",cat:"games",price:83.99,img:"Valorant.jpg",emoji:"🔫",rating:4.9,desc:"Valorant account with 15,000–25,000 VP inventory."},
+    
+    // Clash Royale (generic account)
+    {name:"👑 Clash Royale TOP Account",cat:"games",price:1.49,img:"clashroyale.png",emoji:"👑",rating:4.4,desc:"High-level Clash Royale account with cards & trophies."},
+    
+    // Fortnite skins bundles
+    {name:"🎮 Fortnite 10-20 Skins",cat:"games",price:1.99,img:"fortnite.jpg",emoji:"🎮",rating:4.5,desc:"Fortnite account with 10–20 skins."},
+    {name:"🎮 Fortnite 20-50 Skins",cat:"games",price:2.99,img:"fortnite.jpg",emoji:"🎮",rating:4.6,desc:"Fortnite account with 20–50 skins."},
+    {name:"🎮 Fortnite 60-150 Skins",cat:"games",price:8.99,img:"fortnite.jpg",emoji:"🎮",rating:4.7,desc:"Fortnite account with 60–150 skins."},
+    {name:"🎮 Fortnite 200-400 Skins",cat:"games",price:21.99,img:"fortnite.jpg",emoji:"🎮",rating:4.8,desc:"Fortnite account with 200–400 skins."},
+    
+    // Social followers (Instagram & Twitch)
+    {name:"📸 Instagram 1000+ Followers",cat:"subscriptions",price:9.99,img:"instafolowers.jpg",emoji:"📸",rating:4.3,desc:"Get 1000+ real Instagram followers."},
+    {name:"🎥 Twitch Account 2000+ Followers",cat:"subscriptions",price:2.19,img:"twitchfolo.png",emoji:"🎥",rating:4.2,desc:"Twitch account with 2000+ followers."},
+    {name:"🎥 Twitch Account 9000+ Followers",cat:"subscriptions",price:3.99,img:"twitchfolo.png",emoji:"🎥",rating:4.3,desc:"Twitch account with 9000+ followers."},
+    
+    // TOD TV
+    {name:"📺 TOD TV Subscription",cat:"subscriptions",price:1.49,img:"tod.png",emoji:"📺",rating:4.0,desc:"Premium TOD TV streaming access."},
+    
+    // Crunchyroll
+    {name:"🍥 Crunchyroll FAN",cat:"subscriptions",price:1.49,img:"crunchyroll.png",emoji:"🍥",rating:4.5,desc:"Crunchyroll Fan tier – ad-free anime."},
+    {name:"🍥 Crunchyroll MEGA FAN",cat:"subscriptions",price:1.99,img:"crunchyroll.png",emoji:"🍥",rating:4.6,desc:"Crunchyroll Mega Fan – offline viewing & more."},
+    
+    // IPVanish
+    {name:"🔒 IPVanish VPN",cat:"subscriptions",price:2.49,img:"ipvanish.png",emoji:"🔒",rating:4.4,desc:"Secure & fast VPN service."},
+    
+    // HBO Max
+    {name:"🎬 HBO Max Subscription",cat:"subscriptions",price:3.99,img:"hbo.png",emoji:"🎬",rating:4.6,desc:"Stream HBO Max exclusive series & movies."},
+    
+    // Paramount+
+    {name:"📺 Paramount+ EU",cat:"subscriptions",price:1.49,img:"paramount.png",emoji:"📺",rating:4.3,desc:"Paramount+ subscription for Europe."},
+    {name:"📺 Paramount+ USA",cat:"subscriptions",price:1.49,img:"paramount.png",emoji:"📺",rating:4.3,desc:"Paramount+ subscription for USA."},
+    
+    // Molotov TV
+    {name:"📺 Molotov TV",cat:"subscriptions",price:1.49,img:"molotov.png",emoji:"📺",rating:4.2,desc:"French live TV and replay service."},
+    
+    // CDA Premium
+    {name:"🎬 CDA Premium",cat:"subscriptions",price:2.49,img:"cda.png",emoji:"🎬",rating:4.3,desc:"Premium access to CDA (Polish streaming)."}
+];
 
 // Cart & state
 let cart=[],currentCurrency="eur",currentFilter="all",currentSearch="",currentSort="default",displayedCount=24;
@@ -406,13 +513,13 @@ function renderShop(){
     document.getElementById("loadMoreBtn").style.display=prods.length>displayedCount?"block":"none";
 }
 
-// Purchase history
+// Purchase history (same as before)
 function loadPurchaseHistory(){const s=localStorage.getItem('purchaseHistory_'+(currentUser||'guest'));purchaseHistory=s?JSON.parse(s):[];renderOrdersPanel()}
 function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHistory_'+currentUser,JSON.stringify(purchaseHistory))}
 function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
 function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
 
-// Auth
+// Auth & payment (unchanged, keep as before)
 function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
 function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
 async function modalRegister(){
@@ -451,8 +558,6 @@ async function updateBalanceDisplay(){
     else { logout(); showToastMsg('Session expired',true); }
 }
 async function refreshBalance(){await updateBalanceDisplay();showToastMsg('Balance refreshed')}
-
-// Payment
 function launchConfetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.animationDelay=Math.random()*0.5+'s';c.style.background=['#6366f1','#facc15','#22c55e','#5865F2','#8b5cf6'][Math.floor(Math.random()*5)];document.body.appendChild(c);setTimeout(()=>c.remove(),2500)}}
 async function payWithBalance(){
     if(!currentUser){showToastMsg('Please login first',true);openLoginModal();return}if(cart.length===0){showToastMsg('Cart empty',true);return}const payBtn=document.getElementById('payWithBalanceBtn');if(!payBtn||payCooldown){showToastMsg('Wait 30 seconds',true);return}
@@ -475,8 +580,6 @@ async function payWithBalance(){
         clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true);
     }
 }
-
-// Feedback
 async function submitFeedback(){
     if(feedbackCooldown){showToastMsg('Wait before sending again',true);return}const name=document.getElementById('feedbackName').value.trim(),msg=document.getElementById('feedbackMsg').value.trim();if(!msg){showToastMsg('Enter a message',true);return}const btn=document.getElementById('feedbackSubmitBtn');btn.disabled=true;feedbackCooldown=true;const orig=btn.innerHTML;btn.innerHTML='Sending...';let sec=60;const timer=document.getElementById('feedbackTimer');timer.textContent=`You can send again in ${sec}s`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);timer.textContent='';btn.disabled=false;feedbackCooldown=false;btn.innerHTML=orig}else timer.textContent=`You can send again in ${sec}s`},1000);
     const res=await apiCall('feedback',{name:name||'Anonymous',message:msg});
@@ -484,7 +587,6 @@ async function submitFeedback(){
     else showToastMsg(res.message||'Failed',true);
 }
 
-// Init
 function init(){
     applySettings();loadCart();document.getElementById('liveClock').textContent=new Date().toLocaleTimeString();
     document.getElementById("searchInput").addEventListener("input",e=>{currentSearch=e.target.value;displayedCount=24;document.getElementById("clearSearchBtn").style.display=currentSearch?'inline-block':'none';renderShop()});

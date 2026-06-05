@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>🍪 Cookie's Shop | Premium Gaming Store</title>
+    
+    <!-- Open Graph / Social Media Thumbnail (REPLACE IMAGE URL WITH YOUR ACTUAL THUMBNAIL) -->
+    <meta property="og:title" content="Cookie's Shop – Premium Gaming Store" />
+    <meta property="og:description" content="Buy games, subscriptions, Robux, FiveM tools and more with instant delivery." />
+    <meta property="og:image" content="https://cookie-shop.github.io/Add a heading.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://cookie-shop.github.io" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cookie's Shop – Premium Gaming Store" />
+    <meta name="twitter:description" content="Buy games, subscriptions, Robux, FiveM tools and more with instant delivery." />
+    <meta name="twitter:image" content="https://cookie-shop.github.io/Add a heading.png" />
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -357,7 +371,7 @@ function toggleAnimations(){const o=document.getElementById('animationsToggle').
 function resetSettings(){localStorage.setItem('darkMode','true');localStorage.setItem('particlesOn','true');localStorage.setItem('animationsOn','true');applySettings();closeSettingsModal();showToastMsg('Settings reset')}
 setInterval(()=>document.getElementById('liveClock').textContent=new Date().toLocaleTimeString(),1000);
 
-// ========== PRODUCTS (original + newly added from images) ==========
+// ========== PRODUCTS (final corrected) ==========
 const productsEUR = [
     // --- ORIGINAL PRODUCTS ---
     {name:"🦀 Rust",cat:"games",price:4.99,img:"header.jpg",emoji:"🦀",discount:15,trending:true,rating:4.8,desc:"Survival game with intense PvP and base building."},
@@ -415,14 +429,14 @@ const productsEUR = [
     {name:"🎲 Mystery Steam Acc",cat:"bundles",price:0.49,img:"image.png",emoji:"🎲",rating:4.4,desc:"Random Steam account."},
     {name:"🍩 Dr Donut Money 1M",cat:"bundles",price:0.09,img:"channels4_profile.jpg",emoji:"🍩",rating:4.3,desc:"In-game currency."},
 
-    // ========== CLASH ROYALE (5 tiers from first image) ==========
+    // ========== CLASH ROYALE (5 tiers) ==========
     {name:"👑 Clash Royale 1,000-3,000 Trophies", cat:"games", price:5.49, img:"clashroyale.png", emoji:"👑", rating:4.5, desc:"Clash Royale account with 1,000–3,000 trophies."},
     {name:"👑 Clash Royale 3,000-5,000 Trophies", cat:"games", price:9.99, img:"clashroyale.png", emoji:"👑", rating:4.6, desc:"Clash Royale account with 3,000–5,000 trophies."},
     {name:"👑 Clash Royale 5,000-8,000 Trophies", cat:"games", price:16.99, img:"clashroyale.png", emoji:"👑", rating:4.7, desc:"Clash Royale account with 5,000–8,000 trophies."},
     {name:"👑 Clash Royale 8,000-10,000 Trophies", cat:"games", price:27.99, img:"clashroyale.png", emoji:"👑", rating:4.8, desc:"Clash Royale account with 8,000–10,000 trophies."},
     {name:"👑 Clash Royale 10,000-12,500 Trophies", cat:"games", price:39.99, img:"clashroyale.png", emoji:"👑", rating:4.9, desc:"Clash Royale account with 10,000–12,500 trophies."},
 
-    // ========== BRAWL STARS (4 tiers from second image) ==========
+    // ========== BRAWL STARS (4 tiers) ==========
     {name:"⭐ Brawl Stars 5,000-10,000 Trophies", cat:"games", price:7.49, img:"brawlstars.png", emoji:"⭐", rating:4.6, desc:"Brawl Stars account with 5,000–10,000 trophies."},
     {name:"⭐ Brawl Stars 10,000-18,000 Trophies", cat:"games", price:14.49, img:"brawlstars.png", emoji:"⭐", rating:4.7, desc:"Brawl Stars account with 10,000–18,000 trophies."},
     {name:"⭐ Brawl Stars 20,000-30,000 Trophies", cat:"games", price:22.49, img:"brawlstars.png", emoji:"⭐", rating:4.8, desc:"Brawl Stars account with 20,000–30,000 trophies."},
@@ -499,13 +513,13 @@ function renderShop(){
     document.getElementById("loadMoreBtn").style.display=prods.length>displayedCount?"block":"none";
 }
 
-// Purchase history (same as before)
+// Purchase history
 function loadPurchaseHistory(){const s=localStorage.getItem('purchaseHistory_'+(currentUser||'guest'));purchaseHistory=s?JSON.parse(s):[];renderOrdersPanel()}
 function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHistory_'+currentUser,JSON.stringify(purchaseHistory))}
 function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
 function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
 
-// Auth & payment (unchanged, keep as before)
+// Auth
 function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
 function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
 async function modalRegister(){

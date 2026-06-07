@@ -5,21 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>🍪 Cookie's Shop | Premium Gaming Store</title>
     
-    <!-- Open Graph / Social Media Thumbnail – optimized for Discord / Twitter -->
-<!-- Open Graph / Social Media Thumbnail - Versioned for Cache Busting -->
-<meta property="og:title" content="Cookie's Shop – Premium Games & Subscriptions" />
-<meta property="og:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
-<!-- The key change is adding '?v=2' to the image URL -->
-<meta property="og:image" content="https://cookie-shop.github.io/67.png?v=3" />
-<meta property="og:image:width" content="1920" />
-<meta property="og:image:height" content="1080" />
-<meta property="og:url" content="https://cookie-shop.github.io" />
-<meta property="og:type" content="website" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Cookie's Shop – Premium Games & Subscriptions" />
-<meta name="twitter:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
-<!-- The Twitter image URL also needs to be updated -->
-<meta name="twitter:image" content="https://cookie-shop.github.io/67.png?v=3" />
+    <!-- Open Graph / Social Media Thumbnail -->
+    <meta property="og:title" content="Cookie's Shop – Premium Games & Subscriptions" />
+    <meta property="og:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
+    <meta property="og:image" content="https://cookie-shop.github.io/67.png?v=3" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:url" content="https://cookie-shop.github.io" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cookie's Shop – Premium Games & Subscriptions" />
+    <meta name="twitter:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
+    <meta name="twitter:image" content="https://cookie-shop.github.io/67.png?v=3" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -108,6 +105,112 @@
         .current-price { font-size:1.4rem; font-weight:800; }
         .old-price { color:var(--muted); text-decoration:line-through; font-size:0.9rem; }
         .buy-btn { width:100%; border:none; padding:12px; border-radius:16px; background:var(--btn-gradient); color:white; font-weight:700; cursor:pointer; }
+
+        /* Reputation / Reviews Section */
+        .reputation-section {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 28px;
+            padding: 30px;
+            border: 1px solid var(--border);
+        }
+        .reputation-section .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .reputation-section .section-title span {
+            color: var(--gold);
+            font-size: 0.85rem;
+            background: rgba(250,204,21,0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .review-card {
+            background: var(--card-light);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: 0.2s ease;
+        }
+        .review-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99,102,241,0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .review-user h4 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .review-badge {
+            font-size: 0.7rem;
+            color: #86efac;
+            background: rgba(34,197,94,0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .review-content p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            color: var(--text);
+            font-style: italic;
+        }
+        .review-product {
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: rgba(99,102,241,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+        .proof-image {
+            margin-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 14px;
+        }
+        .proof-image a {
+            display: block;
+            text-decoration: none;
+        }
+        .proof-image img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .proof-image img:hover {
+            opacity: 0.85;
+            border-color: var(--primary);
+        }
+        .proof-label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 8px;
+        }
 
         .feedback-section { margin-top:40px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:24px; padding:30px; }
         .feedback-section textarea, .feedback-section input { width:100%; padding:12px 16px; border-radius:16px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.06); color:white; font-size:0.9rem; outline:none; margin-bottom:10px; }
@@ -204,6 +307,8 @@
             .footer-content { grid-template-columns: 1fr 1fr; gap: 20px; }
             .cart-panel { width: 100%; right: -100%; }
             .modal-content { padding: 20px; }
+            .reviews-grid { grid-template-columns: 1fr; }
+            .reputation-section { padding: 20px; }
         }
         @media (max-width:500px) {
             html { font-size: 12px; }
@@ -232,7 +337,7 @@
 
 <section class="hero">
     <div class="hero-left">
-        <div class="hero-tag">🚀 70+ Premium Products Available Now</div>
+        <div class="hero-tag">🚀 75+ Premium Products Available Now</div>
         <h1>Level Up Your <span class="gradient-text">Gaming Library</span></h1>
         <p>Discover premium PC games, subscriptions, Robux, FiveM tools & exclusive bundles with instant digital delivery, secure payments, and friendly staff support.</p>
         <div class="hero-buttons">
@@ -246,7 +351,7 @@
     <div class="controls-bar">
         <div class="payment-methods">💳 PayPal | 🏦 Swedbank | 🏦 SEB | 🏦 Luminor | ₿ BTC | ₿ ETH</div>
         <div class="search-wrapper">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search 70+ products...">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search 75+ products...">
             <button class="clear-search" id="clearSearchBtn">✖️</button>
         </div>
         <select id="sortSelect" class="filter-select">
@@ -262,10 +367,77 @@
 
 <main class="container">
     <div class="tabs" id="tabsContainer">
-        <div class="tab active" data-filter="all">✨ All (70+)</div><div class="tab" data-filter="games">🎮 Games</div><div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
+        <div class="tab active" data-filter="all">✨ All (75+)</div><div class="tab" data-filter="games">🎮 Games</div><div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
         <div class="tab" data-filter="robux">💰 Robux</div><div class="tab" data-filter="fivem">⚙️ FiveM</div><div class="tab" data-filter="bundles">📦 Bundles</div>
     </div>
     <section id="games"><div class="section-title"><h2>All Products</h2></div><div class="games-grid" id="gamesGrid"></div><div id="loadMoreBtn" style="text-align:center;margin-top:30px;"><button class="secondary-btn" onclick="loadMore()">Load More ➕</button></div></section>
+    
+    <!-- REPUTATION / REVIEWS SECTION WITH PROOF IMAGES -->
+    <div class="reputation-section">
+        <div class="section-title">
+            <h2>⭐ Customer Reputation</h2>
+            <span>Trusted by 500+ gamers</span>
+        </div>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-user">
+                        <h4>tuco</h4>
+                        <div class="review-badge">+rep ✅</div>
+                    </div>
+                </div>
+                <div class="review-content">
+                    <p>"Robux – fast delivery, great price! Will buy again."</p>
+                    <div class="review-product">🛒 Product: Robux</div>
+                    <div class="proof-image">
+                        <a href="tuco.png" target="_blank">
+                            <img src="tuco.png" alt="Proof screenshot" onerror="this.src='https://placehold.co/600x400/1e293b/818cf8?text=Click+to+view+proof'">
+                            <span class="proof-label">📸 Click to view proof</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-user">
+                        <h4>kaspisijus</h4>
+                        <div class="review-badge">+rep ✅</div>
+                    </div>
+                </div>
+                <div class="review-content">
+                    <p>"Discord Nitro – WORTH BUYING! Best price and instant delivery."</p>
+                    <div class="review-product">🛒 Product: Discord Nitro</div>
+                    <div class="proof-image">
+                        <a href="kaspisijus.png" target="_blank">
+                            <img src="kaspisijus.png" alt="Proof screenshot" onerror="this.src='https://placehold.co/600x400/1e293b/818cf8?text=Click+to+view+proof'">
+                            <span class="proof-label">📸 Click to view proof</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-user">
+                        <h4>kaspisijus</h4>
+                        <div class="review-badge">+rep ✅</div>
+                    </div>
+                </div>
+                <div class="review-content">
+                    <p>"Got Forza Horizon 5 Steam account – working perfectly, highly recommend!"</p>
+                    <div class="review-product">🛒 Product: Forza Horizon 5</div>
+                    <div class="proof-image">
+                        <a href="kaspisijus2.png" target="_blank">
+                            <img src="kaspisijus2.png" alt="Proof screenshot" onerror="this.src='https://placehold.co/600x400/1e293b/818cf8?text=Click+to+view+proof'">
+                            <span class="proof-label">📸 Click to view proof</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="orders-panel"><div class="orders-title">📋 YOUR PURCHASED ITEMS</div><div id="ordersList"></div></div>
     <section id="feedback" class="feedback-section">
         <div class="section-title"><h2>💬 Friendly Staff & Feedback</h2></div>
@@ -374,7 +546,7 @@ function toggleAnimations(){const o=document.getElementById('animationsToggle').
 function resetSettings(){localStorage.setItem('darkMode','true');localStorage.setItem('particlesOn','true');localStorage.setItem('animationsOn','true');applySettings();closeSettingsModal();showToastMsg('Settings reset')}
 setInterval(()=>document.getElementById('liveClock').textContent=new Date().toLocaleTimeString(),1000);
 
-// ========== PRODUCTS (final corrected) ==========
+// ========== PRODUCTS ==========
 const productsEUR = [
     // --- ORIGINAL PRODUCTS ---
     {name:"🦀 Rust",cat:"games",price:4.99,img:"header.jpg",emoji:"🦀",discount:15,trending:true,rating:4.8,desc:"Survival game with intense PvP and base building."},
@@ -472,10 +644,17 @@ const productsEUR = [
     {name:"📺 Paramount+ EU", cat:"subscriptions", price:1.49, img:"paramount.png", emoji:"📺", rating:4.3, desc:"Paramount+ subscription for Europe."},
     {name:"📺 Paramount+ USA", cat:"subscriptions", price:1.49, img:"paramount.png", emoji:"📺", rating:4.3, desc:"Paramount+ subscription for USA."},
     {name:"📺 Molotov TV", cat:"subscriptions", price:1.49, img:"molotov.png", emoji:"📺", rating:4.2, desc:"French live TV and replay service."},
-    {name:"🎬 CDA Premium", cat:"subscriptions", price:2.49, img:"cda.png", emoji:"🎬", rating:4.3, desc:"Premium access to CDA (Polish streaming)."}
+    {name:"🎬 CDA Premium", cat:"subscriptions", price:2.49, img:"cda.png", emoji:"🎬", rating:4.3, desc:"Premium access to CDA (Polish streaming)."},
+
+    // ========== NEW GAMES ADDED ==========
+    {name:"🔫 Arma Reforger", cat:"games", price:2.49, img:"armareforger.jpg", emoji:"🔫", rating:4.6, desc:"Realistic military sandbox shooter with immersive combat and large-scale battles."},
+    {name:"🎨 Wallpaper Engine", cat:"games", price:1.49, img:"wallpaperengine.jpg", emoji:"🎨", rating:4.8, desc:"Animated wallpapers and interactive backgrounds for your PC desktop."},
+    {name:"🎯 Crosshair X", cat:"games", price:0.99, img:"crosshair-x.png", emoji:"🎯", rating:4.5, desc:"Customizable crosshair overlay for any FPS game."},
+    {name:"⚔️ God of War", cat:"games", price:2.99, img:"godofwar.jpg", emoji:"⚔️", rating:4.9, desc:"Epic action-adventure with Norse mythology and Kratos."},
+    {name:"👮 Contraband Police", cat:"games", price:2.99, img:"contrabandpolice.jpg", emoji:"👮", rating:4.7, desc:"Border inspection simulator with detective elements and smuggling mechanics."}
 ];
 
-// Cart & state (unchanged, kept from previous)
+// Cart & state
 let cart=[],currentCurrency="eur",currentFilter="all",currentSearch="",currentSort="default",displayedCount=24;
 const rates={eur:1,usd:1.173,gbp:0.85};
 function getCurrencySymbol(){return currentCurrency==="eur"?"€":currentCurrency==="usd"?"$":"£"}
@@ -516,12 +695,13 @@ function renderShop(){
     document.getElementById("loadMoreBtn").style.display=prods.length>displayedCount?"block":"none";
 }
 
-// Purchase history, auth, payment functions (unchanged – same as previous working version)
+// Purchase history
 function loadPurchaseHistory(){const s=localStorage.getItem('purchaseHistory_'+(currentUser||'guest'));purchaseHistory=s?JSON.parse(s):[];renderOrdersPanel()}
 function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHistory_'+currentUser,JSON.stringify(purchaseHistory))}
 function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
 function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
 
+// Auth
 function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
 function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
 async function modalRegister(){

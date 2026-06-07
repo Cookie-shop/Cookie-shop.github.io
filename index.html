@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>🍪 Cookie's Shop | Premium Gaming Store</title>
     
-    <!-- Open Graph / Social Media Thumbnail (UPDATED: using 67.png) -->
-    <meta property="og:title" content="Cookie's Shop – Premium Gaming Store" />
-    <meta property="og:description" content="Buy games, subscriptions, Robux, FiveM tools and more with instant delivery." />
-    <meta property="og:image" content="https://cookie-shop.github.io/67.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:url" content="https://cookie-shop.github.io" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Cookie's Shop – Premium Gaming Store" />
-    <meta name="twitter:description" content="Buy games, subscriptions, Robux, FiveM tools and more with instant delivery." />
-    <meta name="twitter:image" content="https://cookie-shop.github.io/67.png" />
+    <!-- Open Graph / Social Media Thumbnail – optimized for Discord / Twitter -->
+<!-- Open Graph / Social Media Thumbnail - Versioned for Cache Busting -->
+<meta property="og:title" content="Cookie's Shop – Premium Games & Subscriptions" />
+<meta property="og:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
+<!-- The key change is adding '?v=2' to the image URL -->
+<meta property="og:image" content="https://cookie-shop.github.io/67.png?v=3" />
+<meta property="og:image:width" content="1920" />
+<meta property="og:image:height" content="1080" />
+<meta property="og:url" content="https://cookie-shop.github.io" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Cookie's Shop – Premium Games & Subscriptions" />
+<meta name="twitter:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
+<!-- The Twitter image URL also needs to be updated -->
+<meta name="twitter:image" content="https://cookie-shop.github.io/67.png?v=3" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -472,7 +475,7 @@ const productsEUR = [
     {name:"🎬 CDA Premium", cat:"subscriptions", price:2.49, img:"cda.png", emoji:"🎬", rating:4.3, desc:"Premium access to CDA (Polish streaming)."}
 ];
 
-// Cart & state
+// Cart & state (unchanged, kept from previous)
 let cart=[],currentCurrency="eur",currentFilter="all",currentSearch="",currentSort="default",displayedCount=24;
 const rates={eur:1,usd:1.173,gbp:0.85};
 function getCurrencySymbol(){return currentCurrency==="eur"?"€":currentCurrency==="usd"?"$":"£"}
@@ -513,13 +516,12 @@ function renderShop(){
     document.getElementById("loadMoreBtn").style.display=prods.length>displayedCount?"block":"none";
 }
 
-// Purchase history
+// Purchase history, auth, payment functions (unchanged – same as previous working version)
 function loadPurchaseHistory(){const s=localStorage.getItem('purchaseHistory_'+(currentUser||'guest'));purchaseHistory=s?JSON.parse(s):[];renderOrdersPanel()}
 function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHistory_'+currentUser,JSON.stringify(purchaseHistory))}
 function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
 function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
 
-// Auth
 function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
 function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
 async function modalRegister(){

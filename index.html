@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,10 +15,6 @@
     <meta name="twitter:title" content="Cookie's Shop - Digital Gaming Store">
     <meta name="twitter:description" content="Browse digital gaming products and create a Discord ticket for checkout.">
     <meta name="twitter:image" content="https://cookie-shop.github.io/67.png?v=4">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>
         :root {
             color-scheme: dark;
@@ -68,7 +63,7 @@
             min-height: 100vh;
             background: var(--bg);
             color: var(--text);
-            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             overflow-x: hidden;
         }
 
@@ -520,7 +515,7 @@
 
         .shop-tools {
             position: sticky;
-            top: 111px;
+            top: 88px;
             z-index: 20;
             background: color-mix(in srgb, var(--bg) 86%, transparent);
             backdrop-filter: blur(16px);
@@ -620,6 +615,18 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 14px;
+        }
+
+        .load-more-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: 22px;
+        }
+
+        .load-more-btn {
+            min-height: 40px;
+            padding: 0 14px;
+            box-shadow: none;
         }
 
         .product-card {
@@ -1442,12 +1449,6 @@
     <a class="skip-link" href="#products">Skip to products</a>
 
     <header class="site-header">
-        <div class="topline">
-            <div class="topline-inner">
-                <span><strong>Cookie's Shop</strong> digital marketplace</span>
-                <span id="clock">Online now</span>
-            </div>
-        </div>
         <nav class="nav" aria-label="Main navigation">
             <a class="brand" href="#top" aria-label="Cookie's Shop home">
                 <span class="brand-mark" aria-hidden="true"></span>
@@ -1589,6 +1590,12 @@
                 <div class="shop-summary" id="shopSummary"></div>
                 <div class="empty-state" id="emptyState">No products match this search yet.</div>
                 <div class="product-grid" id="productGrid"></div>
+                <div class="load-more-wrap">
+                    <button class="secondary-btn load-more-btn" type="button" id="loadMoreButton">
+                        <i data-lucide="plus" class="icon" aria-hidden="true"></i>
+                        <span class="load-more-count">Load More</span>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -1974,6 +1981,8 @@
             search: "",
             sort: "featured",
             currency: localStorage.getItem("cookieCurrency") || "eur",
+            pageSize: 24,
+            visibleCount: 24,
             cart: [],
             currentUser: null,
             currentToken: null,
@@ -1986,7 +1995,7 @@
 
         function cacheElements() {
             [
-                "clock", "metricProducts", "categoryTabs", "productGrid", "shopSummary", "emptyState",
+                "clock", "metricProducts", "categoryTabs", "productGrid", "shopSummary", "emptyState", "loadMoreButton",
                 "searchInput", "clearSearch", "sortSelect", "currencySelect", "cartButton", "cartDrawer",
                 "drawerBackdrop", "closeCart", "cartItems", "cartTotal", "cartCount", "orderCopy",
                 "copyOrderButton", "clearCartButton", "payBalanceButton", "toast", "loginModal",
@@ -2047,6 +2056,7 @@
             el.categoryTabs.querySelectorAll("[data-category]").forEach((button) => {
                 button.addEventListener("click", () => {
                     state.activeCategory = button.dataset.category;
+                    state.visibleCount = state.pageSize;
                     renderTabs();
                     renderProducts();
                 });
@@ -2074,10 +2084,16 @@
 
         function renderProducts() {
             const result = getFilteredProducts();
+            const shown = result.slice(0, state.visibleCount);
+            const remaining = Math.max(result.length - shown.length, 0);
             el.metricProducts.textContent = `${products.length}+`;
-            el.shopSummary.textContent = `${result.length} product${result.length === 1 ? "" : "s"} shown in ${categoryLabel(state.activeCategory)}.`;
+            el.shopSummary.textContent = `Showing ${shown.length} of ${result.length} product${result.length === 1 ? "" : "s"} in ${categoryLabel(state.activeCategory)}.`;
             el.emptyState.style.display = result.length ? "none" : "block";
-            el.productGrid.innerHTML = result.map((product) => `
+            el.loadMoreButton.hidden = remaining === 0;
+            el.loadMoreButton.querySelector(".load-more-count").textContent = remaining > 0
+                ? `Load ${Math.min(state.pageSize, remaining)} More`
+                : "All Products Loaded";
+            el.productGrid.innerHTML = shown.map((product) => `
                 <article class="product-card">
                     <div class="product-image">
                         <div class="product-badges">
@@ -2479,28 +2495,70 @@
             el.motionToggle.checked = reduceMotion;
         }
 
+        const iconPaths = {
+            "arrow-up": '<path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path>',
+            "badge-check": '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.78 4.78 4 4 0 0 1-6.74 0 4 4 0 0 1-4.78-4.78 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path>',
+            "check": '<path d="M20 6 9 17l-5-5"></path>',
+            "copy": '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>',
+            "copy-check": '<path d="m12 15 2 2 4-4"></path><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>',
+            "credit-card": '<rect width="20" height="14" x="2" y="5" rx="2"></rect><path d="M2 10h20"></path>',
+            "log-in": '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path>',
+            "log-out": '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path>',
+            "message-circle": '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>',
+            "plus": '<path d="M5 12h14"></path><path d="M12 5v14"></path>',
+            "rotate-ccw": '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path>',
+            "search": '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>',
+            "send": '<path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path>',
+            "settings": '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.5a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.72l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"></path><circle cx="12" cy="12" r="3"></circle>',
+            "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1Z"></path><path d="m9 12 2 2 4-4"></path>',
+            "shopping-cart": '<circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>',
+            "store": '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"></path><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"></path><path d="M2 7h20"></path><path d="M22 7v3a2 2 0 0 1-4 0V7"></path><path d="M18 7v3a2 2 0 0 1-4 0V7"></path><path d="M14 7v3a2 2 0 0 1-4 0V7"></path><path d="M10 7v3a2 2 0 0 1-4 0V7"></path><path d="M6 7v3a2 2 0 0 1-4 0V7"></path>',
+            "trash-2": '<path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path>',
+            "user": '<path d="M19 21a7 7 0 0 0-14 0"></path><circle cx="12" cy="7" r="4"></circle>',
+            "user-plus": '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line>',
+            "x": '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+            "zap": '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14Z"></path>'
+        };
+
         function refreshIcons() {
-            if (window.lucide) {
-                window.lucide.createIcons();
-                document.documentElement.classList.add("has-icons");
-            }
+            document.querySelectorAll("[data-lucide]").forEach((node) => {
+                const name = node.getAttribute("data-lucide");
+                const paths = iconPaths[name];
+                if (!paths) return;
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+                svg.setAttribute("viewBox", "0 0 24 24");
+                svg.setAttribute("fill", "none");
+                svg.setAttribute("stroke", "currentColor");
+                svg.setAttribute("stroke-width", "2");
+                svg.setAttribute("stroke-linecap", "round");
+                svg.setAttribute("stroke-linejoin", "round");
+                svg.setAttribute("class", node.getAttribute("class") || "icon");
+                svg.setAttribute("aria-hidden", "true");
+                svg.innerHTML = paths;
+                node.replaceWith(svg);
+            });
+            document.documentElement.classList.add("has-icons");
         }
 
         function bindEvents() {
             el.searchInput.addEventListener("input", () => {
                 state.search = el.searchInput.value;
+                state.visibleCount = state.pageSize;
                 el.clearSearch.style.display = state.search ? "flex" : "none";
                 renderProducts();
             });
             el.clearSearch.addEventListener("click", () => {
                 el.searchInput.value = "";
                 state.search = "";
+                state.visibleCount = state.pageSize;
                 el.clearSearch.style.display = "none";
                 renderProducts();
                 el.searchInput.focus();
             });
             el.sortSelect.addEventListener("change", () => {
                 state.sort = el.sortSelect.value;
+                state.visibleCount = state.pageSize;
                 renderProducts();
             });
             el.currencySelect.value = state.currency;
@@ -2510,6 +2568,10 @@
                 renderProducts();
                 renderCart();
                 showToast(`Currency set to ${rates[state.currency].code}`);
+            });
+            el.loadMoreButton.addEventListener("click", () => {
+                state.visibleCount += state.pageSize;
+                renderProducts();
             });
 
             el.cartButton.addEventListener("click", openCart);
@@ -2564,6 +2626,7 @@
         }
 
         function tickClock() {
+            if (!el.clock) return;
             el.clock.textContent = new Date().toLocaleString([], {
                 weekday: "short",
                 hour: "2-digit",
@@ -2590,792 +2653,3 @@
     </script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>🍪 Cookie's Shop | Premium Gaming Store</title>
-    
-    <!-- Open Graph / Social Media Thumbnail -->
-    <meta property="og:title" content="Cookie's Shop – Premium Games & Subscriptions" />
-    <meta property="og:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
-    <meta property="og:image" content="https://cookie-shop.github.io/67.png?v=3" />
-    <meta property="og:image:width" content="1920" />
-    <meta property="og:image:height" content="1080" />
-    <meta property="og:url" content="https://cookie-shop.github.io" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Cookie's Shop – Premium Games & Subscriptions" />
-    <meta name="twitter:description" content="Buy premium PC games, Robux, FiveM tools, Netflix, Spotify, VPNs & more. Instant delivery, secure checkout, 24/7 support." />
-    <meta name="twitter:image" content="https://cookie-shop.github.io/67.png?v=3" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg:#0f172a; --bg-secondary:#111827; --card:#1e293b; --card-light:#273449; --text:#f8fafc; --muted:#94a3b8; --primary:#6366f1; --secondary:#8b5cf6; --success:#22c55e; --danger:#ef4444; --gold:#facc15; --border:rgba(255,255,255,0.08); --shadow:0 10px 30px rgba(0,0,0,0.35); --btn-gradient:linear-gradient(135deg, #6366f1, #8b5cf6); --header-bg:rgba(15,23,42,0.82); }
-        body.light-mode { --bg:#f8f9fa; --bg-secondary:#fff; --card:#fff; --card-light:#f1f5f9; --text:#1e293b; --muted:#64748b; --border:rgba(0,0,0,0.08); --shadow:0 10px 30px rgba(0,0,0,0.1); --header-bg:rgba(255,255,255,0.9); }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; }
-        body { font-family:'Inter',sans-serif; background:linear-gradient(180deg,#0f172a,#111827); color:var(--text); min-height:100vh; overflow-x:hidden; transition:background 0.3s,color 0.3s; }
-        body.light-mode { background:linear-gradient(180deg,#f8f9fa,#e2e8f0); }
-        img { max-width:100%; display:block; }
-        button,input,select,textarea { font-family:inherit; }
-        a { text-decoration:none; color:inherit; }
-        ::-webkit-scrollbar { width:10px; } ::-webkit-scrollbar-track { background:#111827; } ::-webkit-scrollbar-thumb { background:#374151; border-radius:999px; }
-
-        #particles { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
-        .particle { position:absolute; background:rgba(99,102,241,0.2); border-radius:50%; animation:floatParticle 12s infinite; }
-        @keyframes floatParticle { 0%,100%{ transform:translateY(0); opacity:0.15; } 50%{ transform:translateY(-40px); opacity:0.5; } }
-        body.particles-off #particles { display:none; }
-        body.reduced-motion .game-card, body.reduced-motion .cart-panel { transition:none; }
-
-        header { position:sticky; top:0; z-index:1000; background:var(--header-bg); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
-        .navbar { max-width:1400px; margin:auto; display:flex; align-items:center; justify-content:space-between; padding:18px 24px; flex-wrap:wrap; gap:12px; }
-        .logo { display:flex; align-items:center; gap:12px; font-size:1.5rem; font-weight:800; background:linear-gradient(135deg,#818cf8,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .logo-badge { width:42px; height:42px; display:grid; place-items:center; border-radius:14px; background:var(--btn-gradient); box-shadow:0 8px 20px rgba(99,102,241,0.3); font-size:1.3rem; -webkit-text-fill-color:white; }
-        .live-clock { font-size:0.85rem; background:rgba(255,255,255,0.06); padding:8px 16px; border-radius:20px; color:var(--text); border:1px solid var(--border); }
-        .nav-links { display:flex; gap:28px; } .nav-links a { color:var(--muted); font-weight:500; } .nav-links a:hover { color:white; }
-        .header-actions { display:flex; gap:12px; align-items:center; }
-        .ghost-btn { padding:10px 16px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px; color:white; cursor:pointer; }
-        .cart-button { display:flex; align-items:center; gap:10px; padding:12px 18px; border-radius:16px; border:none; background:var(--btn-gradient); color:white; font-weight:700; cursor:pointer; }
-        .cart-count-badge { background:rgba(255,255,255,0.18); padding:4px 10px; border-radius:999px; font-size:0.8rem; }
-        .settings-btn { background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:50%; width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; color:var(--text); }
-
-        .trust-bar { text-align:center; padding:12px; background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border); color:#cbd5e1; font-size:0.88rem; }
-
-        .hero { max-width:1400px; margin:auto; padding:60px 24px 30px; position:relative; z-index:1; }
-        .hero-left { padding-top:30px; }
-        .hero-tag { display:inline-flex; align-items:center; gap:10px; padding:10px 16px; border-radius:999px; background:rgba(99,102,241,0.12); border:1px solid rgba(99,102,241,0.25); color:#c7d2fe; margin-bottom:24px; }
-        .hero h1 { font-size:3.8rem; line-height:1.05; margin-bottom:20px; font-weight:800; }
-        .gradient-text { background:linear-gradient(135deg,#818cf8,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .hero p { color:var(--muted); font-size:1.1rem; max-width:650px; line-height:1.8; margin-bottom:34px; }
-        .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; }
-        .primary-btn { border:none; padding:16px 28px; border-radius:18px; background:var(--btn-gradient); color:white; font-weight:700; cursor:pointer; }
-        .secondary-btn { border:1px solid var(--border); padding:16px 28px; border-radius:18px; background:rgba(255,255,255,0.04); color:white; font-weight:700; cursor:pointer; }
-
-        .controls-bar { max-width:1400px; margin:auto; padding:16px 24px; display:flex; gap:14px; flex-wrap:wrap; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:24px; position:relative; z-index:1; }
-        .search-wrapper { flex:1; min-width:200px; position:relative; }
-        .search-input { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); color:white; padding:14px 40px 14px 18px; border-radius:16px; outline:none; }
-        .clear-search { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:transparent; border:none; color:var(--muted); cursor:pointer; display:none; }
-        .filter-select { padding:14px 16px; border-radius:16px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.05); color:white; outline:none; min-width:140px; }
-        .filter-select option { background:#1e293b; }
-        .currency-selector { display:flex; gap:6px; background:rgba(255,255,255,0.05); padding:5px; border-radius:16px; border:1px solid rgba(255,255,255,0.06); }
-        .currency-option { padding:8px 14px; border-radius:12px; cursor:pointer; font-weight:600; font-size:0.8rem; color:var(--muted); }
-        .currency-option.active { background:var(--primary); color:white; }
-        .payment-methods { font-size:0.78rem; background:rgba(99,102,241,0.1); padding:8px 16px; border-radius:40px; color:var(--muted); }
-
-        .user-bar { max-width:1400px; margin:12px auto; padding:12px 20px; background:rgba(255,255,255,0.04); border-radius:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; border:1px solid var(--border); }
-        .balance-display { font-weight:700; color:#818cf8; }
-        .btn-login { background:var(--btn-gradient); color:white; padding:8px 16px; border:none; border-radius:12px; cursor:pointer; }
-        .btn-logout { background:rgba(239,68,68,0.15); color:#fca5a5; padding:8px 16px; border:none; border-radius:12px; cursor:pointer; }
-        .btn-refresh { background:rgba(34,197,94,0.15); color:#86efac; padding:8px 16px; border:none; border-radius:12px; cursor:pointer; }
-
-        .container { max-width:1400px; margin:auto; padding:20px 24px 60px; position:relative; z-index:1; }
-        .section-title { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; border-left:4px solid var(--primary); padding-left:16px; }
-        .section-title h2 { font-size:1.8rem; font-weight:800; }
-        .tabs { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:28px; justify-content:center; }
-        .tab { background:rgba(255,255,255,0.04); border:1px solid var(--border); padding:10px 20px; border-radius:60px; cursor:pointer; font-weight:600; font-size:0.85rem; color:var(--muted); }
-        .tab.active { background:var(--btn-gradient); border-color:transparent; color:white; }
-        .games-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:24px; }
-
-        .game-card { background:var(--card); border:1px solid rgba(255,255,255,0.06); border-radius:26px; overflow:hidden; box-shadow:var(--shadow); transition:0.3s ease; }
-        .game-card:hover { transform:translateY(-8px); border-color:rgba(99,102,241,0.4); }
-        .game-image { position:relative; overflow:hidden; }
-        .game-image img { width:100%; height:200px; object-fit:cover; }
-        .discount-badge { position:absolute; top:12px; left:12px; background:rgba(34,197,94,0.18); border:1px solid rgba(34,197,94,0.3); color:#86efac; padding:6px 10px; border-radius:999px; font-size:0.72rem; font-weight:700; backdrop-filter:blur(10px); z-index:2; }
-        .trending-badge { position:absolute; top:12px; right:12px; background:rgba(99,102,241,0.18); border:1px solid rgba(99,102,241,0.3); color:#c7d2fe; padding:6px 10px; border-radius:999px; font-size:0.72rem; z-index:2; }
-        .game-content { padding:18px; }
-        .game-category { color:#818cf8; font-size:0.8rem; font-weight:700; margin-bottom:8px; text-transform:uppercase; }
-        .game-title { font-size:1.15rem; font-weight:800; margin-bottom:6px; }
-        .game-description { color:var(--muted); font-size:0.85rem; margin-bottom:14px; }
-        .rating-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; font-size:0.8rem; }
-        .stars { color:var(--gold); }
-        .price-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-        .price { display:flex; align-items:center; gap:8px; }
-        .current-price { font-size:1.4rem; font-weight:800; }
-        .old-price { color:var(--muted); text-decoration:line-through; font-size:0.9rem; }
-        .buy-btn { width:100%; border:none; padding:12px; border-radius:16px; background:var(--btn-gradient); color:white; font-weight:700; cursor:pointer; }
-
-        /* Reputation / Reviews Section */
-        .reputation-section {
-            margin-top: 50px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 28px;
-            padding: 30px;
-            border: 1px solid var(--border);
-        }
-        .reputation-section .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-        .reputation-section .section-title span {
-            color: var(--gold);
-            font-size: 0.85rem;
-            background: rgba(250,204,21,0.1);
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-        .reviews-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 24px;
-        }
-        .review-card {
-            background: var(--card-light);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: 0.2s ease;
-        }
-        .review-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(99,102,241,0.4);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        }
-        .review-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .review-user h4 {
-            font-size: 1.1rem;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-        .review-badge {
-            font-size: 0.7rem;
-            color: #86efac;
-            background: rgba(34,197,94,0.15);
-            padding: 4px 10px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        .review-content p {
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 12px;
-            color: var(--text);
-            font-style: italic;
-        }
-        .review-product {
-            font-size: 0.75rem;
-            color: var(--primary);
-            background: rgba(99,102,241,0.1);
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 16px;
-        }
-        .proof-image {
-            margin-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            padding-top: 14px;
-        }
-        .proof-image a {
-            display: block;
-            text-decoration: none;
-        }
-        .proof-image img {
-            width: 100%;
-            max-height: 180px;
-            object-fit: cover;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.2s;
-            cursor: pointer;
-        }
-        .proof-image img:hover {
-            opacity: 0.85;
-            border-color: var(--primary);
-        }
-        .proof-label {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--muted);
-            text-align: center;
-            margin-top: 8px;
-        }
-
-        .feedback-section { margin-top:40px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:24px; padding:30px; }
-        .feedback-section textarea, .feedback-section input { width:100%; padding:12px 16px; border-radius:16px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.06); color:white; font-size:0.9rem; outline:none; margin-bottom:10px; }
-        .feedback-btn { padding:12px 24px; border-radius:14px; background:var(--btn-gradient); color:white; border:none; font-weight:700; cursor:pointer; }
-        .feedback-btn:disabled { opacity:0.5; }
-
-        .orders-panel { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:24px; padding:20px; margin-top:40px; max-height:350px; overflow-y:auto; }
-        .orders-title { font-size:1.3rem; font-weight:800; margin-bottom:14px; border-left:4px solid var(--primary); padding-left:12px; }
-        .order-item { background:rgba(255,255,255,0.04); margin-bottom:10px; padding:12px 16px; border-radius:16px; border-left:3px solid var(--gold); font-size:0.85rem; }
-        .order-game { font-weight:700; }
-        .order-code { font-family:monospace; color:#818cf8; font-size:0.8rem; }
-
-        .cart-panel { position:fixed; top:0; right:-480px; width:440px; max-width:100%; height:100vh; background:#0f172a; border-left:1px solid rgba(255,255,255,0.08); z-index:2000; transition:0.35s; display:flex; flex-direction:column; }
-        .cart-panel.active { right:0; }
-        .cart-header { display:flex; align-items:center; justify-content:space-between; padding:24px; border-bottom:1px solid rgba(255,255,255,0.08); }
-        .close-cart { background:rgba(255,255,255,0.08); border:none; color:white; width:38px; height:38px; border-radius:12px; cursor:pointer; }
-        .cart-items { flex:1; overflow-y:auto; padding:20px; }
-        .cart-item { display:flex; gap:12px; margin-bottom:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:18px; padding:14px; align-items:center; }
-        .cart-item-content { flex:1; }
-        .cart-price { color:#818cf8; font-weight:700; }
-        .cart-item-controls { display:flex; gap:8px; align-items:center; }
-        .qty-btn { width:30px; height:30px; border-radius:10px; border:none; background:rgba(99,102,241,0.2); color:white; cursor:pointer; }
-        .remove-btn { border:none; background:rgba(239,68,68,0.12); color:#fca5a5; padding:8px 12px; border-radius:10px; cursor:pointer; }
-        .cart-footer { padding:20px; border-top:1px solid rgba(255,255,255,0.08); }
-        .total-row { display:flex; justify-content:space-between; margin-bottom:14px; font-size:1.2rem; font-weight:700; }
-        .checkout-btn { width:100%; border:none; padding:14px; border-radius:16px; background:var(--btn-gradient); color:white; font-weight:700; cursor:pointer; margin-bottom:8px; }
-        .checkout-btn:disabled { opacity:0.5; }
-        .copy-btn { width:100%; border:none; padding:12px; border-radius:16px; background:#5865F2; color:white; font-weight:700; cursor:pointer; margin-bottom:8px; }
-        .clear-cart-btn { width:100%; border:1px solid rgba(239,68,68,0.3); padding:10px; border-radius:16px; background:rgba(239,68,68,0.08); color:#fca5a5; cursor:pointer; }
-        .cart-textarea { width:100%; height:80px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:10px; color:var(--muted); font-size:0.7rem; resize:none; font-family:monospace; margin:8px 0; }
-
-        .modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); z-index:3000; justify-content:center; align-items:center; }
-        .modal-overlay.active { display:flex; }
-        .modal-content { background:#1e293b; border-radius:28px; padding:30px; width:90%; max-width:420px; border:1px solid rgba(255,255,255,0.1); color:var(--text); }
-        .modal-close { float:right; font-size:26px; cursor:pointer; color:var(--muted); }
-        .modal-content h2 { margin-bottom:18px; }
-        .modal-content input { width:100%; margin-bottom:12px; padding:14px; border-radius:16px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:white; outline:none; }
-        .setting-row { display:flex; justify-content:space-between; align-items:center; margin:14px 0; }
-        .toggle-switch { position:relative; display:inline-block; width:48px; height:26px; }
-        .toggle-switch input { opacity:0; width:0; height:0; }
-        .slider-round { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#4a5568; border-radius:34px; transition:.4s; }
-        .slider-round:before { content:""; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background-color:white; border-radius:50%; transition:.4s; }
-        input:checked+.slider-round { background-color:var(--primary); }
-        input:checked+.slider-round:before { transform:translateX(22px); }
-
-        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#1e293b; backdrop-filter:blur(20px); padding:14px 28px; border-radius:80px; color:var(--text); z-index:4000; opacity:0; transition:0.25s; border:1px solid rgba(255,255,255,0.1); font-weight:500; }
-        .toast.show { opacity:1; }
-        .toast.error { border-left:4px solid var(--danger); }
-
-        .back-to-top { position:fixed; bottom:30px; right:30px; background:rgba(30,41,59,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:1500; opacity:0; visibility:hidden; transition:0.3s; }
-        .back-to-top.show { opacity:1; visibility:visible; }
-
-        footer { margin-top:60px; border-top:1px solid var(--border); padding:60px 24px 40px; }
-        .footer-content { max-width:1400px; margin:auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px; }
-        .footer-column a { display:block; margin-bottom:12px; color:var(--muted); }
-        .copyright { max-width:1400px; margin:60px auto 0; border-top:1px solid var(--border); padding-top:30px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap; }
-
-        .code-modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:5000; justify-content:center; align-items:center; }
-        .code-modal-overlay.active { display:flex; }
-        .code-modal { background:#111827; border-radius:28px; padding:30px; width:90%; max-width:500px; border:2px solid var(--primary); text-align:center; }
-        .code-modal h2 { font-size:1.8rem; margin-bottom:16px; color:#22c55e; }
-        .code-modal .code-box { background:#0f172a; border:1px solid var(--primary); border-radius:14px; padding:16px; font-family:monospace; font-size:1.5rem; color:#facc15; margin-bottom:20px; word-break:break-all; }
-        .code-modal p { color:var(--text); margin-bottom:20px; font-size:1.2rem; font-weight:700; line-height:1.6; }
-        .code-modal button { padding:14px 28px; border-radius:14px; background:var(--btn-gradient); color:white; font-weight:700; border:none; cursor:pointer; font-size:1rem; }
-
-        @media (max-width:800px) {
-            html { font-size: 14px; }
-            .hero { padding: 30px 16px 20px; }
-            .hero h1 { font-size: 2.2rem; margin-bottom: 12px; }
-            .hero p { font-size: 0.9rem; margin-bottom: 20px; }
-            .hero-buttons { gap: 10px; }
-            .primary-btn, .secondary-btn { padding: 12px 20px; font-size: 0.9rem; }
-            .navbar { padding: 12px 16px; }
-            .logo { font-size: 1.3rem; }
-            .logo-badge { width: 34px; height: 34px; font-size: 1.1rem; }
-            .nav-links { gap: 16px; }
-            .ghost-btn { padding: 8px 12px; font-size: 0.85rem; }
-            .cart-button { padding: 10px 14px; }
-            .controls-bar { padding: 12px 16px; flex-direction: column; gap: 10px; }
-            .search-input { padding: 12px 14px; font-size: 0.9rem; }
-            .filter-select, .currency-option { padding: 10px 14px; font-size: 0.8rem; }
-            .games-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
-            .game-image img { height: 140px; }
-            .game-content { padding: 12px; }
-            .game-title { font-size: 1rem; }
-            .game-description { font-size: 0.75rem; margin-bottom: 10px; }
-            .rating-row { margin-bottom: 10px; }
-            .current-price { font-size: 1.2rem; }
-            .buy-btn { padding: 10px; font-size: 0.85rem; }
-            .section-title h2 { font-size: 1.4rem; }
-            .tabs { gap: 6px; margin-bottom: 18px; }
-            .tab { padding: 8px 14px; font-size: 0.75rem; }
-            .container { padding: 10px 12px 40px; }
-            .footer-content { grid-template-columns: 1fr 1fr; gap: 20px; }
-            .cart-panel { width: 100%; right: -100%; }
-            .modal-content { padding: 20px; }
-            .reviews-grid { grid-template-columns: 1fr; }
-            .reputation-section { padding: 20px; }
-        }
-        @media (max-width:500px) {
-            html { font-size: 12px; }
-            .hero h1 { font-size: 1.9rem; }
-            .games-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .game-image img { height: 120px; }
-        }
-    </style>
-</head>
-<body>
-<div id="particles"></div>
-
-<header>
-    <div class="navbar">
-        <div class="logo"><div class="logo-badge">🎮</div>Cookie's Shop</div>
-        <div class="live-clock" id="liveClock"></div>
-        <div class="nav-links"><a href="#games">Products</a><a href="#feedback">Feedback</a><a href="#contact">Contact</a></div>
-        <div class="header-actions">
-            <button class="ghost-btn" onclick="openLoginModal()">Login</button>
-            <button class="cart-button" id="openCartBtn">🛒 Cart <span class="cart-count-badge" id="cartCountBadge">0</span></button>
-            <button class="settings-btn" onclick="openSettingsModal()">⚙️</button>
-        </div>
-    </div>
-    <div class="trust-bar">✅ Secure Checkout • ⚡ Instant Delivery • 🎮 Trusted Marketplace • 💬 <a href="https://discord.gg/49cwUj62aC" target="_blank" style="color:#818cf8;">Join Discord</a></div>
-</header>
-
-<section class="hero">
-    <div class="hero-left">
-        <div class="hero-tag">🚀 75+ Premium Products Available Now</div>
-        <h1>Level Up Your <span class="gradient-text">Gaming Library</span></h1>
-        <p>Discover premium PC games, subscriptions, Robux, FiveM tools & exclusive bundles with instant digital delivery, secure payments, and friendly staff support.</p>
-        <div class="hero-buttons">
-            <button class="primary-btn" onclick="document.getElementById('gamesGrid').scrollIntoView({behavior:'smooth'})">Browse Products</button>
-            <button class="secondary-btn" onclick="document.getElementById('feedback').scrollIntoView({behavior:'smooth'})">Send Feedback</button>
-        </div>
-    </div>
-</section>
-
-<div class="container" style="padding-top:0;">
-    <div class="controls-bar">
-        <div class="payment-methods">💳 PayPal | 🏦 Swedbank | 🏦 SEB | 🏦 Luminor | ₿ BTC | ₿ ETH</div>
-        <div class="search-wrapper">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search 75+ products...">
-            <button class="clear-search" id="clearSearchBtn">✖️</button>
-        </div>
-        <select id="sortSelect" class="filter-select">
-            <option value="default">Sort: Default</option><option value="price-asc">Price: Low → High</option><option value="price-desc">Price: High → Low</option><option value="name-asc">Name: A → Z</option><option value="rating-desc">Rating: High → Low</option>
-        </select>
-        <div class="currency-selector">
-            <div class="currency-option active" data-currency="eur">🇪🇺 EUR</div><div class="currency-option" data-currency="usd">🇺🇸 USD</div><div class="currency-option" data-currency="gbp">🇬🇧 GBP</div>
-        </div>
-    </div>
-    <div class="user-bar" id="userBar" style="display:none;"><span class="balance-display" id="balanceDisplay">💰 Balance: €0.00</span><div><button class="btn-refresh" onclick="refreshBalance()">🔄 Refresh</button><button class="btn-logout" onclick="logout()">🚪 Logout</button></div></div>
-    <div class="user-bar" id="loginPromptBar"><span>🔐 You are not logged in.</span><button class="btn-login" onclick="openLoginModal()">Login / Register</button></div>
-</div>
-
-<main class="container">
-    <div class="tabs" id="tabsContainer">
-        <div class="tab active" data-filter="all">✨ All (75+)</div><div class="tab" data-filter="games">🎮 Games</div><div class="tab" data-filter="subscriptions">📺 Subs & Apps</div>
-        <div class="tab" data-filter="robux">💰 Robux</div><div class="tab" data-filter="fivem">⚙️ FiveM</div><div class="tab" data-filter="bundles">📦 Bundles</div>
-    </div>
-    <section id="games"><div class="section-title"><h2>All Products</h2></div><div class="games-grid" id="gamesGrid"></div><div id="loadMoreBtn" style="text-align:center;margin-top:30px;"><button class="secondary-btn" onclick="loadMore()">Load More ➕</button></div></section>
-    
-    <!-- REPUTATION / REVIEWS SECTION WITH PROOF IMAGES -->
-    <div class="reputation-section">
-        <div class="section-title">
-            <h2>⭐ Customer Reputation</h2>
-        </div>
-        <div class="reviews-grid">
-            <div class="review-card">
-                <div class="review-header">
-                    <div class="review-user">
-                        <h4>tuco</h4>
-                        <div class="review-badge">+rep ✅</div>
-                    </div>
-                </div>
-                <div class="review-content">
-                    <p>"Robux – fast delivery, great price! Will buy again."</p>
-                    <div class="review-product">🛒 Product: Robux</div>
-                    <div class="proof-image">
-                        <a href="tuco.png" target="_blank">
-                            <img src="tuco.png" alt="Proof screenshot" onerror="this.src='https://placehold.co/600x400/1e293b/818cf8?text=Click+to+view+proof'">
-                            <span class="proof-label">📸 Click to view proof</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="review-card">
-                <div class="review-header">
-                    <div class="review-user">
-                        <h4>kaspisijus</h4>
-                        <div class="review-badge">+rep ✅</div>
-                    </div>
-                </div>
-                <div class="review-content">
-                    <p>"Discord Nitro – WORTH BUYING! Best price and instant delivery."</p>
-                    <div class="review-product">🛒 Product: Discord Nitro</div>
-                    <div class="proof-image">
-                        <a href="kaspisijus.png" target="_blank">
-                            <img src="kaspisijus.png" alt="Proof screenshot" onerror="this.src='https://placehold.co/600x400/1e293b/818cf8?text=Click+to+view+proof'">
-                            <span class="proof-label">📸 Click to view proof</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="review-card">
-                <div class="review-header">
-                    <div class="review-user">
-                        <h4>kaspisijus</h4>
-                        <div class="review-badge">+rep ✅</div>
-                    </div>
-                </div>
-                <div class="review-content">
-                    <p>"Got Forza Horizon 5 Steam account – working perfectly, highly recommend!"</p>
-                    <div class="review-product">🛒 Product: Forza Horizon 5</div>
-                    <div class="proof-image">
-                        <a href="kaspisijus2.png" target="_blank">
-                            <img src="kaspisijus2.png" alt="Proof screenshot" onerror="this.src='https://placehold.co/600x400/1e293b/818cf8?text=Click+to+view+proof'">
-                            <span class="proof-label">📸 Click to view proof</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="orders-panel"><div class="orders-title">📋 YOUR PURCHASED ITEMS</div><div id="ordersList"></div></div>
-    <section id="feedback" class="feedback-section">
-        <div class="section-title"><h2>💬 Friendly Staff & Feedback</h2></div>
-        <div style="display:flex; gap:30px; flex-wrap:wrap;">
-            <div style="flex:1; min-width:250px;"><p>Our friendly staff is here to help! Create a <a href="https://discord.gg/49cwUj62aC" target="_blank" style="color:#818cf8;">ticket on Discord</a>.</p><p>🎁 Check our Discord for regular <strong>giveaways</strong>!</p></div>
-            <div style="flex:1; min-width:280px;"><h3>Send Feedback</h3><input type="text" id="feedbackName" placeholder="Your name"><textarea id="feedbackMsg" placeholder="Your message..." rows="3"></textarea><button class="feedback-btn" id="feedbackSubmitBtn" onclick="submitFeedback()">Submit</button><div id="feedbackTimer" style="font-size:0.8rem;color:var(--muted);margin-top:6px;"></div></div>
-        </div>
-    </section>
-</main>
-
-<footer id="contact">
-    <div class="footer-content">
-        <div class="footer-brand"><div class="logo"><div class="logo-badge">🎮</div>Cookie's Shop</div><p>Modern digital gaming marketplace.</p></div>
-        <div class="footer-column"><h4>Store</h4><a href="#">Games</a><a href="#">Subscriptions</a><a href="#">Robux</a><a href="#">Bundles</a></div>
-        <div class="footer-column"><h4>Support</h4><a href="https://discord.gg/49cwUj62aC">Discord Ticket</a><a href="#">FAQ</a></div>
-        <div class="footer-column"><h4>Company</h4><a href="#">About</a><a href="#">Terms</a></div>
-    </div>
-    <div class="copyright"><span>© 2026 Cookie's Shop</span></div>
-</footer>
-
-<aside class="cart-panel" id="cartPanel">
-    <div class="cart-header"><h3>🛒 Your Cart</h3><button class="close-cart" id="closeCartBtn">✕</button></div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-footer">
-        <div class="total-row"><span>Total</span><span id="cartTotal">€0.00</span></div>
-        <button class="checkout-btn" id="payWithBalanceBtn" onclick="payWithBalance()">💳 Pay with Balance</button>
-        <button class="copy-btn" onclick="manualCopy()">📋 Copy Order to Discord</button>
-        <textarea class="cart-textarea" id="copyArea" readonly></textarea>
-        <button class="clear-cart-btn" onclick="clearCart()">🗑️ Clear Cart</button>
-    </div>
-</aside>
-
-<div class="modal-overlay" id="loginModal">
-    <div class="modal-content">
-        <span class="modal-close" onclick="closeLoginModal()">✕</span>
-        <h2>🔑 Login</h2><input type="text" id="modalUsername" placeholder="Username"><input type="password" id="modalPassword" placeholder="Password"><button class="primary-btn" id="loginSubmitBtn" onclick="modalLogin()">Login</button>
-        <hr style="margin:16px 0;border-color:rgba(255,255,255,0.1);">
-        <h2>📝 Register</h2><input type="text" id="modalRegUsername" placeholder="New Username"><input type="password" id="modalRegPassword" placeholder="Password"><button class="primary-btn" id="registerSubmitBtn" onclick="modalRegister()" style="background:#22c55e;">Create Account</button>
-    </div>
-</div>
-
-<div class="modal-overlay" id="settingsModal">
-    <div class="modal-content">
-        <span class="modal-close" onclick="closeSettingsModal()">✕</span><h2>⚙️ Settings</h2>
-        <div class="setting-row"><span>🌓 Dark Mode</span><label class="toggle-switch"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" checked><span class="slider-round"></span></label></div>
-        <div class="setting-row"><span>✨ Particles</span><label class="toggle-switch"><input type="checkbox" id="particlesToggle" onchange="toggleParticles()" checked><span class="slider-round"></span></label></div>
-        <div class="setting-row"><span>🎞️ Animations</span><label class="toggle-switch"><input type="checkbox" id="animationsToggle" onchange="toggleAnimations()" checked><span class="slider-round"></span></label></div>
-        <button class="secondary-btn" onclick="resetSettings()" style="width:100%;margin-top:10px;">Reset to Default</button>
-    </div>
-</div>
-
-<div class="code-modal-overlay" id="codeModalOverlay">
-    <div class="code-modal">
-        <h2>✅ Purchase Successful!</h2>
-        <div class="code-box" id="codeDisplay"></div>
-        <p>Copy this code and open a ticket on our Discord server.<br>Paste the code there to receive your product.</p>
-        <button onclick="closeCodeModal()">OK</button>
-    </div>
-</div>
-
-<div id="toastMsg" class="toast">✨ Added to cart</div>
-<div class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️</div>
-
-<script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzfAENtvAxaxW70i3b_dZDJxJ0IDLufuLyHnzJ1XF0yPG71oAolGTZGWGOUWX-TJ6yBw/exec';
-const BACKEND_URL = 'https://corsproxy.io/?' + encodeURIComponent(SCRIPT_URL);
-
-let currentUser = null, currentToken = null, purchaseHistory = [], payCooldown = false, feedbackCooldown = false;
-
-function showToastMsg(msg,isErr){ const t=document.getElementById('toastMsg'); t.textContent=msg; t.className='toast'+(isErr?' error':''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
-function escapeHtml(s){ return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
-
-function openCodeModal(code) {
-    document.getElementById('codeDisplay').textContent = code;
-    document.getElementById('codeModalOverlay').classList.add('active');
-}
-function closeCodeModal() {
-    document.getElementById('codeModalOverlay').classList.remove('active');
-}
-
-async function apiCall(action,data){
-    try{
-        const res=await fetch(BACKEND_URL + '?_=' + Date.now(), {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({action,...data})
-        });
-        const text=await res.text();
-        try{ return JSON.parse(text); }
-        catch(e){ console.error(text); showToastMsg('Server error',true); return {success:false,message:'Invalid response'}; }
-    }catch(e){ console.error(e); showToastMsg('Network error',true); return {success:false,message:'Network error'}; }
-}
-
-function openSettingsModal(){document.getElementById('settingsModal').classList.add('active')}
-function closeSettingsModal(){document.getElementById('settingsModal').classList.remove('active')}
-function applySettings(){
-    const dm=JSON.parse(localStorage.getItem('darkMode')||'true'),po=JSON.parse(localStorage.getItem('particlesOn')||'true'),ao=JSON.parse(localStorage.getItem('animationsOn')||'true');
-    document.getElementById('darkModeToggle').checked=dm; document.getElementById('particlesToggle').checked=po; document.getElementById('animationsToggle').checked=ao;
-    if(!dm)document.body.classList.add('light-mode');else document.body.classList.remove('light-mode');
-    if(!po)document.body.classList.add('particles-off');else document.body.classList.remove('particles-off');
-    if(!ao)document.body.classList.add('reduced-motion');else document.body.classList.remove('reduced-motion');
-}
-function toggleDarkMode(){const d=document.getElementById('darkModeToggle').checked;localStorage.setItem('darkMode',d);d?document.body.classList.remove('light-mode'):document.body.classList.add('light-mode')}
-function toggleParticles(){const o=document.getElementById('particlesToggle').checked;localStorage.setItem('particlesOn',o);o?document.body.classList.remove('particles-off'):document.body.classList.add('particles-off')}
-function toggleAnimations(){const o=document.getElementById('animationsToggle').checked;localStorage.setItem('animationsOn',o);o?document.body.classList.remove('reduced-motion'):document.body.classList.add('reduced-motion')}
-function resetSettings(){localStorage.setItem('darkMode','true');localStorage.setItem('particlesOn','true');localStorage.setItem('animationsOn','true');applySettings();closeSettingsModal();showToastMsg('Settings reset')}
-setInterval(()=>document.getElementById('liveClock').textContent=new Date().toLocaleTimeString(),1000);
-
-// ========== PRODUCTS ==========
-const productsEUR = [
-    // --- ORIGINAL PRODUCTS ---
-    {name:"🦀 Rust",cat:"games",price:4.99,img:"header.jpg",emoji:"🦀",discount:15,trending:true,rating:4.8,desc:"Survival game with intense PvP and base building."},
-    {name:"🌲 The Forest",cat:"games",price:1.99,img:"theforest.jpg",emoji:"🌲",rating:4.5,desc:"Craft, build, and survive in a mysterious forest."},
-    {name:"⚡ Full Access Rust",cat:"games",price:14.99,img:"header.jpg",emoji:"⚡",rating:4.9,desc:"Premium Rust account with full access and bonuses."},
-    {name:"🚀 Arc Raiders",cat:"games",price:4.49,img:"images.jpg",emoji:"🚀",rating:4.2,desc:"Sci-fi third-person shooter with massive raids."},
-    {name:"🧟 DayZ",cat:"games",price:3.49,img:"dayz.jpg",emoji:"🧟",rating:4.7,desc:"Hardcore zombie survival."},
-    {name:"🏎️ GTA V Steam",cat:"games",price:4.99,img:"gtav.jpg",emoji:"🏎️",discount:10,trending:true,rating:5.0,desc:"The legendary open-world crime saga."},
-    {name:"🚗 BeamNG.drive",cat:"games",price:3.99,img:"beamngdrive.jpg",emoji:"🚗",rating:4.6,desc:"Realistic soft-body physics driving simulator."},
-    {name:"🏁 Forza Horizon 5",cat:"games",price:3.49,img:"kaosk.jpg",emoji:"🏁",rating:4.9,desc:"Open-world racing in vibrant Mexico."},
-    {name:"🌲 Sons of The Forest",cat:"games",price:2.49,img:"sotf.jpg",emoji:"🌲",rating:4.8,desc:"Sequel to the hit survival horror crafting game."},
-    {name:"⛏️ Minecraft Java",cat:"games",price:7.99,img:"minecraft.png",emoji:"⛏️",rating:5.0,desc:"The ultimate sandbox block-building adventure."},
-    {name:"🎮 Cyberpunk 2077",cat:"games",price:2.49,img:"cyberpunk.png",emoji:"🎮",discount:20,rating:4.4,desc:"Futuristic open-world RPG."},
-    {name:"📅 Schedule I",cat:"games",price:2.99,img:"schedule1.png",emoji:"📅",rating:4.1,desc:"Strategic scheduling simulation."},
-    {name:"🛶 Raft",cat:"games",price:2.49,img:"header.png",emoji:"🛶",rating:4.5,desc:"Survive on a raft."},
-    {name:"👽 Among Us",cat:"games",price:1.99,img:"amongus.png",emoji:"👽",rating:4.3,desc:"Multiplayer social deduction."},
-    {name:"🚛 Euro Truck Sim 2",cat:"games",price:3.49,img:"maxresdefault.png",emoji:"🚛",rating:4.7,desc:"Drive across Europe."},
-    {name:"🛒 Supermarket Simulator",cat:"games",price:2.99,img:"headekr.png",emoji:"🛒",rating:4.2,desc:"Run your own supermarket."},
-    {name:"⚔️ Mortal Kombat 1",cat:"games",price:2.99,img:"klll.png",emoji:"⚔️",rating:4.6,desc:"Brutal fighting game."},
-    {name:"🔫 Rainbow Six Siege",cat:"games",price:1.49,img:"lk.png",emoji:"🔫",rating:4.5,desc:"Tactical FPS."},
-    {name:"🧟 Resident Evil Village",cat:"games",price:4.99,img:"NMu5EEmFLFUsuzOW4jGw2KOj.png",emoji:"🧟",rating:4.8,desc:"Survival horror masterpiece."},
-    {name:"⚽ FC 25",cat:"games",price:3.49,img:"afgghj.png",emoji:"⚽",discount:5,rating:4.4,desc:"Latest football simulation."},
-    {name:"⚽ FC 26",cat:"games",price:19.99,img:"maxresdefault__2_.png",emoji:"⚽",rating:4.7,desc:"Next-gen football."},
-    {name:"🦸 Marvel Rivals",cat:"games",price:1.49,img:"images.png",emoji:"🦸",rating:4.3,desc:"Superhero team-based action."},
-    {name:"🎮 Discord Nitro",cat:"subscriptions",price:0.66,img:"nitro.png",emoji:"🎮",rating:4.8,desc:"Premium Discord features."},
-    {name:"📺 Netflix Lifetime",cat:"subscriptions",price:5.49,img:"netflix_vx8r.jpg",emoji:"📺",discount:10,rating:4.7,desc:"Lifetime Netflix access."},
-    {name:"🎵 Spotify Premium 3M",cat:"subscriptions",price:3.99,img:"spotify-logo-zoom-s.png",emoji:"🎵",rating:4.9,desc:"3 months ad-free music."},
-    {name:"📹 YouTube Premium 1M",cat:"subscriptions",price:5.99,img:"YTP.png",emoji:"📹",rating:4.8,desc:"1 month YouTube without ads."},
-    {name:"🤖 ChatGPT Plus",cat:"subscriptions",price:2.99,img:"Chat-GPT-logo.png",emoji:"🤖",rating:4.9,desc:"Premium AI assistant."},
-    {name:"📺 Disney+ Lifetime",cat:"subscriptions",price:4.99,img:"asdasdasd.png",emoji:"📺",rating:4.6,desc:"Lifetime Disney+ access."},
-    {name:"🔒 NordVPN Lifetime",cat:"subscriptions",price:2.49,img:"imajjhges.png",emoji:"🔒",discount:15,rating:4.8,desc:"Secure VPN lifetime."},
-    {name:"✂️ CapCut Pro",cat:"subscriptions",price:1.99,img:"capcut-pro-12-men-3362289.png",emoji:"✂️",rating:4.5,desc:"Professional video editing."},
-    {name:"💰 Robux 2.5k-5k",cat:"robux",price:8.49,img:"public.png",emoji:"💰",rating:4.7,desc:"Roblox currency pack."},
-    {name:"💰 Robux 5k-10k",cat:"robux",price:10.99,img:"public.png",emoji:"💰",rating:4.7,desc:"Medium Robux bundle."},
-    {name:"💰 Robux 10k-15k",cat:"robux",price:15.99,img:"public.png",emoji:"💰",rating:4.8,desc:"Large Robux pack."},
-    {name:"💰 Robux 15k-30k",cat:"robux",price:18.49,img:"public.png",emoji:"💰",rating:4.8,desc:"Extra-large Robux bundle."},
-    {name:"💰 Robux 50k+",cat:"robux",price:35.99,img:"public.png",emoji:"💰",discount:8,rating:4.9,desc:"Ultimate Robux pack."},
-    {name:"⚙️ FiveM Ready Account",cat:"fivem",price:0.99,img:"Fivem.jpg",emoji:"⚙️",rating:4.5,desc:"Pre-configured FiveM account."},
-    {name:"📦 FiveM Bundle",cat:"fivem",price:2.49,img:"Fivem.jpg",emoji:"📦",rating:4.6,desc:"Essential FiveM scripts."},
-    {name:"👑 Valk Menu (3D)",cat:"fivem",price:3.49,img:"Fivem.jpg",emoji:"👑",rating:4.7,desc:"Valk menu 3-day access."},
-    {name:"👑 Valk Menu (1W)",cat:"fivem",price:6.49,img:"Fivem.jpg",emoji:"👑",rating:4.7,desc:"Valk menu 1-week access."},
-    {name:"👑 Valk Menu (1M)",cat:"fivem",price:13.49,img:"Fivem.jpg",emoji:"👑",rating:4.8,desc:"Valk menu 1-month access."},
-    {name:"👑 Valk Menu (Lifetime)",cat:"fivem",price:26.49,img:"Fivem.jpg",emoji:"👑",rating:4.9,desc:"Valk menu lifetime."},
-    {name:"🔑 Keyser (3D)",cat:"fivem",price:6.49,img:"Fivem.jpg",emoji:"🔑",rating:4.6,desc:"Keyser menu 3-day."},
-    {name:"🔑 Keyser (1W)",cat:"fivem",price:11.49,img:"Fivem.jpg",emoji:"🔑",rating:4.7,desc:"Keyser menu 1-week."},
-    {name:"🔑 Keyser (1M)",cat:"fivem",price:15.49,img:"Fivem.jpg",emoji:"🔑",rating:4.7,desc:"Keyser menu 1-month."},
-    {name:"🔑 Keyser (Lifetime)",cat:"fivem",price:36.49,img:"Fivem.jpg",emoji:"🔑",rating:4.8,desc:"Keyser menu lifetime."},
-    {name:"⚡ Ryven (3D)",cat:"fivem",price:8.49,img:"Fivem.jpg",emoji:"⚡",rating:4.7,desc:"Ryven menu 3-day."},
-    {name:"⚡ Ryven (1M)",cat:"fivem",price:11.49,img:"Fivem.jpg",emoji:"⚡",rating:4.7,desc:"Ryven menu 1-month."},
-    {name:"⚡ Ryven (3M)",cat:"fivem",price:19.49,img:"Fivem.jpg",emoji:"⚡",rating:4.8,desc:"Ryven menu 3-month."},
-    {name:"⚡ Ryven (Lifetime)",cat:"fivem",price:31.49,img:"Fivem.jpg",emoji:"⚡",rating:4.8,desc:"Ryven menu lifetime."},
-    {name:"📦 Epic Bundle (20-50)",cat:"bundles",price:0.99,img:"sdfgfgsdfgd.png",emoji:"📦",rating:4.9,desc:"Curated bundle 20-50 items."},
-    {name:"📦 Epic Bundle (50-100)",cat:"bundles",price:1.49,img:"sdfgfgsdfgd.png",emoji:"📦",rating:4.9,desc:"Curated bundle 50-100 items."},
-    {name:"📦 Epic Bundle (350+)",cat:"bundles",price:4.99,img:"sdfgfgsdfgd.png",emoji:"📦",discount:12,rating:5.0,desc:"Massive bundle 350+ items."},
-    {name:"🎲 Mystery Steam Acc",cat:"bundles",price:0.49,img:"image.png",emoji:"🎲",rating:4.4,desc:"Random Steam account."},
-    {name:"🍩 Dr Donut Money 1M",cat:"bundles",price:0.09,img:"channels4_profile.jpg",emoji:"🍩",rating:4.3,desc:"In-game currency."},
-
-    // ========== CLASH ROYALE (5 tiers) ==========
-    {name:"👑 Clash Royale 1,000-3,000 Trophies", cat:"games", price:5.49, img:"clashroyale.png", emoji:"👑", rating:4.5, desc:"Clash Royale account with 1,000–3,000 trophies."},
-    {name:"👑 Clash Royale 3,000-5,000 Trophies", cat:"games", price:9.99, img:"clashroyale.png", emoji:"👑", rating:4.6, desc:"Clash Royale account with 3,000–5,000 trophies."},
-    {name:"👑 Clash Royale 5,000-8,000 Trophies", cat:"games", price:16.99, img:"clashroyale.png", emoji:"👑", rating:4.7, desc:"Clash Royale account with 5,000–8,000 trophies."},
-    {name:"👑 Clash Royale 8,000-10,000 Trophies", cat:"games", price:27.99, img:"clashroyale.png", emoji:"👑", rating:4.8, desc:"Clash Royale account with 8,000–10,000 trophies."},
-    {name:"👑 Clash Royale 10,000-12,500 Trophies", cat:"games", price:39.99, img:"clashroyale.png", emoji:"👑", rating:4.9, desc:"Clash Royale account with 10,000–12,500 trophies."},
-
-    // ========== BRAWL STARS (4 tiers) ==========
-    {name:"⭐ Brawl Stars 5,000-10,000 Trophies", cat:"games", price:7.49, img:"brawlstars.png", emoji:"⭐", rating:4.6, desc:"Brawl Stars account with 5,000–10,000 trophies."},
-    {name:"⭐ Brawl Stars 10,000-18,000 Trophies", cat:"games", price:14.49, img:"brawlstars.png", emoji:"⭐", rating:4.7, desc:"Brawl Stars account with 10,000–18,000 trophies."},
-    {name:"⭐ Brawl Stars 20,000-30,000 Trophies", cat:"games", price:22.49, img:"brawlstars.png", emoji:"⭐", rating:4.8, desc:"Brawl Stars account with 20,000–30,000 trophies."},
-    {name:"⭐ Brawl Stars 30,000-50,000 Trophies", cat:"games", price:37.49, img:"brawlstars.png", emoji:"⭐", rating:4.9, desc:"Brawl Stars account with 30,000–50,000 trophies."},
-
-    // ========== VALORANT (5 tiers) ==========
-    {name:"🔫 Valorant 1k-3k VP", cat:"games", price:23.99, img:"Valorant.jpg", emoji:"🔫", rating:4.7, desc:"Valorant account with 1,000–3,000 VP inventory."},
-    {name:"🔫 Valorant 3k-5k VP", cat:"games", price:33.99, img:"Valorant.jpg", emoji:"🔫", rating:4.7, desc:"Valorant account with 3,000–5,000 VP inventory."},
-    {name:"🔫 Valorant 5k-7k VP", cat:"games", price:49.99, img:"Valorant.jpg", emoji:"🔫", rating:4.8, desc:"Valorant account with 5,000–7,000 VP inventory."},
-    {name:"🔫 Valorant 7k-12k VP", cat:"games", price:69.99, img:"Valorant.jpg", emoji:"🔫", rating:4.8, desc:"Valorant account with 7,000–12,000 VP inventory."},
-    {name:"🔫 Valorant 15k-25k VP", cat:"games", price:83.99, img:"Valorant.jpg", emoji:"🔫", rating:4.9, desc:"Valorant account with 15,000–25,000 VP inventory."},
-
-    // ========== FORTNITE (4 skin bundles) ==========
-    {name:"🎮 Fortnite 10-20 Skins", cat:"games", price:1.99, img:"fortnite.jpg", emoji:"🎮", rating:4.5, desc:"Fortnite account with 10–20 skins."},
-    {name:"🎮 Fortnite 20-50 Skins", cat:"games", price:2.99, img:"fortnite.jpg", emoji:"🎮", rating:4.6, desc:"Fortnite account with 20–50 skins."},
-    {name:"🎮 Fortnite 60-150 Skins", cat:"games", price:8.99, img:"fortnite.jpg", emoji:"🎮", rating:4.7, desc:"Fortnite account with 60–150 skins."},
-    {name:"🎮 Fortnite 200-400 Skins", cat:"games", price:21.99, img:"fortnite.jpg", emoji:"🎮", rating:4.8, desc:"Fortnite account with 200–400 skins."},
-
-    // ========== SOCIAL FOLLOWERS ==========
-    {name:"📸 Instagram 1000+ Followers", cat:"subscriptions", price:9.99, img:"instafolowers.jpg", emoji:"📸", rating:4.3, desc:"Get 1000+ real Instagram followers."},
-    {name:"🎥 Twitch Account 2000+ Followers", cat:"subscriptions", price:2.19, img:"twitchfolo.png", emoji:"🎥", rating:4.2, desc:"Twitch account with 2000+ followers."},
-    {name:"🎥 Twitch Account 9000+ Followers", cat:"subscriptions", price:3.99, img:"twitchfolo.png", emoji:"🎥", rating:4.3, desc:"Twitch account with 9000+ followers."},
-
-    // ========== STREAMING & APPS ==========
-    {name:"📺 TOD TV Subscription", cat:"subscriptions", price:1.49, img:"tod.png", emoji:"📺", rating:4.0, desc:"Premium TOD TV streaming access."},
-    {name:"🍥 Crunchyroll FAN", cat:"subscriptions", price:1.49, img:"crunchyroll.png", emoji:"🍥", rating:4.5, desc:"Crunchyroll Fan tier – ad-free anime."},
-    {name:"🍥 Crunchyroll MEGA FAN", cat:"subscriptions", price:1.99, img:"crunchyroll.png", emoji:"🍥", rating:4.6, desc:"Crunchyroll Mega Fan – offline viewing & more."},
-    {name:"🔒 IPVanish VPN", cat:"subscriptions", price:2.49, img:"ipvanish.png", emoji:"🔒", rating:4.4, desc:"Secure & fast VPN service."},
-    {name:"🎬 HBO Max Subscription", cat:"subscriptions", price:3.99, img:"hbo.png", emoji:"🎬", rating:4.6, desc:"Stream HBO Max exclusive series & movies."},
-    {name:"📺 Paramount+ EU", cat:"subscriptions", price:1.49, img:"paramount.png", emoji:"📺", rating:4.3, desc:"Paramount+ subscription for Europe."},
-    {name:"📺 Paramount+ USA", cat:"subscriptions", price:1.49, img:"paramount.png", emoji:"📺", rating:4.3, desc:"Paramount+ subscription for USA."},
-    {name:"📺 Molotov TV", cat:"subscriptions", price:1.49, img:"molotov.png", emoji:"📺", rating:4.2, desc:"French live TV and replay service."},
-    {name:"🎬 CDA Premium", cat:"subscriptions", price:2.49, img:"cda.png", emoji:"🎬", rating:4.3, desc:"Premium access to CDA (Polish streaming)."},
-
-    // ========== NEW GAMES ADDED ==========
-    {name:"🔫 Arma Reforger", cat:"games", price:2.49, img:"armareforger.jpg", emoji:"🔫", rating:4.6, desc:"Realistic military sandbox shooter with immersive combat and large-scale battles."},
-    {name:"🎨 Wallpaper Engine", cat:"games", price:1.49, img:"wallpaperengine.jpg", emoji:"🎨", rating:4.8, desc:"Animated wallpapers and interactive backgrounds for your PC desktop."},
-    {name:"🎯 Crosshair X", cat:"games", price:0.99, img:"crosshair-x.png", emoji:"🎯", rating:4.5, desc:"Customizable crosshair overlay for any FPS game."},
-    {name:"⚔️ God of War", cat:"games", price:2.99, img:"godofwar.jpg", emoji:"⚔️", rating:4.9, desc:"Epic action-adventure with Norse mythology and Kratos."},
-    {name:"👮 Contraband Police", cat:"games", price:2.99, img:"contrabandpolice.jpg", emoji:"👮", rating:4.7, desc:"Border inspection simulator with detective elements and smuggling mechanics."}
-];
-
-// Cart & state
-let cart=[],currentCurrency="eur",currentFilter="all",currentSearch="",currentSort="default",displayedCount=24;
-const rates={eur:1,usd:1.173,gbp:0.85};
-function getCurrencySymbol(){return currentCurrency==="eur"?"€":currentCurrency==="usd"?"$":"£"}
-function getPriceInCurrency(p){return p*rates[currentCurrency]}
-function getCurrentProducts(){return productsEUR.map(p=>({...p,price:getPriceInCurrency(p.price)}))}
-function saveCart(){localStorage.setItem("cookieCart",JSON.stringify(cart))}
-function loadCart(){let s=localStorage.getItem("cookieCart");if(s){cart=JSON.parse(s);updateCartUI()}}
-function addToCart(name,price){let e=cart.find(i=>i.name===name);if(e)e.quantity++;else cart.push({name,price,quantity:1});updateCartUI();saveCart();showToastMsg(`➕ ${name} added`)}
-function updateCartUI(){
-    let total=0,count=0,html="";
-    cart.forEach((item,idx)=>{
-        let it=item.price*item.quantity;total+=it;count+=item.quantity;
-        html+=`<div class="cart-item"><div class="cart-item-content"><h4>${escapeHtml(item.name)}</h4><div class="cart-price">${getCurrencySymbol()}${item.price.toFixed(2)} each</div></div><div class="cart-item-controls"><button class="qty-btn" data-index="${idx}" data-delta="-1">−</button><span style="font-weight:700;min-width:20px;text-align:center;">${item.quantity}</span><button class="qty-btn" data-index="${idx}" data-delta="1">+</button><button class="remove-btn" data-index="${idx}">🗑️</button></div></div>`;
-    });
-    document.getElementById("cartItems").innerHTML=html||"<div style='padding:20px;text-align:center;opacity:0.6;'>Cart empty</div>";
-    document.getElementById("cartTotal").textContent=`${getCurrencySymbol()}${total.toFixed(2)}`;
-    document.getElementById("cartCountBadge").textContent=count;
-    let ot="🍪 COOKIE'S SHOP ORDER\n━━━━━━━━━━━━━━━━━━\n";cart.forEach(i=>ot+=`${i.name} x${i.quantity} — ${getCurrencySymbol()}${(i.price*i.quantity).toFixed(2)}\n`);ot+=`\nTOTAL: ${getCurrencySymbol()}${total.toFixed(2)}\n💳 Payment: PayPal/Swedbank/SEB/Luminor/Bitcoin/Ethereum\n📌 Paste in Discord ticket`;document.getElementById("copyArea").value=ot;
-    document.querySelectorAll(".qty-btn").forEach(b=>b.onclick=e=>{let idx=parseInt(b.dataset.index),d=parseInt(b.dataset.delta);if(cart[idx]){let nq=cart[idx].quantity+d;if(nq<=0)cart.splice(idx,1);else cart[idx].quantity=nq;updateCartUI();saveCart()}e.stopPropagation()});
-    document.querySelectorAll(".remove-btn").forEach(b=>b.onclick=e=>{cart.splice(parseInt(b.dataset.index),1);updateCartUI();saveCart();showToastMsg("Removed");e.stopPropagation()});
-}
-function clearCart(){if(confirm("Clear cart?")){cart=[];updateCartUI();saveCart();showToastMsg("Cart cleared")}}
-function manualCopy(){let ta=document.getElementById("copyArea");ta.select();navigator.clipboard.writeText(ta.value);showToastMsg("Order copied!")}
-function toggleCart(){document.getElementById("cartPanel").classList.toggle("active")}
-function loadMore(){displayedCount+=24;renderShop()}
-
-function filterAndSort(){
-    let p=getCurrentProducts();
-    if(currentSearch)p=p.filter(x=>x.name.toLowerCase().includes(currentSearch.toLowerCase()));
-    if(currentFilter!="all")p=p.filter(x=>x.cat===currentFilter);
-    if(currentSort==="price-asc")p.sort((a,b)=>a.price-b.price);else if(currentSort==="price-desc")p.sort((a,b)=>b.price-a.price);else if(currentSort==="name-asc")p.sort((a,b)=>a.name.localeCompare(b.name));else if(currentSort==="rating-desc")p.sort((a,b)=>b.rating-a.rating);
-    return p;
-}
-function renderShop(){
-    let prods=filterAndSort(),limited=prods.slice(0,displayedCount),grid=document.getElementById("gamesGrid");if(!grid)return;grid.innerHTML="";
-    limited.forEach(prod=>{let c=document.createElement("div");c.className="game-card";c.innerHTML=`${prod.discount?`<div class="discount-badge">-${prod.discount}%</div>`:""}${prod.trending?`<div class="trending-badge">🔥 Trending</div>`:""}<div class="game-image"><img src="${prod.img}" alt="${prod.name}" onerror="this.src='https://placehold.co/400x250/1e293b/818cf8?text=${prod.emoji}'"></div><div class="game-content"><div class="game-category">${prod.cat}</div><div class="game-title">${prod.name}</div><div class="game-description">${prod.desc||''}</div><div class="rating-row"><div class="stars">${'★'.repeat(Math.floor(prod.rating||4))} ${(prod.rating||4).toFixed(1)}</div></div><div class="price-row"><div class="price"><span class="current-price">${getCurrencySymbol()}${prod.price.toFixed(2)}</span>${prod.discount?`<span class="old-price">${getCurrencySymbol()}${(prod.price/(1-prod.discount/100)).toFixed(2)}</span>`:""}</div></div><button class="buy-btn add-to-cart-btn" data-name="${prod.name.replace(/'/g,"\\'")}" data-price="${prod.price}">🛒 Add To Cart</button></div>`;grid.appendChild(c)});
-    document.querySelectorAll(".add-to-cart-btn").forEach(b=>b.addEventListener("click",()=>addToCart(b.dataset.name,parseFloat(b.dataset.price))));
-    document.getElementById("loadMoreBtn").style.display=prods.length>displayedCount?"block":"none";
-}
-
-// Purchase history
-function loadPurchaseHistory(){const s=localStorage.getItem('purchaseHistory_'+(currentUser||'guest'));purchaseHistory=s?JSON.parse(s):[];renderOrdersPanel()}
-function savePurchaseHistory(){if(currentUser)localStorage.setItem('purchaseHistory_'+currentUser,JSON.stringify(purchaseHistory))}
-function addToPurchaseHistory(game,code){purchaseHistory.unshift({game,code,date:new Date().toLocaleString()});if(purchaseHistory.length>50)purchaseHistory.pop();savePurchaseHistory();renderOrdersPanel()}
-function renderOrdersPanel(){const c=document.getElementById('ordersList');if(!c)return;if(!purchaseHistory.length){c.innerHTML='<div class="no-orders">No purchases yet.</div>';return}c.innerHTML=purchaseHistory.map(o=>`<div class="order-item"><div class="order-game">🎮 ${escapeHtml(o.game)}</div><div class="order-code">📦 Code: ${escapeHtml(o.code)}</div><div style="font-size:0.7rem;opacity:0.6;">${o.date}</div></div>`).join('')}
-
-// Auth
-function openLoginModal(){document.getElementById('loginModal').classList.add('active')}
-function closeLoginModal(){document.getElementById('loginModal').classList.remove('active')}
-async function modalRegister(){
-    const u=document.getElementById('modalRegUsername').value.trim(),p=document.getElementById('modalRegPassword').value.trim();
-    if(!u||!p){showToastMsg('Fill all fields',true);return}const btn=document.getElementById('registerSubmitBtn');btn.disabled=true;btn.innerHTML='Registering...';
-    const res=await apiCall('register',{username:u,password:p});btn.disabled=false;btn.innerHTML='Create Account';
-    if(res.success){showToastMsg('Registered!');closeLoginModal()}else showToastMsg(res.message,true)
-}
-async function modalLogin(){
-    const u=document.getElementById('modalUsername').value.trim(),p=document.getElementById('modalPassword').value.trim();
-    if(!u||!p){showToastMsg('Enter credentials',true);return}const btn=document.getElementById('loginSubmitBtn');btn.disabled=true;btn.innerHTML='Logging in...';
-    const res=await apiCall('login',{username:u,password:p});
-    if(res.success){
-        currentUser=u; currentToken=res.data.token;
-        localStorage.setItem('shopUser',JSON.stringify({username:u,token:currentToken}));
-        document.getElementById('userBar').style.display='flex';
-        document.getElementById('loginPromptBar').style.display='none';
-        document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;
-        loadPurchaseHistory();
-        showToastMsg(`Welcome ${u}!`);
-        closeLoginModal();
-    }else showToastMsg(res.message,true);
-    btn.disabled=false;btn.innerHTML='Login'
-}
-function logout(){
-    currentUser=null;currentToken=null;
-    localStorage.removeItem('shopUser');
-    document.getElementById('userBar').style.display='none';
-    document.getElementById('loginPromptBar').style.display='flex';
-    purchaseHistory=[];renderOrdersPanel();showToastMsg('Logged out')
-}
-async function updateBalanceDisplay(){
-    if(!currentUser) return;
-    const res=await apiCall('getBalance',{username:currentUser,token:currentToken});
-    if(res.success) document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.balance.toFixed(2)}`;
-    else { logout(); showToastMsg('Session expired',true); }
-}
-async function refreshBalance(){await updateBalanceDisplay();showToastMsg('Balance refreshed')}
-function launchConfetti(){for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.animationDelay=Math.random()*0.5+'s';c.style.background=['#6366f1','#facc15','#22c55e','#5865F2','#8b5cf6'][Math.floor(Math.random()*5)];document.body.appendChild(c);setTimeout(()=>c.remove(),2500)}}
-async function payWithBalance(){
-    if(!currentUser){showToastMsg('Please login first',true);openLoginModal();return}if(cart.length===0){showToastMsg('Cart empty',true);return}const payBtn=document.getElementById('payWithBalanceBtn');if(!payBtn||payCooldown){showToastMsg('Wait 30 seconds',true);return}
-    let totalCurr=0,productList=[];for(let item of cart){totalCurr+=item.price*item.quantity;productList.push(`${item.name} x${item.quantity}`)}const totalEUR=totalCurr/rates[currentCurrency];
-    payBtn.disabled=true;payCooldown=true;const orig=payBtn.innerHTML;let sec=30;payBtn.innerHTML=`⏳ Wait ${sec}s...`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false}else payBtn.innerHTML=`⏳ Wait ${sec}s...`},1000);
-    try{
-        const res=await apiCall('purchase',{username:currentUser,token:currentToken,product:productList.join(', '),price:totalEUR});
-        if(res.success){
-            addToPurchaseHistory(`Cart: ${productList.join(', ')}`,res.data.code);
-            showToastMsg(`✅ Payment successful! Code: ${res.data.code}`);
-            launchConfetti();
-            document.getElementById('balanceDisplay').innerHTML=`💰 Balance: €${res.data.newBalance.toFixed(2)}`;
-            cart=[];updateCartUI();saveCart();
-            openCodeModal(res.data.code);
-        }else{
-            showToastMsg(res.message||'Purchase failed',true);
-            clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;
-        }
-    }catch(e){
-        clearInterval(int);payBtn.innerHTML=orig;payBtn.disabled=false;payCooldown=false;showToastMsg('Error',true);
-    }
-}
-async function submitFeedback(){
-    if(feedbackCooldown){showToastMsg('Wait before sending again',true);return}const name=document.getElementById('feedbackName').value.trim(),msg=document.getElementById('feedbackMsg').value.trim();if(!msg){showToastMsg('Enter a message',true);return}const btn=document.getElementById('feedbackSubmitBtn');btn.disabled=true;feedbackCooldown=true;const orig=btn.innerHTML;btn.innerHTML='Sending...';let sec=60;const timer=document.getElementById('feedbackTimer');timer.textContent=`You can send again in ${sec}s`;const int=setInterval(()=>{sec--;if(sec<=0){clearInterval(int);timer.textContent='';btn.disabled=false;feedbackCooldown=false;btn.innerHTML=orig}else timer.textContent=`You can send again in ${sec}s`},1000);
-    const res=await apiCall('feedback',{name:name||'Anonymous',message:msg});
-    if(res.success){showToastMsg('Thank you!');document.getElementById('feedbackName').value='';document.getElementById('feedbackMsg').value='';}
-    else showToastMsg(res.message||'Failed',true);
-}
-
-function init(){
-    applySettings();loadCart();document.getElementById('liveClock').textContent=new Date().toLocaleTimeString();
-    document.getElementById("searchInput").addEventListener("input",e=>{currentSearch=e.target.value;displayedCount=24;document.getElementById("clearSearchBtn").style.display=currentSearch?'inline-block':'none';renderShop()});
-    document.getElementById("clearSearchBtn").addEventListener("click",()=>{document.getElementById("searchInput").value='';currentSearch='';displayedCount=24;document.getElementById("clearSearchBtn").style.display='none';renderShop()});
-    document.getElementById("sortSelect").addEventListener("change",e=>{currentSort=e.target.value;renderShop()});
-    document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");currentFilter=t.dataset.filter;displayedCount=24;renderShop()}));
-    document.querySelectorAll(".currency-option").forEach(o=>o.addEventListener("click",()=>{const cur=o.dataset.currency;if(!cur)return;currentCurrency=cur;document.querySelectorAll(".currency-option").forEach(x=>x.classList.remove("active"));o.classList.add("active");renderShop();updateCartUI();showToastMsg(`Currency: ${cur.toUpperCase()}`)}));
-    document.getElementById("openCartBtn").addEventListener("click",toggleCart);document.getElementById("closeCartBtn").addEventListener("click",toggleCart);
-    window.addEventListener("scroll",()=>{const b=document.getElementById("backToTopBtn");if(window.scrollY>400)b.classList.add("show");else b.classList.remove("show")});
-    let saved=localStorage.getItem('shopUser');if(saved){try{let{username,token}=JSON.parse(saved);currentUser=username;currentToken=token;updateBalanceDisplay().then(()=>{document.getElementById('userBar').style.display='flex';document.getElementById('loginPromptBar').style.display='none';loadPurchaseHistory();showToastMsg(`Welcome back ${username}!`)}).catch(()=>{localStorage.removeItem('shopUser')})}catch(e){}}
-    renderShop();loadPurchaseHistory();
-    for(let i=0;i<40;i++){let p=document.createElement("div");p.className="particle";p.style.width=Math.random()*7+3+"px";p.style.height=p.style.width;p.style.left=Math.random()*100+"%";p.style.top=Math.random()*100+"%";p.style.animationDelay=Math.random()*10+"s";p.style.animationDuration=Math.random()*8+5+"s";document.getElementById("particles").appendChild(p)}
-}
-init();
-</script>
-</body>
-</html>
->>>>>>> 8d40155dd40207e1a17f3b36929c8ac27ac8db14

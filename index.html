@@ -1,3 +1,2596 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101114">
+    <title>Cookie's Shop | Digital Gaming Store</title>
+    <meta name="description" content="Cookie's Shop is a digital gaming store for games, subscriptions, Robux, FiveM tools, and bundles with fast Discord support.">
+    <meta property="og:title" content="Cookie's Shop - Digital Gaming Store">
+    <meta property="og:description" content="Games, subscriptions, Robux, FiveM tools, and bundles with fast Discord support.">
+    <meta property="og:image" content="https://cookie-shop.github.io/67.png?v=4">
+    <meta property="og:url" content="https://cookie-shop.github.io">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cookie's Shop - Digital Gaming Store">
+    <meta name="twitter:description" content="Browse digital gaming products and create a Discord ticket for checkout.">
+    <meta name="twitter:image" content="https://cookie-shop.github.io/67.png?v=4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #101114;
+            --surface: #17191f;
+            --surface-2: #20242d;
+            --surface-3: #282d38;
+            --text: #fbfbf8;
+            --muted: #a7adba;
+            --line: rgba(255,255,255,0.12);
+            --line-strong: rgba(255,255,255,0.2);
+            --amber: #f5a524;
+            --amber-2: #ffcf5a;
+            --mint: #3ddc97;
+            --cyan: #4cc9f0;
+            --red: #ff5c7a;
+            --shadow: 0 18px 42px rgba(0,0,0,0.36);
+            --radius: 8px;
+            --header: rgba(16,17,20,0.78);
+        }
+
+        body.light {
+            color-scheme: light;
+            --bg: #f5f6f0;
+            --surface: #ffffff;
+            --surface-2: #ecefe7;
+            --surface-3: #e0e6dd;
+            --text: #15171b;
+            --muted: #58606d;
+            --line: rgba(0,0,0,0.12);
+            --line-strong: rgba(0,0,0,0.2);
+            --header: rgba(245,246,240,0.86);
+            --shadow: 0 18px 42px rgba(43,47,54,0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            overflow-x: hidden;
+        }
+
+        body.drawer-open {
+            overflow: hidden;
+        }
+
+        body.reduce-motion *,
+        body.reduce-motion *::before,
+        body.reduce-motion *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            scroll-behavior: auto !important;
+            transition-duration: 0.01ms !important;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.2;
+            flex: 0 0 auto;
+        }
+
+        .icon-fallback {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .has-icons .icon-fallback {
+            display: none;
+        }
+
+        .control-btn .icon-fallback {
+            display: none;
+        }
+
+        .skip-link {
+            position: fixed;
+            left: 12px;
+            top: 12px;
+            z-index: 4000;
+            transform: translateY(-130%);
+            background: var(--amber);
+            color: #111;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-weight: 800;
+        }
+
+        .skip-link:focus {
+            transform: translateY(0);
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--header);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topline {
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+
+        .topline-inner,
+        .nav,
+        .section-inner {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .topline-inner {
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .topline strong {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .nav {
+            min-height: 76px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            min-width: max-content;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius);
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle at 68% 36%, #201612 0 4px, transparent 5px),
+                radial-gradient(circle at 40% 64%, #201612 0 3px, transparent 4px),
+                radial-gradient(circle at 32% 34%, #201612 0 2px, transparent 3px),
+                linear-gradient(135deg, #ffcf5a, #d17a1d);
+            box-shadow: inset 0 -7px 14px rgba(68,32,3,0.22), 0 9px 24px rgba(245,165,36,0.24);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .brand-copy {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand-title {
+            font-size: 1.02rem;
+            font-weight: 900;
+            letter-spacing: 0;
+        }
+
+        .brand-sub {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .nav-links a,
+        .chip,
+        .control-btn,
+        .tab-btn,
+        .quantity-btn,
+        .icon-btn {
+            min-height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: var(--text);
+            background: rgba(255,255,255,0.04);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .nav-links a {
+            padding: 0 12px;
+            color: var(--muted);
+            font-weight: 700;
+            font-size: 0.86rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus-visible {
+            color: var(--text);
+            border-color: var(--line-strong);
+        }
+
+        .nav-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn,
+        .icon-btn {
+            padding: 0 12px;
+            font-weight: 800;
+        }
+
+        .icon-btn {
+            width: 42px;
+            padding: 0;
+        }
+
+        .cart-count {
+            min-width: 22px;
+            height: 22px;
+            display: inline-grid;
+            place-items: center;
+            border-radius: 999px;
+            background: var(--amber);
+            color: #14110b;
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 72svh;
+            isolation: isolate;
+            display: flex;
+            align-items: end;
+            padding: 92px 0 48px;
+            background: #101114;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            background: url("colorful-gaming-accessories.jpg") center / cover no-repeat;
+            transform: scale(1.02);
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background:
+                linear-gradient(90deg, rgba(16,17,20,0.96) 0%, rgba(16,17,20,0.78) 42%, rgba(16,17,20,0.36) 100%),
+                linear-gradient(0deg, var(--bg) 0%, rgba(16,17,20,0.05) 44%);
+        }
+
+        .hero-inner {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 710px);
+            gap: 28px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            color: #111;
+            background: var(--amber-2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 6px;
+            padding: 9px 12px;
+            font-size: 0.76rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            max-width: 10ch;
+            font-size: clamp(3.4rem, 9vw, 7.4rem);
+            line-height: 0.88;
+            font-weight: 900;
+            letter-spacing: 0;
+            text-wrap: balance;
+        }
+
+        .hero-copy {
+            max-width: 680px;
+            color: #e8ebf1;
+            font-size: clamp(1rem, 1.7vw, 1.18rem);
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .danger-btn {
+            min-height: 46px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 0 16px;
+            font-weight: 900;
+            color: #12100b;
+            background: linear-gradient(135deg, var(--amber-2), var(--amber));
+            box-shadow: 0 12px 28px rgba(245,165,36,0.24);
+        }
+
+        .secondary-btn {
+            color: var(--text);
+            background: rgba(255,255,255,0.08);
+            border-color: var(--line-strong);
+            box-shadow: none;
+        }
+
+        .danger-btn {
+            color: #fff;
+            background: rgba(255,92,122,0.16);
+            border-color: rgba(255,92,122,0.3);
+            box-shadow: none;
+        }
+
+        .primary-btn:hover,
+        .secondary-btn:hover,
+        .danger-btn:hover,
+        .control-btn:hover,
+        .icon-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .metric {
+            border: 1px solid var(--line);
+            background: rgba(17,19,23,0.56);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 14px;
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 1.26rem;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .metric span {
+            color: #cbd0da;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .band {
+            border-top: 1px solid var(--line);
+        }
+
+        .section {
+            padding: 64px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-kicker {
+            color: var(--amber);
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            line-height: 1.02;
+            letter-spacing: 0;
+            text-wrap: balance;
+        }
+
+        .section-note {
+            max-width: 520px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .feature {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            min-height: 154px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+        }
+
+        .feature .icon {
+            color: var(--cyan);
+            width: 24px;
+            height: 24px;
+        }
+
+        .feature h3 {
+            font-size: 1rem;
+            margin-top: 22px;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .shop-tools {
+            position: sticky;
+            top: 111px;
+            z-index: 20;
+            background: color-mix(in srgb, var(--bg) 86%, transparent);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .search-wrap {
+            position: relative;
+        }
+
+        .search-wrap .icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+        }
+
+        .search-input,
+        .select-input,
+        .modal-input,
+        .feedback-field,
+        .cart-copy {
+            width: 100%;
+            min-height: 44px;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            color: var(--text);
+            padding: 0 12px;
+            outline: none;
+        }
+
+        .search-input {
+            padding-left: 42px;
+            padding-right: 42px;
+        }
+
+        .search-input:focus,
+        .select-input:focus,
+        .modal-input:focus,
+        .feedback-field:focus,
+        .cart-copy:focus {
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px rgba(245,165,36,0.16);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            width: 36px;
+            height: 36px;
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tab-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 18px;
+            scrollbar-width: thin;
+        }
+
+        .tab-btn {
+            flex: 0 0 auto;
+            padding: 0 12px;
+            color: var(--muted);
+            font-weight: 900;
+        }
+
+        .tab-btn.active {
+            color: #12100b;
+            background: var(--amber);
+            border-color: var(--amber);
+        }
+
+        .shop-summary {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 14px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .product-card {
+            position: relative;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            min-width: 0;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(245,165,36,0.48);
+        }
+
+        .product-image {
+            position: relative;
+            aspect-ratio: 16 / 10;
+            background:
+                linear-gradient(135deg, rgba(245,165,36,0.24), rgba(76,201,240,0.14)),
+                var(--surface-2);
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.04);
+        }
+
+        .image-fallback-label {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            color: rgba(255,255,255,0.76);
+            font-weight: 900;
+            font-size: 2.8rem;
+            letter-spacing: 0;
+        }
+
+        .product-image img + .image-fallback-label {
+            display: none;
+        }
+
+        .product-image.image-fallback .image-fallback-label {
+            display: grid;
+        }
+
+        .product-badges {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 10px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            z-index: 2;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            min-height: 26px;
+            border-radius: 6px;
+            padding: 0 8px;
+            background: rgba(16,17,20,0.78);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .badge.sale {
+            color: #111;
+            background: var(--mint);
+            border-color: var(--mint);
+        }
+
+        .badge.hot {
+            color: #111;
+            background: var(--amber-2);
+            border-color: var(--amber-2);
+        }
+
+        .product-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .product-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .rating {
+            color: var(--amber-2);
+            white-space: nowrap;
+        }
+
+        .product-title {
+            font-size: 1rem;
+            line-height: 1.26;
+            min-height: 2.52em;
+            overflow-wrap: anywhere;
+        }
+
+        .product-desc {
+            color: var(--muted);
+            font-size: 0.86rem;
+            line-height: 1.48;
+            min-height: 3.82em;
+        }
+
+        .product-footer {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .price {
+            display: grid;
+            gap: 2px;
+        }
+
+        .price strong {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .price span {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+
+        .add-btn {
+            min-height: 42px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--text);
+            color: var(--bg);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 12px;
+            font-weight: 900;
+            min-width: 0;
+        }
+
+        .add-btn:hover {
+            background: var(--amber);
+            color: #111;
+        }
+
+        .empty-state {
+            border: 1px dashed var(--line-strong);
+            border-radius: var(--radius);
+            padding: 38px 18px;
+            text-align: center;
+            color: var(--muted);
+            display: none;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .review-card,
+        .faq-item,
+        .contact-panel,
+        .orders-panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .review-card {
+            overflow: hidden;
+        }
+
+        .proof-link {
+            display: block;
+            aspect-ratio: 16 / 9;
+            background: var(--surface-2);
+            overflow: hidden;
+        }
+
+        .proof-link img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .review-copy {
+            padding: 16px;
+        }
+
+        .review-copy h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .review-copy p {
+            color: var(--muted);
+            line-height: 1.55;
+            margin-bottom: 12px;
+        }
+
+        .verified {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-height: 28px;
+            padding: 0 9px;
+            color: #111;
+            background: var(--mint);
+            border-radius: 6px;
+            font-size: 0.76rem;
+            font-weight: 900;
+        }
+
+        .account-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .account-row strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .account-row span {
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .account-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .orders-panel {
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .orders-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+            max-height: 280px;
+            overflow: auto;
+        }
+
+        .order-item {
+            border-left: 3px solid var(--amber);
+            background: var(--surface-2);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.88rem;
+        }
+
+        .order-code {
+            color: var(--cyan);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            margin-top: 4px;
+        }
+
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .contact-panel {
+            padding: 20px;
+        }
+
+        .contact-panel h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .contact-panel p {
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .payment-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 0.86rem;
+        }
+
+        .payment-list span {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 10px;
+            background: var(--surface-2);
+        }
+
+        .feedback-form {
+            display: grid;
+            gap: 10px;
+        }
+
+        textarea.feedback-field {
+            min-height: 126px;
+            padding-top: 12px;
+            resize: vertical;
+        }
+
+        .timer {
+            min-height: 20px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .faq-item {
+            padding: 18px;
+        }
+
+        .faq-item h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .faq-item p {
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .footer {
+            border-top: 1px solid var(--line);
+            padding: 34px 0;
+            color: var(--muted);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-links a {
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0 10px;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        .drawer-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 1990;
+            background: rgba(0,0,0,0.56);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .drawer-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 2000;
+            width: min(440px, 100vw);
+            height: 100svh;
+            background: var(--surface);
+            border-left: 1px solid var(--line);
+            box-shadow: -24px 0 54px rgba(0,0,0,0.35);
+            transform: translateX(102%);
+            transition: transform 0.25s ease;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .cart-drawer.active {
+            transform: translateX(0);
+        }
+
+        .drawer-head,
+        .drawer-foot {
+            padding: 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .drawer-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .drawer-head h2 {
+            font-size: 1.2rem;
+        }
+
+        .cart-items {
+            overflow: auto;
+            padding: 14px;
+            display: grid;
+            align-content: start;
+            gap: 10px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            border: 1px solid var(--line);
+            background: var(--surface-2);
+            border-radius: var(--radius);
+            padding: 12px;
+        }
+
+        .cart-item h3 {
+            font-size: 0.92rem;
+            line-height: 1.35;
+            margin-bottom: 6px;
+            overflow-wrap: anywhere;
+        }
+
+        .cart-item p {
+            color: var(--muted);
+            font-size: 0.84rem;
+        }
+
+        .cart-controls {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            gap: 6px;
+        }
+
+        .quantity-btn {
+            width: 34px;
+            min-height: 34px;
+            padding: 0;
+            font-weight: 900;
+        }
+
+        .drawer-foot {
+            border-top: 1px solid var(--line);
+            border-bottom: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 900;
+            font-size: 1.1rem;
+        }
+
+        .cart-copy {
+            min-height: 90px;
+            resize: none;
+            padding: 10px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.45;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0,0,0,0.64);
+            display: none;
+            place-items: center;
+            padding: 16px;
+        }
+
+        .modal-backdrop.active {
+            display: grid;
+        }
+
+        .modal {
+            width: min(430px, 100%);
+            max-height: min(720px, 92svh);
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .modal-head {
+            padding: 16px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-head h2 {
+            font-size: 1.2rem;
+        }
+
+        .modal-body {
+            padding: 16px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .modal-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--line);
+            margin: 4px 0;
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            flex: 0 0 auto;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch span {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: var(--surface-3);
+            border: 1px solid var(--line);
+        }
+
+        .switch span::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            border-radius: 999px;
+            background: var(--text);
+            transition: transform 0.2s ease;
+        }
+
+        .switch input:checked + span {
+            background: var(--amber);
+            border-color: var(--amber);
+        }
+
+        .switch input:checked + span::after {
+            transform: translateX(20px);
+            background: #111;
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            z-index: 5000;
+            transform: translate(-50%, 140%);
+            max-width: min(520px, calc(100% - 32px));
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            padding: 12px 14px;
+            box-shadow: var(--shadow);
+            transition: transform 0.22s ease;
+            font-weight: 800;
+        }
+
+        .toast.show {
+            transform: translate(-50%, 0);
+        }
+
+        .toast.error {
+            border-color: rgba(255,92,122,0.42);
+            color: #ffd2da;
+        }
+
+        .back-top {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 1200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(8px);
+        }
+
+        .back-top.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 940px) {
+            .topline-inner {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .topline-inner span:last-child {
+                display: none;
+            }
+
+            .nav {
+                grid-template-columns: 1fr auto;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .metrics,
+            .feature-grid,
+            .reviews-grid,
+            .faq-grid,
+            .feedback-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .shop-tools {
+                top: 76px;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .search-wrap {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .topline {
+                display: none;
+            }
+
+            .nav {
+                min-height: 66px;
+                width: min(100% - 22px, 1180px);
+                gap: 10px;
+            }
+
+            .brand-sub {
+                display: none;
+            }
+
+            .brand-mark {
+                width: 38px;
+                height: 38px;
+            }
+
+            .nav-actions .control-btn .button-label {
+                display: none;
+            }
+
+            .control-btn .icon-fallback {
+                display: inline-flex;
+            }
+
+            .has-icons .control-btn .icon-fallback {
+                display: none;
+            }
+
+            .control-btn,
+            .icon-btn {
+                width: 40px;
+                padding: 0;
+            }
+
+            #cartButton {
+                width: 56px;
+            }
+
+            .hero {
+                min-height: 76svh;
+                padding: 76px 0 36px;
+            }
+
+            .hero::after {
+                background:
+                    linear-gradient(90deg, rgba(16,17,20,0.95) 0%, rgba(16,17,20,0.72) 100%),
+                    linear-gradient(0deg, var(--bg) 0%, rgba(16,17,20,0.08) 48%);
+            }
+
+            .section {
+                padding: 46px 0;
+            }
+
+            .section-header,
+            .footer-grid,
+            .account-row {
+                display: grid;
+                grid-template-columns: 1fr;
+                align-items: start;
+            }
+
+            .metrics,
+            .feature-grid,
+            .reviews-grid,
+            .faq-grid,
+            .feedback-grid,
+            .payment-list,
+            .shop-tools {
+                grid-template-columns: 1fr;
+            }
+
+            .shop-tools {
+                position: static;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-title,
+            .product-desc {
+                min-height: auto;
+            }
+
+            .account-actions,
+            .hero-actions {
+                width: 100%;
+            }
+
+            .account-actions > *,
+            .hero-actions > * {
+                flex: 1;
+            }
+
+            .footer-links {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#products">Skip to products</a>
+
+    <header class="site-header">
+        <div class="topline">
+            <div class="topline-inner">
+                <span><strong>Cookie's Shop</strong> digital marketplace</span>
+                <span id="clock">Online now</span>
+            </div>
+        </div>
+        <nav class="nav" aria-label="Main navigation">
+            <a class="brand" href="#top" aria-label="Cookie's Shop home">
+                <span class="brand-mark" aria-hidden="true"></span>
+                <span class="brand-copy">
+                    <span class="brand-title">Cookie's Shop</span>
+                    <span class="brand-sub">Gaming store</span>
+                </span>
+            </a>
+            <div class="nav-links">
+                <a href="#products">Products</a>
+                <a href="#reviews">Reviews</a>
+                <a href="#support">Support</a>
+                <a href="#faq">FAQ</a>
+            </div>
+            <div class="nav-actions">
+                <button class="icon-btn" type="button" id="themeButton" aria-label="Open settings" title="Settings">
+                    <i data-lucide="settings" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">SET</span>
+                </button>
+                <button class="control-btn" type="button" id="loginButton">
+                    <i data-lucide="user" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">IN</span>
+                    <span class="button-label">Login</span>
+                </button>
+                <button class="control-btn" type="button" id="cartButton">
+                    <i data-lucide="shopping-cart" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">CT</span>
+                    <span class="button-label">Cart</span>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main id="top">
+        <section class="hero" aria-label="Cookie's Shop hero">
+            <div class="hero-inner">
+                <span class="eyebrow">
+                    <i data-lucide="zap" class="icon" aria-hidden="true"></i>
+                    Fast Discord support
+                </span>
+                <h1>Cookie's Shop</h1>
+                <p class="hero-copy">A sharper digital store for games, subscriptions, Robux, FiveM tools, and bundles. Browse the catalog, build your cart, then create a Discord ticket with a clean order summary.</p>
+                <div class="hero-actions">
+                    <a class="primary-btn" href="#products">
+                        <i data-lucide="store" class="icon" aria-hidden="true"></i>
+                        Browse Products
+                    </a>
+                    <a class="secondary-btn" href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">
+                        <i data-lucide="message-circle" class="icon" aria-hidden="true"></i>
+                        Open Discord
+                    </a>
+                </div>
+                <div class="metrics" aria-label="Store highlights">
+                    <div class="metric"><strong id="metricProducts">75+</strong><span>Products</span></div>
+                    <div class="metric"><strong>4.8</strong><span>Average rating</span></div>
+                    <div class="metric"><strong>24/7</strong><span>Ticket support</span></div>
+                    <div class="metric"><strong>6</strong><span>Payment options</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section band" aria-label="Store features">
+            <div class="section-inner">
+                <div class="section-header">
+                    <div>
+                        <div class="section-kicker">Why shop here</div>
+                        <h2>Built for fast digital orders.</h2>
+                    </div>
+                    <p class="section-note">A cleaner catalog, clearer prices, saved cart, currency switching, order copy, proof images, and account balance checkout when your backend is available.</p>
+                </div>
+                <div class="feature-grid">
+                    <article class="feature">
+                        <i data-lucide="search" class="icon" aria-hidden="true"></i>
+                        <div>
+                            <h3>Instant catalog search</h3>
+                            <p>Filter by category, price, rating, and product name without waiting for another page.</p>
+                        </div>
+                    </article>
+                    <article class="feature">
+                        <i data-lucide="badge-check" class="icon" aria-hidden="true"></i>
+                        <div>
+                            <h3>Proof-first trust</h3>
+                            <p>Customer reputation is placed close to the shop experience with linked proof screenshots.</p>
+                        </div>
+                    </article>
+                    <article class="feature">
+                        <i data-lucide="copy-check" class="icon" aria-hidden="true"></i>
+                        <div>
+                            <h3>Clean order summary</h3>
+                            <p>The cart generates a tidy Discord ticket message with quantities, currency, and total.</p>
+                        </div>
+                    </article>
+                    <article class="feature">
+                        <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
+                        <div>
+                            <h3>Responsive by default</h3>
+                            <p>The storefront is tuned for desktop, tablet, and phone screens with stable product cards.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="products">
+            <div class="section-inner">
+                <div class="section-header">
+                    <div>
+                        <div class="section-kicker">Catalog</div>
+                        <h2>Find the right drop.</h2>
+                    </div>
+                    <p class="section-note">Prices are listed in EUR by default. Currency conversion is an estimate for browsing; final payment is confirmed in your ticket.</p>
+                </div>
+
+                <div class="shop-tools" aria-label="Product controls">
+                    <div class="search-wrap">
+                        <i data-lucide="search" class="icon" aria-hidden="true"></i>
+                        <input class="search-input" id="searchInput" type="search" placeholder="Search games, Robux, Nitro, VPN..." autocomplete="off">
+                        <button class="clear-search" id="clearSearch" type="button" aria-label="Clear search">
+                            <i data-lucide="x" class="icon" aria-hidden="true"></i>
+                            <span class="icon-fallback" aria-hidden="true">X</span>
+                        </button>
+                    </div>
+                    <select class="select-input" id="sortSelect" aria-label="Sort products">
+                        <option value="featured">Featured first</option>
+                        <option value="price-asc">Price low to high</option>
+                        <option value="price-desc">Price high to low</option>
+                        <option value="rating-desc">Highest rated</option>
+                        <option value="name-asc">Name A to Z</option>
+                    </select>
+                    <select class="select-input" id="currencySelect" aria-label="Currency">
+                        <option value="eur">EUR</option>
+                        <option value="usd">USD</option>
+                        <option value="gbp">GBP</option>
+                    </select>
+                </div>
+
+                <div class="tab-strip" id="categoryTabs" aria-label="Product categories"></div>
+                <div class="shop-summary" id="shopSummary"></div>
+                <div class="empty-state" id="emptyState">No products match this search yet.</div>
+                <div class="product-grid" id="productGrid"></div>
+            </div>
+        </section>
+
+        <section class="section band" id="reviews">
+            <div class="section-inner">
+                <div class="section-header">
+                    <div>
+                        <div class="section-kicker">Customer reputation</div>
+                        <h2>Proof that the shop is moving.</h2>
+                    </div>
+                    <p class="section-note">The proof images open in a new tab so customers can inspect the screenshots directly.</p>
+                </div>
+                <div class="reviews-grid">
+                    <article class="review-card">
+                        <a class="proof-link" href="tuco.png" target="_blank" rel="noopener">
+                            <img src="tuco.png" alt="Robux order proof from tuco" loading="lazy">
+                        </a>
+                        <div class="review-copy">
+                            <h3>tuco</h3>
+                            <p>Robux order delivered fast with a clean support experience.</p>
+                            <span class="verified"><i data-lucide="check" class="icon" aria-hidden="true"></i>Verified review</span>
+                        </div>
+                    </article>
+                    <article class="review-card">
+                        <a class="proof-link" href="kaspisijus.png" target="_blank" rel="noopener">
+                            <img src="kaspisijus.png" alt="Discord Nitro order proof from kaspisijus" loading="lazy">
+                        </a>
+                        <div class="review-copy">
+                            <h3>kaspisijus</h3>
+                            <p>Discord Nitro order at a strong price with quick delivery.</p>
+                            <span class="verified"><i data-lucide="check" class="icon" aria-hidden="true"></i>Verified review</span>
+                        </div>
+                    </article>
+                    <article class="review-card">
+                        <a class="proof-link" href="kaspisijus2.png" target="_blank" rel="noopener">
+                            <img src="kaspisijus2.png" alt="Forza Horizon 5 order proof from kaspisijus" loading="lazy">
+                        </a>
+                        <div class="review-copy">
+                            <h3>kaspisijus</h3>
+                            <p>Forza Horizon 5 order confirmed and working after purchase.</p>
+                            <span class="verified"><i data-lucide="check" class="icon" aria-hidden="true"></i>Verified review</span>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="orders-panel" aria-live="polite">
+                    <h3>Your Purchased Items</h3>
+                    <div class="orders-list" id="ordersList"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="support">
+            <div class="section-inner">
+                <div class="section-header">
+                    <div>
+                        <div class="section-kicker">Support</div>
+                        <h2>Friendly staff, clear tickets.</h2>
+                    </div>
+                    <p class="section-note">Use the cart to copy your order, then paste it into Discord. The feedback form uses your existing backend hook when it is online.</p>
+                </div>
+
+                <div class="account-row" id="accountRow">
+                    <div>
+                        <strong id="accountStatus">You are browsing as a guest.</strong>
+                        <span id="accountDetail">Login if you use store balance and purchase history.</span>
+                    </div>
+                    <div class="account-actions">
+                        <button class="secondary-btn" type="button" id="accountLoginButton">
+                            <i data-lucide="log-in" class="icon" aria-hidden="true"></i>
+                            Login
+                        </button>
+                        <button class="danger-btn" type="button" id="logoutButton" hidden>
+                            <i data-lucide="log-out" class="icon" aria-hidden="true"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
+                <div class="feedback-grid">
+                    <div class="contact-panel">
+                        <h3>Payment options</h3>
+                        <p>Confirm the final method and product details with staff before payment. Digital goods are handled through tickets.</p>
+                        <div class="payment-list" aria-label="Payment methods">
+                            <span>PayPal</span>
+                            <span>Swedbank</span>
+                            <span>SEB</span>
+                            <span>Luminor</span>
+                            <span>Bitcoin</span>
+                            <span>Ethereum</span>
+                        </div>
+                    </div>
+                    <form class="contact-panel feedback-form" id="feedbackForm">
+                        <h3>Send feedback</h3>
+                        <input class="feedback-field" id="feedbackName" type="text" placeholder="Your name">
+                        <textarea class="feedback-field" id="feedbackMessage" placeholder="Your message"></textarea>
+                        <button class="primary-btn" type="submit" id="feedbackSubmit">
+                            <i data-lucide="send" class="icon" aria-hidden="true"></i>
+                            Submit Feedback
+                        </button>
+                        <div class="timer" id="feedbackTimer"></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="section band" id="faq">
+            <div class="section-inner">
+                <div class="section-header">
+                    <div>
+                        <div class="section-kicker">FAQ</div>
+                        <h2>Simple answers before checkout.</h2>
+                    </div>
+                </div>
+                <div class="faq-grid">
+                    <article class="faq-item">
+                        <h3>How do orders work?</h3>
+                        <p>Add products to the cart, copy the order summary, and paste it into a Discord ticket. Staff confirms stock, delivery details, and payment.</p>
+                    </article>
+                    <article class="faq-item">
+                        <h3>Does the cart save?</h3>
+                        <p>Yes. Your cart and currency choice are saved in this browser so you can return without rebuilding the order.</p>
+                    </article>
+                    <article class="faq-item">
+                        <h3>What if an image does not load?</h3>
+                        <p>The product card still works, and the cart can still add the product. Replace the asset file anytime without changing the product data.</p>
+                    </article>
+                    <article class="faq-item">
+                        <h3>Can I pay with balance?</h3>
+                        <p>Yes, when the connected backend is online and your account has enough balance. Otherwise use a Discord ticket.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="section-inner footer-grid">
+            <div>
+                <a class="brand" href="#top">
+                    <span class="brand-mark" aria-hidden="true"></span>
+                    <span class="brand-copy">
+                        <span class="brand-title">Cookie's Shop</span>
+                        <span class="brand-sub">Digital gaming store</span>
+                    </span>
+                </a>
+                <p style="margin-top: 10px;">&copy; 2026 Cookie's Shop. Brand names belong to their respective owners.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#products">Products</a>
+                <a href="#reviews">Reviews</a>
+                <a href="#support">Support</a>
+                <a href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">Discord</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart" aria-hidden="true">
+        <div class="drawer-head">
+            <h2>Your Cart</h2>
+            <button class="icon-btn" type="button" id="closeCart" aria-label="Close cart">
+                <i data-lucide="x" class="icon" aria-hidden="true"></i>
+                <span class="icon-fallback" aria-hidden="true">X</span>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="drawer-foot">
+            <div class="total-row"><span>Total</span><span id="cartTotal">EUR 0.00</span></div>
+            <button class="primary-btn" type="button" id="payBalanceButton">
+                <i data-lucide="credit-card" class="icon" aria-hidden="true"></i>
+                Pay With Balance
+            </button>
+            <button class="secondary-btn" type="button" id="copyOrderButton">
+                <i data-lucide="copy" class="icon" aria-hidden="true"></i>
+                Copy Order
+            </button>
+            <textarea class="cart-copy" id="orderCopy" readonly></textarea>
+            <button class="danger-btn" type="button" id="clearCartButton">
+                <i data-lucide="trash-2" class="icon" aria-hidden="true"></i>
+                Clear Cart
+            </button>
+        </div>
+    </aside>
+
+    <div class="modal-backdrop" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <h2 id="loginTitle">Store Account</h2>
+                <button class="icon-btn" type="button" data-close-modal="loginModal" aria-label="Close login">
+                    <i data-lucide="x" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-grid">
+                    <input class="modal-input" id="loginUsername" type="text" placeholder="Username" autocomplete="username">
+                    <input class="modal-input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password">
+                    <button class="primary-btn" type="button" id="loginSubmit">
+                        <i data-lucide="log-in" class="icon" aria-hidden="true"></i>
+                        Login
+                    </button>
+                </div>
+                <div class="divider"></div>
+                <div class="modal-grid">
+                    <input class="modal-input" id="registerUsername" type="text" placeholder="New username" autocomplete="username">
+                    <input class="modal-input" id="registerPassword" type="password" placeholder="New password" autocomplete="new-password">
+                    <button class="secondary-btn" type="button" id="registerSubmit">
+                        <i data-lucide="user-plus" class="icon" aria-hidden="true"></i>
+                        Create Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <h2 id="settingsTitle">Settings</h2>
+                <button class="icon-btn" type="button" data-close-modal="settingsModal" aria-label="Close settings">
+                    <i data-lucide="x" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <label class="toggle-row">
+                    <span>Light theme</span>
+                    <span class="switch"><input type="checkbox" id="themeToggle"><span></span></span>
+                </label>
+                <label class="toggle-row">
+                    <span>Reduce motion</span>
+                    <span class="switch"><input type="checkbox" id="motionToggle"><span></span></span>
+                </label>
+                <button class="secondary-btn" type="button" id="resetSettings">
+                    <i data-lucide="rotate-ccw" class="icon" aria-hidden="true"></i>
+                    Reset Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="codeModal" role="dialog" aria-modal="true" aria-labelledby="codeTitle">
+        <div class="modal">
+            <div class="modal-head">
+                <h2 id="codeTitle">Purchase Successful</h2>
+                <button class="icon-btn" type="button" data-close-modal="codeModal" aria-label="Close purchase code">
+                    <i data-lucide="x" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">X</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="section-note">Send this code in your Discord ticket to receive your product.</p>
+                <div class="cart-copy" id="purchaseCode" style="min-height: 54px; display: grid; place-items: center; color: var(--text); font-size: 1rem;"></div>
+                <a class="primary-btn" href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">
+                    <i data-lucide="message-circle" class="icon" aria-hidden="true"></i>
+                    Open Discord
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <button class="icon-btn back-top" id="backTop" type="button" aria-label="Back to top">
+        <i data-lucide="arrow-up" class="icon" aria-hidden="true"></i>
+        <span class="icon-fallback" aria-hidden="true">UP</span>
+    </button>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTrovLy-KKL_IeGXcPu21Y8v8LgIO7qFgdWKo-8QlMiYTpMdKd377jkGdzC5JbygGaWQ/exec";
+        const BACKEND_URL = "https://corsproxy.io/?" + encodeURIComponent(SCRIPT_URL);
+        const DISCORD_URL = "https://discord.gg/49cwUj62aC";
+
+        const products = [
+            { id: "rust", name: "Rust", cat: "games", price: 4.99, img: "header.jpg", rating: 4.8, desc: "Survival PvP with base building and raids.", featured: true, sale: 15 },
+            { id: "the-forest", name: "The Forest", cat: "games", price: 1.99, img: "theforest.jpg", rating: 4.5, desc: "Craft, build, and survive on a mysterious island." },
+            { id: "full-access-rust", name: "Full Access Rust", cat: "games", price: 14.99, img: "header.jpg", rating: 4.9, desc: "Premium Rust access package.", featured: true },
+            { id: "arc-raiders", name: "Arc Raiders", cat: "games", price: 4.49, img: "images.jpg", rating: 4.2, desc: "Sci-fi extraction action with squad-based raids." },
+            { id: "dayz", name: "DayZ", cat: "games", price: 3.49, img: "dayz.jpg", rating: 4.7, desc: "Hardcore open-world survival." },
+            { id: "gta-v-steam", name: "GTA V Steam", cat: "games", price: 4.99, img: "gtav.jpg", rating: 5.0, desc: "Open-world crime sandbox on Steam.", featured: true, sale: 10 },
+            { id: "beamng-drive", name: "BeamNG.drive", cat: "games", price: 3.99, img: "beamngdrive.jpg", rating: 4.6, desc: "Realistic soft-body physics driving simulator." },
+            { id: "forza-horizon-5", name: "Forza Horizon 5", cat: "games", price: 3.49, img: "kaosk.jpg", rating: 4.9, desc: "Open-world racing across Mexico.", featured: true },
+            { id: "sons-of-the-forest", name: "Sons of The Forest", cat: "games", price: 2.49, img: "sotf.jpg", rating: 4.8, desc: "Survival horror crafting sequel." },
+            { id: "minecraft-java", name: "Minecraft Java", cat: "games", price: 7.99, img: "minecraft.png", rating: 5.0, desc: "Sandbox building, mining, and survival." },
+            { id: "cyberpunk-2077", name: "Cyberpunk 2077", cat: "games", price: 2.49, img: "cyberpunk.png", rating: 4.4, desc: "Futuristic open-world RPG.", sale: 20 },
+            { id: "schedule-i", name: "Schedule I", cat: "games", price: 2.99, img: "schedule1.png", rating: 4.1, desc: "Strategy and management simulation." },
+            { id: "raft", name: "Raft", cat: "games", price: 2.49, img: "header.png", rating: 4.5, desc: "Ocean survival and base crafting." },
+            { id: "among-us", name: "Among Us", cat: "games", price: 1.99, img: "amongus.png", rating: 4.3, desc: "Multiplayer social deduction." },
+            { id: "euro-truck-sim-2", name: "Euro Truck Simulator 2", cat: "games", price: 3.49, img: "maxresdefault.png", rating: 4.7, desc: "Drive cargo across Europe." },
+            { id: "supermarket-sim", name: "Supermarket Simulator", cat: "games", price: 2.99, img: "headekr.png", rating: 4.2, desc: "Run and grow your own store." },
+            { id: "mortal-kombat-1", name: "Mortal Kombat 1", cat: "games", price: 2.99, img: "klll.png", rating: 4.6, desc: "Fast, cinematic fighting action." },
+            { id: "rainbow-six-siege", name: "Rainbow Six Siege", cat: "games", price: 1.49, img: "lk.png", rating: 4.5, desc: "Tactical team FPS." },
+            { id: "resident-evil-village", name: "Resident Evil Village", cat: "games", price: 4.99, img: "NMu5EEmFLFUsuzOW4jGw2KOj.png", rating: 4.8, desc: "Survival horror adventure." },
+            { id: "fc-25", name: "FC 25", cat: "games", price: 3.49, img: "afgghj.png", rating: 4.4, desc: "Football simulation package.", sale: 5 },
+            { id: "fc-26", name: "FC 26", cat: "games", price: 19.99, img: "maxresdefault__2_.png", rating: 4.7, desc: "Next-generation football package." },
+            { id: "marvel-rivals", name: "Marvel Rivals", cat: "games", price: 1.49, img: "images.png", rating: 4.3, desc: "Team-based superhero action." },
+            { id: "clash-royale-1", name: "Clash Royale 1,000-3,000 Trophies", cat: "games", price: 5.49, img: "clashroyale.png", rating: 4.5, desc: "Starter trophy range package." },
+            { id: "clash-royale-2", name: "Clash Royale 3,000-5,000 Trophies", cat: "games", price: 9.99, img: "clashroyale.png", rating: 4.6, desc: "Mid trophy range package." },
+            { id: "clash-royale-3", name: "Clash Royale 5,000-8,000 Trophies", cat: "games", price: 16.99, img: "clashroyale.png", rating: 4.7, desc: "High trophy range package." },
+            { id: "clash-royale-4", name: "Clash Royale 8,000-10,000 Trophies", cat: "games", price: 27.99, img: "clashroyale.png", rating: 4.8, desc: "Advanced trophy range package." },
+            { id: "clash-royale-5", name: "Clash Royale 10,000-12,500 Trophies", cat: "games", price: 39.99, img: "clashroyale.png", rating: 4.9, desc: "Elite trophy range package." },
+            { id: "brawl-stars-1", name: "Brawl Stars 5,000-10,000 Trophies", cat: "games", price: 7.49, img: "brawlstars.png", rating: 4.6, desc: "Starter Brawl Stars trophy range." },
+            { id: "brawl-stars-2", name: "Brawl Stars 10,000-18,000 Trophies", cat: "games", price: 14.49, img: "brawlstars.png", rating: 4.7, desc: "Mid Brawl Stars trophy range." },
+            { id: "brawl-stars-3", name: "Brawl Stars 20,000-30,000 Trophies", cat: "games", price: 22.49, img: "brawlstars.png", rating: 4.8, desc: "High Brawl Stars trophy range." },
+            { id: "brawl-stars-4", name: "Brawl Stars 30,000-50,000 Trophies", cat: "games", price: 37.49, img: "brawlstars.png", rating: 4.9, desc: "Elite Brawl Stars trophy range." },
+            { id: "valorant-1", name: "Valorant 1k-3k VP", cat: "games", price: 23.99, img: "Valorant.jpg", rating: 4.7, desc: "Valorant inventory package." },
+            { id: "valorant-2", name: "Valorant 3k-5k VP", cat: "games", price: 33.99, img: "Valorant.jpg", rating: 4.7, desc: "Expanded Valorant inventory package." },
+            { id: "valorant-3", name: "Valorant 5k-7k VP", cat: "games", price: 49.99, img: "Valorant.jpg", rating: 4.8, desc: "High-value Valorant inventory package." },
+            { id: "valorant-4", name: "Valorant 7k-12k VP", cat: "games", price: 69.99, img: "Valorant.jpg", rating: 4.8, desc: "Premium Valorant inventory package." },
+            { id: "valorant-5", name: "Valorant 15k-25k VP", cat: "games", price: 83.99, img: "Valorant.jpg", rating: 4.9, desc: "Top-tier Valorant inventory package." },
+            { id: "fortnite-1", name: "Fortnite 10-20 Skins", cat: "games", price: 1.99, img: "fortnite.jpg", rating: 4.5, desc: "Starter skin range package." },
+            { id: "fortnite-2", name: "Fortnite 20-50 Skins", cat: "games", price: 2.99, img: "fortnite.jpg", rating: 4.6, desc: "Expanded skin range package." },
+            { id: "fortnite-3", name: "Fortnite 60-150 Skins", cat: "games", price: 8.99, img: "fortnite.jpg", rating: 4.7, desc: "Large skin range package." },
+            { id: "fortnite-4", name: "Fortnite 200-400 Skins", cat: "games", price: 21.99, img: "fortnite.jpg", rating: 4.8, desc: "Collector skin range package." },
+            { id: "arma-reforger", name: "Arma Reforger", cat: "games", price: 2.49, img: "armareforger.jpg", rating: 4.6, desc: "Realistic military sandbox shooter." },
+            { id: "wallpaper-engine", name: "Wallpaper Engine", cat: "games", price: 1.49, img: "wallpaperengine.jpg", rating: 4.8, desc: "Animated wallpapers and desktop scenes." },
+            { id: "crosshair-x", name: "Crosshair X", cat: "games", price: 0.99, img: "crosshair-x.png", rating: 4.5, desc: "Custom crosshair overlay." },
+            { id: "god-of-war", name: "God of War", cat: "games", price: 2.99, img: "godofwar.jpg", rating: 4.9, desc: "Action adventure with Norse mythology.", featured: true },
+            { id: "contraband-police", name: "Contraband Police", cat: "games", price: 2.99, img: "contrabandpolice.jpg", rating: 4.7, desc: "Border inspection simulator." },
+            { id: "discord-nitro", name: "Discord Nitro", cat: "subscriptions", price: 0.66, img: "nitro.png", rating: 4.8, desc: "Premium Discord features.", featured: true },
+            { id: "netflix-lifetime", name: "Netflix Lifetime", cat: "subscriptions", price: 5.49, img: "netflix_vx8r.jpg", rating: 4.7, desc: "Streaming access package.", sale: 10 },
+            { id: "spotify-3m", name: "Spotify Premium 3M", cat: "subscriptions", price: 3.99, img: "spotify-logo-zoom-s.png", rating: 4.9, desc: "Three months of premium music." },
+            { id: "youtube-1m", name: "YouTube Premium 1M", cat: "subscriptions", price: 5.99, img: "YTP.png", rating: 4.8, desc: "One month premium video access." },
+            { id: "chatgpt-plus", name: "ChatGPT Plus", cat: "subscriptions", price: 2.99, img: "Chat-GPT-logo.png", rating: 4.9, desc: "Premium AI subscription access." },
+            { id: "disney-lifetime", name: "Disney+ Lifetime", cat: "subscriptions", price: 4.99, img: "asdasdasd.png", rating: 4.6, desc: "Streaming access package." },
+            { id: "nordvpn-lifetime", name: "NordVPN Lifetime", cat: "subscriptions", price: 2.49, img: "imajjhges.png", rating: 4.8, desc: "VPN access package.", sale: 15 },
+            { id: "capcut-pro", name: "CapCut Pro", cat: "subscriptions", price: 1.99, img: "capcut-pro-12-men-3362289.png", rating: 4.5, desc: "Professional video editing tools." },
+            { id: "instagram-followers", name: "Instagram 1000+ Followers", cat: "subscriptions", price: 9.99, img: "instafolowers.jpg", rating: 4.3, desc: "Follower growth package." },
+            { id: "twitch-2000", name: "Twitch Account 2000+ Followers", cat: "subscriptions", price: 2.19, img: "twitchfolo.png", rating: 4.2, desc: "Twitch account package." },
+            { id: "twitch-9000", name: "Twitch Account 9000+ Followers", cat: "subscriptions", price: 3.99, img: "twitchfolo.png", rating: 4.3, desc: "High-follower Twitch package." },
+            { id: "tod-tv", name: "TOD TV Subscription", cat: "subscriptions", price: 1.49, img: "tod.png", rating: 4.0, desc: "Premium streaming access." },
+            { id: "crunchyroll-fan", name: "Crunchyroll FAN", cat: "subscriptions", price: 1.49, img: "crunchyroll.png", rating: 4.5, desc: "Anime streaming fan tier." },
+            { id: "crunchyroll-mega", name: "Crunchyroll MEGA FAN", cat: "subscriptions", price: 1.99, img: "crunchyroll.png", rating: 4.6, desc: "Anime streaming mega fan tier." },
+            { id: "ipvanish", name: "IPVanish VPN", cat: "subscriptions", price: 2.49, img: "ipvanish.png", rating: 4.4, desc: "VPN access package." },
+            { id: "hbo-max", name: "HBO Max Subscription", cat: "subscriptions", price: 3.99, img: "hbo.png", rating: 4.6, desc: "Streaming access package." },
+            { id: "paramount-eu", name: "Paramount+ EU", cat: "subscriptions", price: 1.49, img: "paramount.png", rating: 4.3, desc: "Paramount+ Europe package." },
+            { id: "paramount-usa", name: "Paramount+ USA", cat: "subscriptions", price: 1.49, img: "paramount.png", rating: 4.3, desc: "Paramount+ USA package." },
+            { id: "molotov-tv", name: "Molotov TV", cat: "subscriptions", price: 1.49, img: "molotov.png", rating: 4.2, desc: "French TV streaming package." },
+            { id: "cda-premium", name: "CDA Premium", cat: "subscriptions", price: 2.49, img: "cda.png", rating: 4.3, desc: "Polish streaming premium package." },
+            { id: "robux-2500", name: "Robux 2.5k-5k", cat: "robux", price: 8.49, img: "public.png", rating: 4.7, desc: "Roblox currency range package." },
+            { id: "robux-5000", name: "Robux 5k-10k", cat: "robux", price: 10.99, img: "public.png", rating: 4.7, desc: "Medium Robux range package." },
+            { id: "robux-10000", name: "Robux 10k-15k", cat: "robux", price: 15.99, img: "public.png", rating: 4.8, desc: "Large Robux range package." },
+            { id: "robux-15000", name: "Robux 15k-30k", cat: "robux", price: 18.49, img: "public.png", rating: 4.8, desc: "Extra-large Robux range package." },
+            { id: "robux-50000", name: "Robux 50k+", cat: "robux", price: 35.99, img: "public.png", rating: 4.9, desc: "Ultimate Robux range package.", sale: 8 },
+            { id: "fivem-ready", name: "FiveM Ready Account", cat: "fivem", price: 0.99, img: "Fivem.jpg", rating: 4.5, desc: "Ready-to-use FiveM package." },
+            { id: "fivem-bundle", name: "FiveM Bundle", cat: "fivem", price: 2.49, img: "Fivem.jpg", rating: 4.6, desc: "Essential FiveM tools bundle." },
+            { id: "valk-3d", name: "Valk Menu 3D", cat: "fivem", price: 3.49, img: "Fivem.jpg", rating: 4.7, desc: "Three-day Valk menu access." },
+            { id: "valk-1w", name: "Valk Menu 1W", cat: "fivem", price: 6.49, img: "Fivem.jpg", rating: 4.7, desc: "One-week Valk menu access." },
+            { id: "valk-1m", name: "Valk Menu 1M", cat: "fivem", price: 13.49, img: "Fivem.jpg", rating: 4.8, desc: "One-month Valk menu access." },
+            { id: "valk-lifetime", name: "Valk Menu Lifetime", cat: "fivem", price: 26.49, img: "Fivem.jpg", rating: 4.9, desc: "Lifetime Valk menu access." },
+            { id: "keyser-3d", name: "Keyser 3D", cat: "fivem", price: 6.49, img: "Fivem.jpg", rating: 4.6, desc: "Three-day Keyser menu access." },
+            { id: "keyser-1w", name: "Keyser 1W", cat: "fivem", price: 11.49, img: "Fivem.jpg", rating: 4.7, desc: "One-week Keyser menu access." },
+            { id: "keyser-1m", name: "Keyser 1M", cat: "fivem", price: 15.49, img: "Fivem.jpg", rating: 4.7, desc: "One-month Keyser menu access." },
+            { id: "keyser-lifetime", name: "Keyser Lifetime", cat: "fivem", price: 36.49, img: "Fivem.jpg", rating: 4.8, desc: "Lifetime Keyser menu access." },
+            { id: "ryven-3d", name: "Ryven 3D", cat: "fivem", price: 8.49, img: "Fivem.jpg", rating: 4.7, desc: "Three-day Ryven menu access." },
+            { id: "ryven-1m", name: "Ryven 1M", cat: "fivem", price: 11.49, img: "Fivem.jpg", rating: 4.7, desc: "One-month Ryven menu access." },
+            { id: "ryven-3m", name: "Ryven 3M", cat: "fivem", price: 19.49, img: "Fivem.jpg", rating: 4.8, desc: "Three-month Ryven menu access." },
+            { id: "ryven-lifetime", name: "Ryven Lifetime", cat: "fivem", price: 31.49, img: "Fivem.jpg", rating: 4.8, desc: "Lifetime Ryven menu access." },
+            { id: "epic-bundle-20", name: "Epic Bundle 20-50", cat: "bundles", price: 0.99, img: "sdfgfgsdfgd.png", rating: 4.9, desc: "Curated bundle range package." },
+            { id: "epic-bundle-50", name: "Epic Bundle 50-100", cat: "bundles", price: 1.49, img: "sdfgfgsdfgd.png", rating: 4.9, desc: "Expanded curated bundle." },
+            { id: "epic-bundle-350", name: "Epic Bundle 350+", cat: "bundles", price: 4.99, img: "sdfgfgsdfgd.png", rating: 5.0, desc: "Massive curated bundle.", sale: 12, featured: true },
+            { id: "mystery-steam", name: "Mystery Steam Acc", cat: "bundles", price: 0.49, img: "image.png", rating: 4.4, desc: "Random Steam mystery package." },
+            { id: "dr-donut-money", name: "Dr Donut Money 1M", cat: "bundles", price: 0.09, img: "channels4_profile.jpg", rating: 4.3, desc: "In-game currency package." }
+        ];
+
+        const categories = [
+            { id: "all", label: "All" },
+            { id: "games", label: "Games" },
+            { id: "subscriptions", label: "Subs & Apps" },
+            { id: "robux", label: "Robux" },
+            { id: "fivem", label: "FiveM" },
+            { id: "bundles", label: "Bundles" }
+        ];
+
+        const rates = {
+            eur: { rate: 1, code: "EUR", symbol: "\u20ac" },
+            usd: { rate: 1.17, code: "USD", symbol: "$" },
+            gbp: { rate: 0.85, code: "GBP", symbol: "\u00a3" }
+        };
+
+        const state = {
+            activeCategory: "all",
+            search: "",
+            sort: "featured",
+            currency: localStorage.getItem("cookieCurrency") || "eur",
+            cart: [],
+            currentUser: null,
+            currentToken: null,
+            purchaseHistory: [],
+            feedbackCooldown: false,
+            payCooldown: false
+        };
+
+        const el = {};
+
+        function cacheElements() {
+            [
+                "clock", "metricProducts", "categoryTabs", "productGrid", "shopSummary", "emptyState",
+                "searchInput", "clearSearch", "sortSelect", "currencySelect", "cartButton", "cartDrawer",
+                "drawerBackdrop", "closeCart", "cartItems", "cartTotal", "cartCount", "orderCopy",
+                "copyOrderButton", "clearCartButton", "payBalanceButton", "toast", "loginModal",
+                "settingsModal", "codeModal", "purchaseCode", "loginButton", "accountLoginButton",
+                "logoutButton", "accountStatus", "accountDetail", "loginUsername", "loginPassword",
+                "registerUsername", "registerPassword", "loginSubmit", "registerSubmit", "themeButton",
+                "themeToggle", "motionToggle", "resetSettings", "feedbackForm", "feedbackName",
+                "feedbackMessage", "feedbackSubmit", "feedbackTimer", "ordersList", "backTop"
+            ].forEach((id) => {
+                el[id] = document.getElementById(id);
+            });
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, (char) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                "\"": "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        function productById(id) {
+            return products.find((product) => product.id === id);
+        }
+
+        function showToast(message, isError = false) {
+            el.toast.textContent = message;
+            el.toast.className = "toast" + (isError ? " error" : "");
+            requestAnimationFrame(() => el.toast.classList.add("show"));
+            clearTimeout(showToast.timer);
+            showToast.timer = setTimeout(() => el.toast.classList.remove("show"), 2800);
+        }
+
+        function formatPrice(priceEur) {
+            const currency = rates[state.currency] || rates.eur;
+            return `${currency.code} ${currency.symbol}${(priceEur * currency.rate).toFixed(2)}`;
+        }
+
+        function categoryLabel(id) {
+            return categories.find((category) => category.id === id)?.label || id;
+        }
+
+        function renderTabs() {
+            const counts = products.reduce((acc, product) => {
+                acc[product.cat] = (acc[product.cat] || 0) + 1;
+                return acc;
+            }, {});
+            counts.all = products.length;
+
+            el.categoryTabs.innerHTML = categories.map((category) => `
+                <button class="tab-btn ${state.activeCategory === category.id ? "active" : ""}" type="button" data-category="${category.id}">
+                    ${escapeHtml(category.label)} <span>${counts[category.id] || 0}</span>
+                </button>
+            `).join("");
+
+            el.categoryTabs.querySelectorAll("[data-category]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    state.activeCategory = button.dataset.category;
+                    renderTabs();
+                    renderProducts();
+                });
+            });
+        }
+
+        function getFilteredProducts() {
+            const needle = state.search.trim().toLowerCase();
+            let result = products.filter((product) => {
+                const categoryMatch = state.activeCategory === "all" || product.cat === state.activeCategory;
+                const searchMatch = !needle || [product.name, product.cat, product.desc].join(" ").toLowerCase().includes(needle);
+                return categoryMatch && searchMatch;
+            });
+
+            result = [...result].sort((a, b) => {
+                if (state.sort === "price-asc") return a.price - b.price;
+                if (state.sort === "price-desc") return b.price - a.price;
+                if (state.sort === "rating-desc") return b.rating - a.rating;
+                if (state.sort === "name-asc") return a.name.localeCompare(b.name);
+                return Number(b.featured || 0) - Number(a.featured || 0) || b.rating - a.rating || a.price - b.price;
+            });
+
+            return result;
+        }
+
+        function renderProducts() {
+            const result = getFilteredProducts();
+            el.metricProducts.textContent = `${products.length}+`;
+            el.shopSummary.textContent = `${result.length} product${result.length === 1 ? "" : "s"} shown in ${categoryLabel(state.activeCategory)}.`;
+            el.emptyState.style.display = result.length ? "none" : "block";
+            el.productGrid.innerHTML = result.map((product) => `
+                <article class="product-card">
+                    <div class="product-image">
+                        <div class="product-badges">
+                            ${product.featured ? `<span class="badge hot">Hot</span>` : `<span class="badge">${escapeHtml(categoryLabel(product.cat))}</span>`}
+                            ${product.sale ? `<span class="badge sale">-${product.sale}%</span>` : ""}
+                        </div>
+                        <img src="${escapeHtml(product.img)}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.parentElement.classList.add('image-fallback'); this.remove();">
+                        <div class="image-fallback-label">CS</div>
+                    </div>
+                    <div class="product-body">
+                        <div class="product-meta">
+                            <span>${escapeHtml(categoryLabel(product.cat))}</span>
+                            <span class="rating">Rating ${product.rating.toFixed(1)}</span>
+                        </div>
+                        <h3 class="product-title">${escapeHtml(product.name)}</h3>
+                        <p class="product-desc">${escapeHtml(product.desc)}</p>
+                        <div class="product-footer">
+                            <div class="price">
+                                <strong>${formatPrice(product.price)}</strong>
+                                <span>digital item</span>
+                            </div>
+                            <button class="add-btn" type="button" data-add="${escapeHtml(product.id)}">
+                                <i data-lucide="plus" class="icon" aria-hidden="true"></i>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            `).join("");
+
+            el.productGrid.querySelectorAll("[data-add]").forEach((button) => {
+                button.addEventListener("click", () => addToCart(button.dataset.add));
+            });
+            refreshIcons();
+        }
+
+        function saveCart() {
+            localStorage.setItem("cookieCartV2", JSON.stringify(state.cart));
+        }
+
+        function loadCart() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("cookieCartV2") || "[]");
+                state.cart = saved.filter((item) => productById(item.id)).map((item) => ({
+                    id: item.id,
+                    qty: Math.max(1, Number(item.qty) || 1)
+                }));
+            } catch (error) {
+                state.cart = [];
+            }
+        }
+
+        function addToCart(id) {
+            const product = productById(id);
+            if (!product) return;
+            const existing = state.cart.find((item) => item.id === id);
+            if (existing) existing.qty += 1;
+            else state.cart.push({ id, qty: 1 });
+            saveCart();
+            renderCart();
+            showToast(`${product.name} added to cart`);
+        }
+
+        function updateQuantity(id, delta) {
+            const existing = state.cart.find((item) => item.id === id);
+            if (!existing) return;
+            existing.qty += delta;
+            if (existing.qty <= 0) {
+                state.cart = state.cart.filter((item) => item.id !== id);
+            }
+            saveCart();
+            renderCart();
+        }
+
+        function getCartTotalEur() {
+            return state.cart.reduce((total, item) => {
+                const product = productById(item.id);
+                return total + (product ? product.price * item.qty : 0);
+            }, 0);
+        }
+
+        function getCartCount() {
+            return state.cart.reduce((total, item) => total + item.qty, 0);
+        }
+
+        function buildOrderText() {
+            const lines = [
+                "COOKIE'S SHOP ORDER",
+                "-------------------"
+            ];
+            if (!state.cart.length) {
+                lines.push("Cart empty");
+            } else {
+                state.cart.forEach((item) => {
+                    const product = productById(item.id);
+                    if (!product) return;
+                    lines.push(`${product.name} x${item.qty} - ${formatPrice(product.price * item.qty)}`);
+                });
+            }
+            lines.push("");
+            lines.push(`TOTAL: ${formatPrice(getCartTotalEur())}`);
+            lines.push("Payment: PayPal / Swedbank / SEB / Luminor / BTC / ETH");
+            lines.push("Paste this into a Discord ticket.");
+            return lines.join("\n");
+        }
+
+        function renderCart() {
+            const count = getCartCount();
+            el.cartCount.textContent = count;
+            el.cartTotal.textContent = formatPrice(getCartTotalEur());
+            el.orderCopy.value = buildOrderText();
+
+            if (!state.cart.length) {
+                el.cartItems.innerHTML = `<div class="empty-state" style="display:block;">Your cart is empty.</div>`;
+                return;
+            }
+
+            el.cartItems.innerHTML = state.cart.map((item) => {
+                const product = productById(item.id);
+                if (!product) return "";
+                return `
+                    <div class="cart-item">
+                        <div>
+                            <h3>${escapeHtml(product.name)}</h3>
+                            <p>${formatPrice(product.price)} each</p>
+                        </div>
+                        <div class="cart-controls">
+                            <button class="quantity-btn" type="button" data-qty="${escapeHtml(product.id)}" data-delta="-1" aria-label="Decrease ${escapeHtml(product.name)}">-</button>
+                            <strong>${item.qty}</strong>
+                            <button class="quantity-btn" type="button" data-qty="${escapeHtml(product.id)}" data-delta="1" aria-label="Increase ${escapeHtml(product.name)}">+</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+
+            el.cartItems.querySelectorAll("[data-qty]").forEach((button) => {
+                button.addEventListener("click", () => updateQuantity(button.dataset.qty, Number(button.dataset.delta)));
+            });
+        }
+
+        function openCart() {
+            el.cartDrawer.classList.add("active");
+            el.drawerBackdrop.classList.add("active");
+            el.cartDrawer.setAttribute("aria-hidden", "false");
+            document.body.classList.add("drawer-open");
+        }
+
+        function closeCart() {
+            el.cartDrawer.classList.remove("active");
+            el.drawerBackdrop.classList.remove("active");
+            el.cartDrawer.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("drawer-open");
+        }
+
+        async function copyOrder() {
+            const text = buildOrderText();
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast("Order copied");
+            } catch (error) {
+                el.orderCopy.focus();
+                el.orderCopy.select();
+                document.execCommand("copy");
+                showToast("Order selected and copied");
+            }
+        }
+
+        function clearCart() {
+            if (!state.cart.length) return;
+            state.cart = [];
+            saveCart();
+            renderCart();
+            showToast("Cart cleared");
+        }
+
+        function openModal(id) {
+            document.getElementById(id)?.classList.add("active");
+        }
+
+        function closeModal(id) {
+            document.getElementById(id)?.classList.remove("active");
+        }
+
+        async function apiCall(action, data) {
+            try {
+                const response = await fetch(BACKEND_URL + "?_=" + Date.now(), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action, ...data })
+                });
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch (error) {
+                    return { success: false, message: "Server response was not valid." };
+                }
+            } catch (error) {
+                return { success: false, message: "Network error. Use Discord checkout instead." };
+            }
+        }
+
+        function loadUser() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("shopUser") || "null");
+                if (saved?.username && saved?.token) {
+                    state.currentUser = saved.username;
+                    state.currentToken = saved.token;
+                }
+            } catch (error) {
+                state.currentUser = null;
+                state.currentToken = null;
+            }
+            updateAccountUI();
+            loadPurchaseHistory();
+        }
+
+        function updateAccountUI(balance) {
+            const loggedIn = Boolean(state.currentUser);
+            el.loginButton.querySelector(".button-label").textContent = loggedIn ? state.currentUser : "Login";
+            el.accountStatus.textContent = loggedIn ? `Logged in as ${state.currentUser}` : "You are browsing as a guest.";
+            el.accountDetail.textContent = loggedIn
+                ? (typeof balance === "number" ? `Balance: EUR \u20ac${balance.toFixed(2)}` : "Balance available after refresh or purchase.")
+                : "Login if you use store balance and purchase history.";
+            el.logoutButton.hidden = !loggedIn;
+        }
+
+        async function login() {
+            const username = el.loginUsername.value.trim();
+            const password = el.loginPassword.value.trim();
+            if (!username || !password) {
+                showToast("Enter username and password", true);
+                return;
+            }
+            el.loginSubmit.disabled = true;
+            const result = await apiCall("login", { username, password });
+            el.loginSubmit.disabled = false;
+            if (!result.success) {
+                showToast(result.message || "Login failed", true);
+                return;
+            }
+            state.currentUser = username;
+            state.currentToken = result.data.token;
+            localStorage.setItem("shopUser", JSON.stringify({ username, token: state.currentToken }));
+            closeModal("loginModal");
+            updateAccountUI(result.data.balance);
+            loadPurchaseHistory();
+            showToast(`Welcome, ${username}`);
+        }
+
+        async function register() {
+            const username = el.registerUsername.value.trim();
+            const password = el.registerPassword.value.trim();
+            if (!username || !password) {
+                showToast("Enter a new username and password", true);
+                return;
+            }
+            el.registerSubmit.disabled = true;
+            const result = await apiCall("register", { username, password });
+            el.registerSubmit.disabled = false;
+            showToast(result.success ? "Account created" : (result.message || "Register failed"), !result.success);
+        }
+
+        function logout() {
+            state.currentUser = null;
+            state.currentToken = null;
+            localStorage.removeItem("shopUser");
+            state.purchaseHistory = [];
+            updateAccountUI();
+            renderOrders();
+            showToast("Logged out");
+        }
+
+        function loadPurchaseHistory() {
+            const key = `purchaseHistory_${state.currentUser || "guest"}`;
+            try {
+                state.purchaseHistory = JSON.parse(localStorage.getItem(key) || "[]");
+            } catch (error) {
+                state.purchaseHistory = [];
+            }
+            renderOrders();
+        }
+
+        function savePurchaseHistory() {
+            if (!state.currentUser) return;
+            localStorage.setItem(`purchaseHistory_${state.currentUser}`, JSON.stringify(state.purchaseHistory));
+        }
+
+        function addPurchaseHistory(game, code) {
+            state.purchaseHistory.unshift({ game, code, date: new Date().toLocaleString() });
+            state.purchaseHistory = state.purchaseHistory.slice(0, 50);
+            savePurchaseHistory();
+            renderOrders();
+        }
+
+        function renderOrders() {
+            if (!state.purchaseHistory.length) {
+                el.ordersList.innerHTML = `<div class="empty-state" style="display:block;">No purchases saved in this browser.</div>`;
+                return;
+            }
+            el.ordersList.innerHTML = state.purchaseHistory.map((order) => `
+                <div class="order-item">
+                    <strong>${escapeHtml(order.game)}</strong>
+                    <div class="order-code">Code: ${escapeHtml(order.code)}</div>
+                    <div style="color:var(--muted);font-size:0.78rem;margin-top:4px;">${escapeHtml(order.date)}</div>
+                </div>
+            `).join("");
+        }
+
+        async function payWithBalance() {
+            if (!state.currentUser) {
+                showToast("Login first for balance checkout", true);
+                openModal("loginModal");
+                return;
+            }
+            if (!state.cart.length) {
+                showToast("Cart empty", true);
+                return;
+            }
+            if (state.payCooldown) {
+                showToast("Please wait before trying again", true);
+                return;
+            }
+
+            const productList = state.cart.map((item) => `${productById(item.id).name} x${item.qty}`);
+            const totalEUR = getCartTotalEur();
+            state.payCooldown = true;
+            el.payBalanceButton.disabled = true;
+
+            const result = await apiCall("purchase", {
+                username: state.currentUser,
+                token: state.currentToken,
+                product: productList.join(", "),
+                price: totalEUR
+            });
+
+            state.payCooldown = false;
+            el.payBalanceButton.disabled = false;
+
+            if (!result.success) {
+                showToast(result.message || "Purchase failed", true);
+                return;
+            }
+
+            addPurchaseHistory(`Cart: ${productList.join(", ")}`, result.data.code);
+            state.cart = [];
+            saveCart();
+            renderCart();
+            updateAccountUI(result.data.newBalance);
+            el.purchaseCode.textContent = result.data.code;
+            openModal("codeModal");
+            showToast("Payment successful");
+        }
+
+        async function submitFeedback(event) {
+            event.preventDefault();
+            if (state.feedbackCooldown) {
+                showToast("Please wait before sending more feedback", true);
+                return;
+            }
+            const name = el.feedbackName.value.trim() || "Anonymous";
+            const message = el.feedbackMessage.value.trim();
+            if (!message) {
+                showToast("Enter a message", true);
+                return;
+            }
+
+            state.feedbackCooldown = true;
+            el.feedbackSubmit.disabled = true;
+            let remaining = 60;
+            el.feedbackTimer.textContent = `You can send again in ${remaining}s`;
+            const timer = setInterval(() => {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    state.feedbackCooldown = false;
+                    el.feedbackSubmit.disabled = false;
+                    el.feedbackTimer.textContent = "";
+                } else {
+                    el.feedbackTimer.textContent = `You can send again in ${remaining}s`;
+                }
+            }, 1000);
+
+            const result = await apiCall("feedback", { name, message });
+            if (result.success) {
+                el.feedbackName.value = "";
+                el.feedbackMessage.value = "";
+                showToast("Feedback sent");
+            } else {
+                showToast(result.message || "Feedback failed", true);
+            }
+        }
+
+        function applySettings() {
+            const light = localStorage.getItem("cookieLightTheme") === "true";
+            const reduceMotion = localStorage.getItem("cookieReduceMotion") === "true";
+            document.body.classList.toggle("light", light);
+            document.body.classList.toggle("reduce-motion", reduceMotion);
+            el.themeToggle.checked = light;
+            el.motionToggle.checked = reduceMotion;
+        }
+
+        function refreshIcons() {
+            if (window.lucide) {
+                window.lucide.createIcons();
+                document.documentElement.classList.add("has-icons");
+            }
+        }
+
+        function bindEvents() {
+            el.searchInput.addEventListener("input", () => {
+                state.search = el.searchInput.value;
+                el.clearSearch.style.display = state.search ? "flex" : "none";
+                renderProducts();
+            });
+            el.clearSearch.addEventListener("click", () => {
+                el.searchInput.value = "";
+                state.search = "";
+                el.clearSearch.style.display = "none";
+                renderProducts();
+                el.searchInput.focus();
+            });
+            el.sortSelect.addEventListener("change", () => {
+                state.sort = el.sortSelect.value;
+                renderProducts();
+            });
+            el.currencySelect.value = state.currency;
+            el.currencySelect.addEventListener("change", () => {
+                state.currency = el.currencySelect.value;
+                localStorage.setItem("cookieCurrency", state.currency);
+                renderProducts();
+                renderCart();
+                showToast(`Currency set to ${rates[state.currency].code}`);
+            });
+
+            el.cartButton.addEventListener("click", openCart);
+            el.closeCart.addEventListener("click", closeCart);
+            el.drawerBackdrop.addEventListener("click", closeCart);
+            el.copyOrderButton.addEventListener("click", copyOrder);
+            el.clearCartButton.addEventListener("click", clearCart);
+            el.payBalanceButton.addEventListener("click", payWithBalance);
+
+            el.loginButton.addEventListener("click", () => openModal("loginModal"));
+            el.accountLoginButton.addEventListener("click", () => openModal("loginModal"));
+            el.logoutButton.addEventListener("click", logout);
+            el.loginSubmit.addEventListener("click", login);
+            el.registerSubmit.addEventListener("click", register);
+
+            el.themeButton.addEventListener("click", () => openModal("settingsModal"));
+            el.themeToggle.addEventListener("change", () => {
+                localStorage.setItem("cookieLightTheme", String(el.themeToggle.checked));
+                applySettings();
+            });
+            el.motionToggle.addEventListener("change", () => {
+                localStorage.setItem("cookieReduceMotion", String(el.motionToggle.checked));
+                applySettings();
+            });
+            el.resetSettings.addEventListener("click", () => {
+                localStorage.removeItem("cookieLightTheme");
+                localStorage.removeItem("cookieReduceMotion");
+                applySettings();
+                showToast("Settings reset");
+            });
+
+            document.querySelectorAll("[data-close-modal]").forEach((button) => {
+                button.addEventListener("click", () => closeModal(button.dataset.closeModal));
+            });
+            document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
+                backdrop.addEventListener("click", (event) => {
+                    if (event.target === backdrop) closeModal(backdrop.id);
+                });
+            });
+            document.addEventListener("keydown", (event) => {
+                if (event.key === "Escape") {
+                    closeCart();
+                    document.querySelectorAll(".modal-backdrop.active").forEach((modal) => closeModal(modal.id));
+                }
+            });
+
+            el.feedbackForm.addEventListener("submit", submitFeedback);
+            el.backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+            window.addEventListener("scroll", () => {
+                el.backTop.classList.toggle("show", window.scrollY > 500);
+            }, { passive: true });
+        }
+
+        function tickClock() {
+            el.clock.textContent = new Date().toLocaleString([], {
+                weekday: "short",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+        function init() {
+            cacheElements();
+            bindEvents();
+            applySettings();
+            loadCart();
+            loadUser();
+            renderTabs();
+            renderProducts();
+            renderCart();
+            tickClock();
+            setInterval(tickClock, 30000);
+            refreshIcons();
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+        window.addEventListener("load", refreshIcons);
+    </script>
+</body>
+</html>
+=======
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -785,3 +3378,4 @@ init();
 </script>
 </body>
 </html>
+>>>>>>> 8d40155dd40207e1a17f3b36929c8ac27ac8db14

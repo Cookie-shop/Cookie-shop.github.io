@@ -18,22 +18,22 @@
     <style>
         :root {
             color-scheme: dark;
-            --bg: #101114;
-            --surface: #17191f;
-            --surface-2: #20242d;
-            --surface-3: #282d38;
+            --bg: #080712;
+            --surface: #111022;
+            --surface-2: #15142a;
+            --surface-3: #1d1935;
             --text: #fbfbf8;
-            --muted: #a7adba;
-            --line: rgba(255,255,255,0.12);
-            --line-strong: rgba(255,255,255,0.2);
-            --amber: #f5a524;
-            --amber-2: #ffcf5a;
-            --mint: #3ddc97;
-            --cyan: #4cc9f0;
+            --muted: #8f8aae;
+            --line: rgba(139,92,246,0.22);
+            --line-strong: rgba(168,85,247,0.42);
+            --amber: #8b5cf6;
+            --amber-2: #a855f7;
+            --mint: #00e083;
+            --cyan: #7c3aed;
             --red: #ff5c7a;
-            --shadow: 0 18px 42px rgba(0,0,0,0.36);
+            --shadow: 0 22px 54px rgba(0,0,0,0.42);
             --radius: 8px;
-            --header: rgba(16,17,20,0.78);
+            --header: rgba(8,7,18,0.9);
         }
 
         body.light {
@@ -61,7 +61,9 @@
         body {
             margin: 0;
             min-height: 100vh;
-            background: var(--bg);
+            background:
+                radial-gradient(circle at 50% 0%, rgba(124,58,237,0.18), transparent 36rem),
+                linear-gradient(180deg, #0b0719 0%, var(--bg) 38rem);
             color: var(--text);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             overflow-x: hidden;
@@ -285,20 +287,21 @@
             display: inline-grid;
             place-items: center;
             border-radius: 999px;
-            background: var(--amber);
-            color: #14110b;
+            background: var(--mint);
+            color: #04120b;
             font-size: 0.72rem;
             font-weight: 900;
         }
 
         .hero {
             position: relative;
-            min-height: 72svh;
+            min-height: 390px;
             isolation: isolate;
             display: flex;
-            align-items: end;
-            padding: 92px 0 48px;
-            background: #101114;
+            align-items: center;
+            text-align: center;
+            padding: 68px 0 44px;
+            background: transparent;
             overflow: hidden;
         }
 
@@ -307,8 +310,9 @@
             position: absolute;
             inset: 0;
             z-index: -2;
-            background: url("colorful-gaming-accessories.jpg") center / cover no-repeat;
-            transform: scale(1.02);
+            background:
+                linear-gradient(180deg, rgba(139,92,246,0.12), transparent 70%),
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 72px);
         }
 
         .hero::after {
@@ -316,17 +320,16 @@
             position: absolute;
             inset: 0;
             z-index: -1;
-            background:
-                linear-gradient(90deg, rgba(16,17,20,0.96) 0%, rgba(16,17,20,0.78) 42%, rgba(16,17,20,0.36) 100%),
-                linear-gradient(0deg, var(--bg) 0%, rgba(16,17,20,0.05) 44%);
+            background: linear-gradient(180deg, transparent 0%, var(--bg) 100%);
         }
 
         .hero-inner {
             width: min(1180px, calc(100% - 32px));
             margin: 0 auto;
             display: grid;
-            grid-template-columns: minmax(0, 710px);
-            gap: 28px;
+            justify-items: center;
+            grid-template-columns: minmax(0, 760px);
+            gap: 20px;
         }
 
         .eyebrow {
@@ -334,14 +337,13 @@
             align-items: center;
             gap: 8px;
             width: fit-content;
-            color: #111;
-            background: var(--amber-2);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 6px;
+            color: #d8c8ff;
+            background: rgba(139,92,246,0.16);
+            border: 1px solid rgba(168,85,247,0.42);
+            border-radius: 999px;
             padding: 9px 12px;
             font-size: 0.76rem;
             font-weight: 900;
-            text-transform: uppercase;
         }
 
         h1,
@@ -352,9 +354,9 @@
         }
 
         h1 {
-            max-width: 10ch;
-            font-size: clamp(3.4rem, 9vw, 7.4rem);
-            line-height: 0.88;
+            max-width: 15ch;
+            font-size: clamp(2.6rem, 6vw, 4.8rem);
+            line-height: 0.98;
             font-weight: 900;
             letter-spacing: 0;
             text-wrap: balance;
@@ -362,7 +364,7 @@
 
         .hero-copy {
             max-width: 680px;
-            color: #e8ebf1;
+            color: var(--muted);
             font-size: clamp(1rem, 1.7vw, 1.18rem);
             line-height: 1.7;
         }
@@ -385,9 +387,9 @@
             gap: 9px;
             padding: 0 16px;
             font-weight: 900;
-            color: #12100b;
+            color: #fff;
             background: linear-gradient(135deg, var(--amber-2), var(--amber));
-            box-shadow: 0 12px 28px rgba(245,165,36,0.24);
+            box-shadow: 0 12px 28px rgba(139,92,246,0.24);
         }
 
         .secondary-btn {
@@ -412,6 +414,15 @@
             transform: translateY(-1px);
         }
 
+        .primary-btn:disabled,
+        .secondary-btn:disabled,
+        .danger-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+            box-shadow: none;
+        }
+
         .metrics {
             display: grid;
             grid-template-columns: repeat(4, minmax(120px, 1fr));
@@ -421,7 +432,7 @@
 
         .metric {
             border: 1px solid var(--line);
-            background: rgba(17,19,23,0.56);
+            background: rgba(17,16,34,0.72);
             backdrop-filter: blur(10px);
             border-radius: var(--radius);
             padding: 14px;
@@ -457,7 +468,7 @@
         }
 
         .section-kicker {
-            color: var(--amber);
+            color: #c4b5fd;
             font-size: 0.75rem;
             font-weight: 900;
             text-transform: uppercase;
@@ -566,7 +577,7 @@
         .feedback-field:focus,
         .cart-copy:focus {
             border-color: var(--amber);
-            box-shadow: 0 0 0 3px rgba(245,165,36,0.16);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
         }
 
         .clear-search {
@@ -600,7 +611,7 @@
         }
 
         .tab-btn.active {
-            color: #12100b;
+            color: #fff;
             background: var(--amber);
             border-color: var(--amber);
         }
@@ -644,14 +655,14 @@
 
         .product-card:hover {
             transform: translateY(-3px);
-            border-color: rgba(245,165,36,0.48);
+            border-color: rgba(168,85,247,0.62);
         }
 
         .product-image {
             position: relative;
             aspect-ratio: 16 / 10;
             background:
-                linear-gradient(135deg, rgba(245,165,36,0.24), rgba(76,201,240,0.14)),
+                linear-gradient(135deg, rgba(139,92,246,0.18), rgba(0,224,131,0.08)),
                 var(--surface-2);
             overflow: hidden;
         }
@@ -778,6 +789,7 @@
         .price strong {
             font-size: 1.25rem;
             line-height: 1;
+            color: var(--mint);
         }
 
         .price span {
@@ -788,10 +800,10 @@
 
         .add-btn {
             min-height: 42px;
-            border: 0;
+            border: 1px solid rgba(139,92,246,0.34);
             border-radius: 6px;
-            background: var(--text);
-            color: var(--bg);
+            background: rgba(139,92,246,0.22);
+            color: var(--text);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -802,8 +814,8 @@
         }
 
         .add-btn:hover {
-            background: var(--amber);
-            color: #111;
+            background: var(--mint);
+            color: #04120b;
         }
 
         .empty-state {
@@ -1145,6 +1157,18 @@
             font-size: 1.1rem;
         }
 
+        .payment-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .payment-help {
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
         .cart-copy {
             min-height: 90px;
             resize: none;
@@ -1153,6 +1177,149 @@
             font-size: 0.78rem;
             line-height: 1.45;
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        }
+
+        .paypal-modal {
+            width: min(610px, 100%);
+        }
+
+        .paypal-top {
+            min-height: 46px;
+            padding: 0 14px;
+            border-bottom: 1px solid var(--line);
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .paypal-deadline-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-weight: 800;
+        }
+
+        .paypal-deadline {
+            color: var(--text);
+            font-weight: 900;
+            letter-spacing: 0;
+            white-space: nowrap;
+        }
+
+        .paypal-body {
+            gap: 18px;
+        }
+
+        .paypal-alert {
+            border: 1px solid rgba(57, 139, 255, 0.42);
+            border-radius: 8px;
+            background: rgba(57, 139, 255, 0.08);
+            padding: 18px 20px;
+        }
+
+        .paypal-alert strong {
+            color: #58a6ff;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .paypal-alert ul {
+            margin-left: 18px;
+            line-height: 1.6;
+        }
+
+        .paypal-alert b {
+            color: var(--text);
+        }
+
+        .bot-confirm-card {
+            border: 1px solid rgba(0,224,131,0.28);
+            border-radius: 8px;
+            background: rgba(0,224,131,0.07);
+            padding: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .bot-confirm-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--mint);
+            font-weight: 900;
+        }
+
+        .bot-confirm-steps {
+            display: grid;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+
+        .bot-confirm-steps span {
+            color: var(--text);
+            font-weight: 900;
+        }
+
+        .paypal-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .paypal-field label {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .paypal-copy-box {
+            min-height: 52px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface-2);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 8px;
+            padding: 0 10px 0 16px;
+        }
+
+        .paypal-copy-text {
+            min-width: 0;
+            color: var(--text);
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .paypal-copy-text.order-note {
+            color: #00d084;
+        }
+
+        .paypal-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .paypal-status {
+            min-height: 22px;
+            color: var(--muted);
+            font-size: 0.86rem;
+            line-height: 1.45;
+        }
+
+        .paypal-status.success {
+            color: var(--mint);
+        }
+
+        .paypal-status.error {
+            color: #ffd2da;
         }
 
         .modal-backdrop {
@@ -1304,6 +1471,91 @@
             transform: translateY(0);
         }
 
+        @media (min-width: 1000px) {
+            .site-header {
+                position: fixed;
+                inset: 0 auto 0 0;
+                width: 218px;
+                border-right: 1px solid var(--line);
+                border-bottom: 0;
+                background: rgba(8,7,18,0.96);
+            }
+
+            .nav {
+                width: 100%;
+                min-height: 100%;
+                padding: 24px 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 24px;
+            }
+
+            .brand {
+                padding: 0 8px;
+            }
+
+            .brand-mark {
+                width: 34px;
+                height: 34px;
+                background: linear-gradient(135deg, var(--mint), var(--amber));
+                box-shadow: 0 0 28px rgba(0,224,131,0.22);
+            }
+
+            .brand-sub {
+                display: none;
+            }
+
+            .nav-links {
+                display: grid;
+                justify-content: stretch;
+                gap: 8px;
+            }
+
+            .nav-links a {
+                justify-content: flex-start;
+                min-height: 38px;
+                border-color: transparent;
+                background: transparent;
+            }
+
+            .nav-links a.active,
+            .nav-links a:hover,
+            .nav-links a:focus-visible {
+                color: var(--text);
+                background: rgba(139,92,246,0.22);
+                border-color: rgba(139,92,246,0.34);
+            }
+
+            .nav-actions {
+                margin-top: auto;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-actions .control-btn,
+            .nav-actions .icon-btn,
+            #cartButton {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            main,
+            .footer {
+                margin-left: 218px;
+            }
+
+            .hero-inner,
+            .section-inner {
+                width: min(930px, calc(100% - 48px));
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 18px;
+            }
+        }
+
         @media (max-width: 940px) {
             .topline-inner {
                 justify-content: center;
@@ -1382,6 +1634,20 @@
                 width: 56px;
             }
 
+            .paypal-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .paypal-top {
+                grid-template-columns: 1fr auto;
+            }
+
+            .paypal-deadline {
+                grid-column: 1 / 2;
+                grid-row: 2;
+                padding-bottom: 10px;
+            }
+
             .hero {
                 min-height: 76svh;
                 padding: 76px 0 36px;
@@ -1458,10 +1724,22 @@
                 </span>
             </a>
             <div class="nav-links">
-                <a href="#products">Products</a>
-                <a href="#reviews">Reviews</a>
-                <a href="#support">Support</a>
-                <a href="#faq">FAQ</a>
+                <a class="active" href="#products">
+                    <i data-lucide="store" class="icon" aria-hidden="true"></i>
+                    Marketplace
+                </a>
+                <a href="#reviews">
+                    <i data-lucide="badge-check" class="icon" aria-hidden="true"></i>
+                    Proof
+                </a>
+                <a href="#support">
+                    <i data-lucide="message-circle" class="icon" aria-hidden="true"></i>
+                    Support
+                </a>
+                <a href="#faq">
+                    <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
+                    FAQ
+                </a>
             </div>
             <div class="nav-actions">
                 <button class="icon-btn" type="button" id="themeButton" aria-label="Open settings" title="Settings">
@@ -1488,10 +1766,10 @@
             <div class="hero-inner">
                 <span class="eyebrow">
                     <i data-lucide="zap" class="icon" aria-hidden="true"></i>
-                    Fast Discord support
+                    Cookie Store Marketplace
                 </span>
-                <h1>Cookie's Shop</h1>
-                <p class="hero-copy">A sharper digital store for games, subscriptions, Robux, FiveM tools, and bundles. Browse the catalog, build your cart, then create a Discord ticket with a clean order summary.</p>
+                <h1>Cookie's Shop Marketplace</h1>
+                <p class="hero-copy">Dark, fast, and built for digital orders. Browse games, subscriptions, Robux, FiveM tools, and bundles, then pay with a tracked PayPal Order ID.</p>
                 <div class="hero-actions">
                     <a class="primary-btn" href="#products">
                         <i data-lucide="store" class="icon" aria-hidden="true"></i>
@@ -1505,8 +1783,8 @@
                 <div class="metrics" aria-label="Store highlights">
                     <div class="metric"><strong id="metricProducts">75+</strong><span>Products</span></div>
                     <div class="metric"><strong>4.8</strong><span>Average rating</span></div>
-                    <div class="metric"><strong>24/7</strong><span>Ticket support</span></div>
-                    <div class="metric"><strong>6</strong><span>Payment options</span></div>
+                    <div class="metric"><strong>Bot</strong><span>Payment matching</span></div>
+                    <div class="metric"><strong>PayPal</strong><span>Order ID checkout</span></div>
                 </div>
             </div>
         </section>
@@ -1518,7 +1796,7 @@
                         <div class="section-kicker">Why shop here</div>
                         <h2>Built for fast digital orders.</h2>
                     </div>
-                    <p class="section-note">A cleaner catalog, clearer prices, saved cart, currency switching, order copy, proof images, and account balance checkout when your backend is available.</p>
+                    <p class="section-note">A cleaner catalog, clearer prices, saved cart, currency switching, order copy, proof images, and PayPal Order ID checkout for fast orders.</p>
                 </div>
                 <div class="feature-grid">
                     <article class="feature">
@@ -1538,15 +1816,15 @@
                     <article class="feature">
                         <i data-lucide="copy-check" class="icon" aria-hidden="true"></i>
                         <div>
-                            <h3>Clean order summary</h3>
-                            <p>The cart generates a tidy Discord ticket message with quantities, currency, and total.</p>
+                            <h3>Tracked Order ID</h3>
+                            <p>The cart generates an Order ID that the PayPal payment and Discord ticket can both reference.</p>
                         </div>
                     </article>
                     <article class="feature">
                         <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
                         <div>
-                            <h3>Responsive by default</h3>
-                            <p>The storefront is tuned for desktop, tablet, and phone screens with stable product cards.</p>
+                            <h3>Bot-confirmed code</h3>
+                            <p>After your backend confirms PayPal payment, the bot can send a delivery code for the Discord ticket.</p>
                         </div>
                     </article>
                 </div>
@@ -1560,7 +1838,7 @@
                         <div class="section-kicker">Catalog</div>
                         <h2>Find the right drop.</h2>
                     </div>
-                    <p class="section-note">Prices are listed in EUR by default. Currency conversion is an estimate for browsing; final payment is confirmed in your ticket.</p>
+                    <p class="section-note">Prices are listed in EUR by default. PayPal instructions create an Order ID that your bot can match before it gives a Discord delivery code.</p>
                 </div>
 
                 <div class="shop-tools" aria-label="Product controls">
@@ -1655,13 +1933,13 @@
                         <div class="section-kicker">Support</div>
                         <h2>Friendly staff, clear tickets.</h2>
                     </div>
-                    <p class="section-note">Use the cart to copy your order, then paste it into Discord. The feedback form uses your existing backend hook when it is online.</p>
+                    <p class="section-note">Use PayPal checkout to create an Order ID. After the bot confirms the payment, paste the delivery code it gives you into a Discord ticket.</p>
                 </div>
 
                 <div class="account-row" id="accountRow">
                     <div>
                         <strong id="accountStatus">You are browsing as a guest.</strong>
-                        <span id="accountDetail">Login if you use store balance and purchase history.</span>
+                        <span id="accountDetail">Login to keep purchase history.</span>
                     </div>
                     <div class="account-actions">
                         <button class="secondary-btn" type="button" id="accountLoginButton">
@@ -1678,14 +1956,9 @@
                 <div class="feedback-grid">
                     <div class="contact-panel">
                         <h3>Payment options</h3>
-                        <p>Confirm the final method and product details with staff before payment. Digital goods are handled through tickets.</p>
+                        <p>Use PayPal checkout for orders. The bot matches the PayPal Order ID, then gives a delivery code for the Discord ticket.</p>
                         <div class="payment-list" aria-label="Payment methods">
                             <span>PayPal</span>
-                            <span>Swedbank</span>
-                            <span>SEB</span>
-                            <span>Luminor</span>
-                            <span>Bitcoin</span>
-                            <span>Ethereum</span>
                         </div>
                     </div>
                     <form class="contact-panel feedback-form" id="feedbackForm">
@@ -1713,7 +1986,7 @@
                 <div class="faq-grid">
                     <article class="faq-item">
                         <h3>How do orders work?</h3>
-                        <p>Add products to the cart, copy the order summary, and paste it into a Discord ticket. Staff confirms stock, delivery details, and payment.</p>
+                        <p>Add products to the cart, click Pay With PayPal, and pay with the shown Order ID. The bot confirms the payment, then gives a delivery code for Discord.</p>
                     </article>
                     <article class="faq-item">
                         <h3>Does the cart save?</h3>
@@ -1724,8 +1997,8 @@
                         <p>The product card still works, and the cart can still add the product. Replace the asset file anytime without changing the product data.</p>
                     </article>
                     <article class="faq-item">
-                        <h3>Can I pay with balance?</h3>
-                        <p>Yes, when the connected backend is online and your account has enough balance. Otherwise use a Discord ticket.</p>
+                        <h3>Where does the code go?</h3>
+                        <p>After payment is confirmed, paste the bot's delivery code into your Discord ticket so staff can finish the order.</p>
                     </article>
                 </div>
             </div>
@@ -1765,10 +2038,13 @@
         <div class="cart-items" id="cartItems"></div>
         <div class="drawer-foot">
             <div class="total-row"><span>Total</span><span id="cartTotal">EUR 0.00</span></div>
-            <button class="primary-btn" type="button" id="payBalanceButton">
-                <i data-lucide="credit-card" class="icon" aria-hidden="true"></i>
-                Pay With Balance
-            </button>
+            <div class="payment-buttons" aria-label="PayPal checkout">
+                <button class="primary-btn" type="button" id="payPaypalButton">
+                    <i data-lucide="credit-card" class="icon" aria-hidden="true"></i>
+                    Pay With PayPal
+                </button>
+            </div>
+            <p class="payment-help">PayPal opens payment instructions with the exact amount, PayPal email, and required Order ID.</p>
             <button class="secondary-btn" type="button" id="copyOrderButton">
                 <i data-lucide="copy" class="icon" aria-hidden="true"></i>
                 Copy Order
@@ -1841,19 +2117,91 @@
     <div class="modal-backdrop" id="codeModal" role="dialog" aria-modal="true" aria-labelledby="codeTitle">
         <div class="modal">
             <div class="modal-head">
-                <h2 id="codeTitle">Purchase Successful</h2>
+                <h2 id="codeTitle">Payment Confirmed</h2>
                 <button class="icon-btn" type="button" data-close-modal="codeModal" aria-label="Close purchase code">
                     <i data-lucide="x" class="icon" aria-hidden="true"></i>
                     <span class="icon-fallback" aria-hidden="true">X</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="section-note">Send this code in your Discord ticket to receive your product.</p>
+                <p class="section-note">Paste this bot delivery code in your Discord ticket to receive your product.</p>
                 <div class="cart-copy" id="purchaseCode" style="min-height: 54px; display: grid; place-items: center; color: var(--text); font-size: 1rem;"></div>
                 <a class="primary-btn" href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">
                     <i data-lucide="message-circle" class="icon" aria-hidden="true"></i>
                     Open Discord
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="paypalModal" role="dialog" aria-modal="true" aria-labelledby="paypalTitle">
+        <div class="modal paypal-modal">
+            <div class="paypal-top">
+                <span class="paypal-deadline-label" id="paypalTitle">
+                    <i data-lucide="clock" class="icon" aria-hidden="true"></i>
+                    Pay before
+                </span>
+                <strong class="paypal-deadline" id="paypalDeadline">--</strong>
+                <button class="icon-btn" type="button" data-close-modal="paypalModal" aria-label="Close PayPal instructions">
+                    <i data-lucide="x" class="icon" aria-hidden="true"></i>
+                    <span class="icon-fallback" aria-hidden="true">X</span>
+                </button>
+            </div>
+            <div class="modal-body paypal-body">
+                <div class="paypal-alert">
+                    <strong>Important:</strong>
+                    <ul>
+                        <li>Send exactly <b id="paypalAmount">EUR 0.00</b></li>
+                        <li>Use normal PayPal payment for goods/services</li>
+                        <li>Include your Order ID in the payment note</li>
+                    </ul>
+                </div>
+                <div class="bot-confirm-card">
+                    <div class="bot-confirm-title">
+                        <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
+                        Bot-confirmed delivery
+                    </div>
+                    <div class="bot-confirm-steps">
+                        <p><span>1.</span> Customer pays with the exact amount and Order ID.</p>
+                        <p><span>2.</span> The bot/backend checks PayPal and matches that Order ID.</p>
+                        <p><span>3.</span> After confirmation, the bot gives a delivery code to paste in a Discord ticket.</p>
+                    </div>
+                </div>
+                <div class="paypal-field">
+                    <label>PayPal email</label>
+                    <div class="paypal-copy-box">
+                        <span class="paypal-copy-text" id="paypalEmail">jokubassakalis@gmail.com</span>
+                        <button class="icon-btn" type="button" id="copyPaypalEmail" aria-label="Copy PayPal email">
+                            <i data-lucide="copy" class="icon" aria-hidden="true"></i>
+                            <span class="icon-fallback" aria-hidden="true">COPY</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="paypal-field">
+                    <label>Order ID (required)</label>
+                    <div class="paypal-copy-box">
+                        <span class="paypal-copy-text order-note" id="paypalOrderNote">--</span>
+                        <button class="icon-btn" type="button" id="copyPaypalNote" aria-label="Copy Order ID">
+                            <i data-lucide="copy" class="icon" aria-hidden="true"></i>
+                            <span class="icon-fallback" aria-hidden="true">COPY</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="paypal-actions">
+                    <a class="primary-btn" id="openPaypalSiteButton" href="https://www.paypal.com/myaccount/transfer/homepage" target="_blank" rel="noopener">
+                        <i data-lucide="credit-card" class="icon" aria-hidden="true"></i>
+                        Open PayPal
+                    </a>
+                    <button class="secondary-btn" type="button" id="checkPaypalStatusButton">
+                        <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
+                        Check Payment
+                    </button>
+                    <button class="secondary-btn" type="button" id="copyPaypalOrderButton">
+                        <i data-lucide="copy" class="icon" aria-hidden="true"></i>
+                        Copy Order
+                    </button>
+                </div>
+                <p class="paypal-status" id="paypalStatusMessage">Waiting for PayPal payment and bot confirmation.</p>
             </div>
         </div>
     </div>
@@ -1865,9 +2213,11 @@
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTrovLy-KKL_IeGXcPu21Y8v8LgIO7qFgdWKo-8QlMiYTpMdKd377jkGdzC5JbygGaWQ/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzfAENtvAxaxW70i3b_dZDJxJ0IDLufuLyHnzJ1XF0yPG71oAolGTZGWGOUWX-TJ6yBw/exec";
         const BACKEND_URL = "https://corsproxy.io/?" + encodeURIComponent(SCRIPT_URL);
         const DISCORD_URL = "https://discord.gg/49cwUj62aC";
+        const PAYPAL_EMAIL = "jokubassakalis@gmail.com";
+        const PAYPAL_PAYMENT_LINK = "https://www.paypal.com/myaccount/transfer/homepage";
 
         const products = [
             { id: "rust", name: "Rust", cat: "games", price: 4.99, img: "header.jpg", rating: 4.8, desc: "Survival PvP with base building and raids.", featured: true, sale: 15 },
@@ -1988,7 +2338,10 @@
             currentToken: null,
             purchaseHistory: [],
             feedbackCooldown: false,
-            payCooldown: false
+            payCooldown: false,
+            checkoutCooldown: false,
+            paypalOrderNote: "",
+            paypalDeadline: null
         };
 
         const el = {};
@@ -1998,12 +2351,15 @@
                 "clock", "metricProducts", "categoryTabs", "productGrid", "shopSummary", "emptyState", "loadMoreButton",
                 "searchInput", "clearSearch", "sortSelect", "currencySelect", "cartButton", "cartDrawer",
                 "drawerBackdrop", "closeCart", "cartItems", "cartTotal", "cartCount", "orderCopy",
-                "copyOrderButton", "clearCartButton", "payBalanceButton", "toast", "loginModal",
+                "copyOrderButton", "clearCartButton", "payPaypalButton", "toast", "loginModal",
                 "settingsModal", "codeModal", "purchaseCode", "loginButton", "accountLoginButton",
                 "logoutButton", "accountStatus", "accountDetail", "loginUsername", "loginPassword",
                 "registerUsername", "registerPassword", "loginSubmit", "registerSubmit", "themeButton",
                 "themeToggle", "motionToggle", "resetSettings", "feedbackForm", "feedbackName",
-                "feedbackMessage", "feedbackSubmit", "feedbackTimer", "ordersList", "backTop"
+                "feedbackMessage", "feedbackSubmit", "feedbackTimer", "ordersList", "backTop",
+                "paypalModal", "paypalDeadline", "paypalAmount", "paypalEmail", "paypalOrderNote",
+                "copyPaypalEmail", "copyPaypalNote", "copyPaypalOrderButton", "openPaypalSiteButton",
+                "checkPaypalStatusButton", "paypalStatusMessage"
             ].forEach((id) => {
                 el[id] = document.getElementById(id);
             });
@@ -2152,6 +2508,7 @@
             const existing = state.cart.find((item) => item.id === id);
             if (existing) existing.qty += 1;
             else state.cart.push({ id, qty: 1 });
+            resetPaypalInstructions();
             saveCart();
             renderCart();
             showToast(`${product.name} added to cart`);
@@ -2164,6 +2521,7 @@
             if (existing.qty <= 0) {
                 state.cart = state.cart.filter((item) => item.id !== id);
             }
+            resetPaypalInstructions();
             saveCart();
             renderCart();
         }
@@ -2195,8 +2553,12 @@
             }
             lines.push("");
             lines.push(`TOTAL: ${formatPrice(getCartTotalEur())}`);
-            lines.push("Payment: PayPal / Swedbank / SEB / Luminor / BTC / ETH");
-            lines.push("Paste this into a Discord ticket.");
+            lines.push("Payment: PayPal");
+            if (state.paypalOrderNote) {
+                lines.push(`Order ID: ${state.paypalOrderNote}`);
+                lines.push(`PayPal email: ${PAYPAL_EMAIL}`);
+            }
+            lines.push("Put the Order ID in the PayPal note. After bot confirmation, paste the delivery code in Discord.");
             return lines.join("\n");
         }
 
@@ -2206,7 +2568,12 @@
             el.cartTotal.textContent = formatPrice(getCartTotalEur());
             el.orderCopy.value = buildOrderText();
 
-            if (!state.cart.length) {
+            const hasCartItems = Boolean(state.cart.length);
+            [el.payPaypalButton, el.copyOrderButton, el.clearCartButton].forEach((button) => {
+                if (button) button.disabled = !hasCartItems;
+            });
+
+            if (!hasCartItems) {
                 el.cartItems.innerHTML = `<div class="empty-state" style="display:block;">Your cart is empty.</div>`;
                 return;
             }
@@ -2248,22 +2615,156 @@
             document.body.classList.remove("drawer-open");
         }
 
-        async function copyOrder() {
-            const text = buildOrderText();
+        async function copyText(text, successMessage) {
             try {
                 await navigator.clipboard.writeText(text);
-                showToast("Order copied");
+                showToast(successMessage);
+                return true;
             } catch (error) {
-                el.orderCopy.focus();
-                el.orderCopy.select();
+                const temp = document.createElement("textarea");
+                temp.value = text;
+                temp.setAttribute("readonly", "");
+                temp.style.position = "fixed";
+                temp.style.opacity = "0";
+                document.body.appendChild(temp);
+                temp.select();
                 document.execCommand("copy");
-                showToast("Order selected and copied");
+                temp.remove();
+                showToast(successMessage);
+                return true;
             }
+        }
+
+        async function copyOrder() {
+            el.orderCopy.value = buildOrderText();
+            await copyText(el.orderCopy.value, "Order copied");
+        }
+
+        function resetPaypalInstructions() {
+            state.paypalOrderNote = "";
+            state.paypalDeadline = null;
+            if (el.paypalStatusMessage) {
+                el.paypalStatusMessage.textContent = "Waiting for PayPal payment and bot confirmation.";
+                el.paypalStatusMessage.className = "paypal-status";
+            }
+        }
+
+        function buildCheckoutCart() {
+            return state.cart.map((item) => ({
+                id: item.id,
+                qty: item.qty
+            }));
+        }
+
+        function formatExactEur(amount) {
+            return `EUR €${Number(amount || 0).toFixed(2)}`;
+        }
+
+        function setPaypalStatus(message, type = "") {
+            el.paypalStatusMessage.textContent = message;
+            el.paypalStatusMessage.className = `paypal-status ${type}`.trim();
+        }
+
+        function formatPaypalDeadline(date) {
+            return date.toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+            });
+        }
+
+        function updatePaypalModal(orderData = {}) {
+            const deadline = state.paypalDeadline ? new Date(state.paypalDeadline) : new Date(Date.now() + 30 * 60 * 1000);
+            el.paypalDeadline.textContent = formatPaypalDeadline(deadline);
+            el.paypalAmount.textContent = formatExactEur(orderData.total ?? getCartTotalEur());
+            el.paypalEmail.textContent = orderData.paypalEmail || PAYPAL_EMAIL;
+            el.paypalOrderNote.textContent = state.paypalOrderNote;
+            el.openPaypalSiteButton.href = PAYPAL_PAYMENT_LINK;
+            el.orderCopy.value = buildOrderText();
+        }
+
+        async function openPaypalCheckout() {
+            if (!state.cart.length) {
+                showToast("Add products to cart first", true);
+                return;
+            }
+
+            if (state.checkoutCooldown) {
+                showToast("Creating Order ID, please wait", true);
+                return;
+            }
+
+            state.checkoutCooldown = true;
+            el.payPaypalButton.disabled = true;
+            showToast("Creating PayPal Order ID");
+
+            const result = await apiCall("createPaypalOrder", {
+                cart: buildCheckoutCart(),
+                customer: state.currentUser || "Guest"
+            });
+
+            state.checkoutCooldown = false;
+            el.payPaypalButton.disabled = false;
+
+            if (!result.success || !result.data?.orderId) {
+                showToast(result.message || "Could not create PayPal Order ID", true);
+                return;
+            }
+
+            state.paypalOrderNote = result.data.orderId;
+            state.paypalDeadline = result.data.payBefore ? new Date(result.data.payBefore).getTime() : Date.now() + 30 * 60 * 1000;
+            updatePaypalModal(result.data);
+            setPaypalStatus("Waiting for PayPal payment and bot confirmation.");
+            openModal("paypalModal");
+            refreshIcons();
+            showToast("PayPal Order ID ready");
+        }
+
+        async function checkPaypalStatus() {
+            if (!state.paypalOrderNote) {
+                showToast("Create a PayPal Order ID first", true);
+                return;
+            }
+
+            el.checkPaypalStatusButton.disabled = true;
+            setPaypalStatus("Checking bot confirmation...");
+            const result = await apiCall("getPaypalOrderStatus", {
+                orderId: state.paypalOrderNote
+            });
+            el.checkPaypalStatusButton.disabled = false;
+
+            if (!result.success) {
+                setPaypalStatus(result.message || "Could not check payment yet.", "error");
+                showToast(result.message || "Could not check payment yet", true);
+                return;
+            }
+
+            const status = String(result.data?.status || "").toUpperCase();
+            if (status === "CONFIRMED" && result.data.deliveryCode) {
+                setPaypalStatus("Payment confirmed. Delivery code ready.", "success");
+                el.purchaseCode.textContent = result.data.deliveryCode;
+                closeModal("paypalModal");
+                openModal("codeModal");
+                showToast("Payment confirmed");
+                return;
+            }
+
+            if (status === "EXPIRED") {
+                setPaypalStatus("This Order ID expired. Create a new PayPal checkout.", "error");
+                showToast("Order ID expired", true);
+                return;
+            }
+
+            setPaypalStatus("Still waiting. PayPal payment has not been confirmed by the bot yet.");
+            showToast("Still waiting for bot confirmation");
         }
 
         function clearCart() {
             if (!state.cart.length) return;
             state.cart = [];
+            resetPaypalInstructions();
             saveCart();
             renderCart();
             showToast("Cart cleared");
@@ -2315,8 +2816,8 @@
             el.loginButton.querySelector(".button-label").textContent = loggedIn ? state.currentUser : "Login";
             el.accountStatus.textContent = loggedIn ? `Logged in as ${state.currentUser}` : "You are browsing as a guest.";
             el.accountDetail.textContent = loggedIn
-                ? (typeof balance === "number" ? `Balance: EUR \u20ac${balance.toFixed(2)}` : "Balance available after refresh or purchase.")
-                : "Login if you use store balance and purchase history.";
+                ? "Purchase history is saved in this browser."
+                : "Login to keep purchase history.";
             el.logoutButton.hidden = !loggedIn;
         }
 
@@ -2402,51 +2903,6 @@
             `).join("");
         }
 
-        async function payWithBalance() {
-            if (!state.currentUser) {
-                showToast("Login first for balance checkout", true);
-                openModal("loginModal");
-                return;
-            }
-            if (!state.cart.length) {
-                showToast("Cart empty", true);
-                return;
-            }
-            if (state.payCooldown) {
-                showToast("Please wait before trying again", true);
-                return;
-            }
-
-            const productList = state.cart.map((item) => `${productById(item.id).name} x${item.qty}`);
-            const totalEUR = getCartTotalEur();
-            state.payCooldown = true;
-            el.payBalanceButton.disabled = true;
-
-            const result = await apiCall("purchase", {
-                username: state.currentUser,
-                token: state.currentToken,
-                product: productList.join(", "),
-                price: totalEUR
-            });
-
-            state.payCooldown = false;
-            el.payBalanceButton.disabled = false;
-
-            if (!result.success) {
-                showToast(result.message || "Purchase failed", true);
-                return;
-            }
-
-            addPurchaseHistory(`Cart: ${productList.join(", ")}`, result.data.code);
-            state.cart = [];
-            saveCart();
-            renderCart();
-            updateAccountUI(result.data.newBalance);
-            el.purchaseCode.textContent = result.data.code;
-            openModal("codeModal");
-            showToast("Payment successful");
-        }
-
         async function submitFeedback(event) {
             event.preventDefault();
             if (state.feedbackCooldown) {
@@ -2499,6 +2955,7 @@
             "arrow-up": '<path d="m5 12 7-7 7 7"></path><path d="M12 19V5"></path>',
             "badge-check": '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.78 4.78 4 4 0 0 1-6.74 0 4 4 0 0 1-4.78-4.78 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path>',
             "check": '<path d="M20 6 9 17l-5-5"></path>',
+            "clock": '<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>',
             "copy": '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>',
             "copy-check": '<path d="m12 15 2 2 4-4"></path><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>',
             "credit-card": '<rect width="20" height="14" x="2" y="5" rx="2"></rect><path d="M2 10h20"></path>',
@@ -2579,7 +3036,11 @@
             el.drawerBackdrop.addEventListener("click", closeCart);
             el.copyOrderButton.addEventListener("click", copyOrder);
             el.clearCartButton.addEventListener("click", clearCart);
-            el.payBalanceButton.addEventListener("click", payWithBalance);
+            el.payPaypalButton.addEventListener("click", openPaypalCheckout);
+            el.copyPaypalEmail.addEventListener("click", () => copyText(PAYPAL_EMAIL, "PayPal email copied"));
+            el.copyPaypalNote.addEventListener("click", () => copyText(state.paypalOrderNote || el.paypalOrderNote.textContent, "Order ID copied"));
+            el.copyPaypalOrderButton.addEventListener("click", copyOrder);
+            el.checkPaypalStatusButton.addEventListener("click", checkPaypalStatus);
 
             el.loginButton.addEventListener("click", () => openModal("loginModal"));
             el.accountLoginButton.addEventListener("click", () => openModal("loginModal"));

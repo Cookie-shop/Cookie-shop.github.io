@@ -1208,6 +1208,30 @@
             white-space: nowrap;
         }
 
+        .beta-badge {
+            min-height: 20px;
+            border: 1px solid rgba(255, 214, 10, 0.58);
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            color: #ffd60a;
+            background: rgba(255, 214, 10, 0.14);
+            font-size: 0.68rem;
+            font-weight: 1000;
+            line-height: 1;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .primary-btn .beta-badge {
+            color: #3a2600;
+            background: #ffd84d;
+            border-color: rgba(255,255,255,0.5);
+        }
+
         .paypal-body {
             gap: 18px;
         }
@@ -1320,6 +1344,37 @@
 
         .paypal-status.error {
             color: #ffd2da;
+        }
+
+        .paypal-auto-note,
+        .paypal-ticket-help {
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.045);
+            padding: 10px 12px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+
+        .paypal-auto-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .paypal-auto-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #ffd60a;
+            box-shadow: 0 0 18px rgba(255, 214, 10, 0.72);
+            flex: 0 0 auto;
+        }
+
+        .paypal-ticket-help a {
+            color: #ffd60a;
+            font-weight: 900;
         }
 
         .modal-backdrop {
@@ -1783,7 +1838,7 @@
                 <div class="metrics" aria-label="Store highlights">
                     <div class="metric"><strong id="metricProducts">75+</strong><span>Products</span></div>
                     <div class="metric"><strong>4.8</strong><span>Average rating</span></div>
-                    <div class="metric"><strong>Bot</strong><span>Payment matching</span></div>
+                    <div class="metric"><strong>Auto</strong><span>20s status checks</span></div>
                     <div class="metric"><strong>PayPal</strong><span>Order ID checkout</span></div>
                 </div>
             </div>
@@ -1823,8 +1878,8 @@
                     <article class="feature">
                         <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
                         <div>
-                            <h3>Bot-confirmed code</h3>
-                            <p>After your backend confirms PayPal payment, the bot can send a delivery code for the Discord ticket.</p>
+                            <h3>Confirmed delivery code</h3>
+                            <p>After PayPal payment is confirmed, you receive a delivery code for the Discord ticket.</p>
                         </div>
                     </article>
                 </div>
@@ -1838,7 +1893,7 @@
                         <div class="section-kicker">Catalog</div>
                         <h2>Find the right drop.</h2>
                     </div>
-                    <p class="section-note">Prices are listed in EUR by default. PayPal instructions create an Order ID that your bot can match before it gives a Discord delivery code.</p>
+                    <p class="section-note">Prices are listed in EUR by default. PayPal instructions create an Order ID that support staff can match before delivery.</p>
                 </div>
 
                 <div class="shop-tools" aria-label="Product controls">
@@ -1933,7 +1988,7 @@
                         <div class="section-kicker">Support</div>
                         <h2>Friendly staff, clear tickets.</h2>
                     </div>
-                    <p class="section-note">Use PayPal checkout to create an Order ID. After the bot confirms the payment, paste the delivery code it gives you into a Discord ticket.</p>
+                    <p class="section-note">Use PayPal checkout to create an Order ID. After payment confirmation, paste the delivery code into a Discord ticket.</p>
                 </div>
 
                 <div class="account-row" id="accountRow">
@@ -1956,7 +2011,7 @@
                 <div class="feedback-grid">
                     <div class="contact-panel">
                         <h3>Payment options</h3>
-                        <p>Use PayPal checkout for orders. The bot matches the PayPal Order ID, then gives a delivery code for the Discord ticket.</p>
+                        <p>Use PayPal checkout for orders. Staff confirms the PayPal Order ID, then you get a delivery code for the Discord ticket.</p>
                         <div class="payment-list" aria-label="Payment methods">
                             <span>PayPal</span>
                         </div>
@@ -1986,7 +2041,7 @@
                 <div class="faq-grid">
                     <article class="faq-item">
                         <h3>How do orders work?</h3>
-                        <p>Add products to the cart, click Pay With PayPal, and pay with the shown Order ID. The bot confirms the payment, then gives a delivery code for Discord.</p>
+                        <p>Add products to the cart, click Pay With PayPal, and pay with the shown Order ID. After confirmation, you get a delivery code for Discord.</p>
                     </article>
                     <article class="faq-item">
                         <h3>Does the cart save?</h3>
@@ -1998,7 +2053,7 @@
                     </article>
                     <article class="faq-item">
                         <h3>Where does the code go?</h3>
-                        <p>After payment is confirmed, paste the bot's delivery code into your Discord ticket so staff can finish the order.</p>
+                        <p>After payment is confirmed, paste the delivery code into your Discord ticket so staff can finish the order.</p>
                     </article>
                 </div>
             </div>
@@ -2042,6 +2097,7 @@
                 <button class="primary-btn" type="button" id="payPaypalButton">
                     <i data-lucide="credit-card" class="icon" aria-hidden="true"></i>
                     Pay With PayPal
+                    <span class="beta-badge">Beta</span>
                 </button>
             </div>
             <p class="payment-help">PayPal opens payment instructions with the exact amount, PayPal email, and required Order ID.</p>
@@ -2124,7 +2180,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p class="section-note">Paste this bot delivery code in your Discord ticket to receive your product.</p>
+                <p class="section-note">Paste this delivery code in your Discord ticket to receive your product.</p>
                 <div class="cart-copy" id="purchaseCode" style="min-height: 54px; display: grid; place-items: center; color: var(--text); font-size: 1rem;"></div>
                 <a class="primary-btn" href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">
                     <i data-lucide="message-circle" class="icon" aria-hidden="true"></i>
@@ -2140,6 +2196,7 @@
                 <span class="paypal-deadline-label" id="paypalTitle">
                     <i data-lucide="clock" class="icon" aria-hidden="true"></i>
                     Pay before
+                    <span class="beta-badge">Beta</span>
                 </span>
                 <strong class="paypal-deadline" id="paypalDeadline">--</strong>
                 <button class="icon-btn" type="button" data-close-modal="paypalModal" aria-label="Close PayPal instructions">
@@ -2152,25 +2209,25 @@
                     <strong>Important:</strong>
                     <ul>
                         <li>Send exactly <b id="paypalAmount">EUR 0.00</b></li>
-                        <li>Use normal PayPal payment for goods/services</li>
+                        <li>Use normal PayPal payment</li>
                         <li>Include your Order ID in the payment note</li>
                     </ul>
                 </div>
                 <div class="bot-confirm-card">
                     <div class="bot-confirm-title">
                         <i data-lucide="shield-check" class="icon" aria-hidden="true"></i>
-                        Bot-confirmed delivery
+                        Staff-confirmed delivery
                     </div>
                     <div class="bot-confirm-steps">
                         <p><span>1.</span> Customer pays with the exact amount and Order ID.</p>
-                        <p><span>2.</span> The bot/backend checks PayPal and matches that Order ID.</p>
-                        <p><span>3.</span> After confirmation, the bot gives a delivery code to paste in a Discord ticket.</p>
+                        <p><span>2.</span> Staff checks PayPal and matches that Order ID.</p>
+                        <p><span>3.</span> After confirmation, you receive a delivery code to paste in a Discord ticket.</p>
                     </div>
                 </div>
                 <div class="paypal-field">
                     <label>PayPal email</label>
                     <div class="paypal-copy-box">
-                        <span class="paypal-copy-text" id="paypalEmail">jokubassakalis@gmail.com</span>
+                        <span class="paypal-copy-text" id="paypalEmail">nedxn100@gmail.com</span>
                         <button class="icon-btn" type="button" id="copyPaypalEmail" aria-label="Copy PayPal email">
                             <i data-lucide="copy" class="icon" aria-hidden="true"></i>
                             <span class="icon-fallback" aria-hidden="true">COPY</span>
@@ -2201,7 +2258,12 @@
                         Copy Order
                     </button>
                 </div>
-                <p class="paypal-status" id="paypalStatusMessage">Waiting for PayPal payment and bot confirmation.</p>
+                <div class="paypal-auto-note">
+                    <span class="paypal-auto-dot" aria-hidden="true"></span>
+                    Auto-checking for confirmation every 20 seconds.
+                </div>
+                <p class="paypal-status" id="paypalStatusMessage">Waiting for PayPal payment and staff confirmation.</p>
+                <p class="paypal-ticket-help">Payment not being confirmed? Please create a ticket in our <a href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">Discord</a>.</p>
             </div>
         </div>
     </div>
@@ -2216,8 +2278,9 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzfAENtvAxaxW70i3b_dZDJxJ0IDLufuLyHnzJ1XF0yPG71oAolGTZGWGOUWX-TJ6yBw/exec";
         const BACKEND_URL = "https://corsproxy.io/?" + encodeURIComponent(SCRIPT_URL);
         const DISCORD_URL = "https://discord.gg/49cwUj62aC";
-        const PAYPAL_EMAIL = "jokubassakalis@gmail.com";
+        const PAYPAL_EMAIL = "nedxn100@gmail.com";
         const PAYPAL_PAYMENT_LINK = "https://www.paypal.com/myaccount/transfer/homepage";
+        const PAYPAL_AUTO_CHECK_SECONDS = 20;
 
         const products = [
             { id: "rust", name: "Rust", cat: "games", price: 4.99, img: "header.jpg", rating: 4.8, desc: "Survival PvP with base building and raids.", featured: true, sale: 15 },
@@ -2341,7 +2404,9 @@
             payCooldown: false,
             checkoutCooldown: false,
             paypalOrderNote: "",
-            paypalDeadline: null
+            paypalDeadline: null,
+            paypalCheckTimer: null,
+            paypalCheckInProgress: false
         };
 
         const el = {};
@@ -2558,7 +2623,7 @@
                 lines.push(`Order ID: ${state.paypalOrderNote}`);
                 lines.push(`PayPal email: ${PAYPAL_EMAIL}`);
             }
-            lines.push("Put the Order ID in the PayPal note. After bot confirmation, paste the delivery code in Discord.");
+            lines.push("Put the Order ID in the PayPal note. After payment confirmation, paste the delivery code in Discord.");
             return lines.join("\n");
         }
 
@@ -2641,10 +2706,11 @@
         }
 
         function resetPaypalInstructions() {
+            stopPaypalAutoCheck();
             state.paypalOrderNote = "";
             state.paypalDeadline = null;
             if (el.paypalStatusMessage) {
-                el.paypalStatusMessage.textContent = "Waiting for PayPal payment and bot confirmation.";
+                el.paypalStatusMessage.textContent = "Waiting for PayPal payment and staff confirmation.";
                 el.paypalStatusMessage.className = "paypal-status";
             }
         }
@@ -2663,6 +2729,20 @@
         function setPaypalStatus(message, type = "") {
             el.paypalStatusMessage.textContent = message;
             el.paypalStatusMessage.className = `paypal-status ${type}`.trim();
+        }
+
+        function stopPaypalAutoCheck() {
+            if (state.paypalCheckTimer) {
+                window.clearInterval(state.paypalCheckTimer);
+                state.paypalCheckTimer = null;
+            }
+        }
+
+        function startPaypalAutoCheck() {
+            stopPaypalAutoCheck();
+            state.paypalCheckTimer = window.setInterval(() => {
+                checkPaypalStatus({ silent: true, automatic: true });
+            }, PAYPAL_AUTO_CHECK_SECONDS * 1000);
         }
 
         function formatPaypalDeadline(date) {
@@ -2716,49 +2796,60 @@
             state.paypalOrderNote = result.data.orderId;
             state.paypalDeadline = result.data.payBefore ? new Date(result.data.payBefore).getTime() : Date.now() + 30 * 60 * 1000;
             updatePaypalModal(result.data);
-            setPaypalStatus("Waiting for PayPal payment and bot confirmation.");
+            setPaypalStatus(`Waiting for PayPal payment and staff confirmation. Auto-check runs every ${PAYPAL_AUTO_CHECK_SECONDS} seconds.`);
             openModal("paypalModal");
+            startPaypalAutoCheck();
             refreshIcons();
             showToast("PayPal Order ID ready");
         }
 
-        async function checkPaypalStatus() {
+        async function checkPaypalStatus(options = {}) {
+            const silent = Boolean(options.silent);
             if (!state.paypalOrderNote) {
-                showToast("Create a PayPal Order ID first", true);
+                if (!silent) showToast("Create a PayPal Order ID first", true);
                 return;
             }
 
+            if (state.paypalCheckInProgress) {
+                if (!silent) showToast("Already checking payment");
+                return;
+            }
+
+            state.paypalCheckInProgress = true;
             el.checkPaypalStatusButton.disabled = true;
-            setPaypalStatus("Checking bot confirmation...");
+            setPaypalStatus(options.automatic ? "Auto-checking payment confirmation..." : "Checking payment confirmation...");
             const result = await apiCall("getPaypalOrderStatus", {
                 orderId: state.paypalOrderNote
             });
+            state.paypalCheckInProgress = false;
             el.checkPaypalStatusButton.disabled = false;
 
             if (!result.success) {
                 setPaypalStatus(result.message || "Could not check payment yet.", "error");
-                showToast(result.message || "Could not check payment yet", true);
+                if (!silent) showToast(result.message || "Could not check payment yet", true);
                 return;
             }
 
             const status = String(result.data?.status || "").toUpperCase();
             if (status === "CONFIRMED" && result.data.deliveryCode) {
+                stopPaypalAutoCheck();
                 setPaypalStatus("Payment confirmed. Delivery code ready.", "success");
                 el.purchaseCode.textContent = result.data.deliveryCode;
                 closeModal("paypalModal");
                 openModal("codeModal");
-                showToast("Payment confirmed");
+                if (!silent) showToast("Payment confirmed");
                 return;
             }
 
             if (status === "EXPIRED") {
+                stopPaypalAutoCheck();
                 setPaypalStatus("This Order ID expired. Create a new PayPal checkout.", "error");
-                showToast("Order ID expired", true);
+                if (!silent) showToast("Order ID expired", true);
                 return;
             }
 
-            setPaypalStatus("Still waiting. PayPal payment has not been confirmed by the bot yet.");
-            showToast("Still waiting for bot confirmation");
+            setPaypalStatus("Payment not confirmed yet. We auto-check every 20 seconds. If it takes too long, create a ticket in our Discord.");
+            if (!silent) showToast("Still waiting for staff confirmation");
         }
 
         function clearCart() {
@@ -2776,6 +2867,7 @@
 
         function closeModal(id) {
             document.getElementById(id)?.classList.remove("active");
+            if (id === "paypalModal") stopPaypalAutoCheck();
         }
 
         async function apiCall(action, data) {

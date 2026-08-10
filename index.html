@@ -3643,7 +3643,7 @@
                 </div>
                 <div class="detail-gallery" id="detailGallery">
                     <img id="detailImage" src="" alt="" loading="lazy">
-                    <div class="detail-image-fallback" id="detailImageFallback">CS</div>
+                    <div class="detail-image-fallback" id="detailImageFallback"></div>
                 </div>
                 <div class="detail-info">
                     <div class="detail-title-row">
@@ -4248,7 +4248,7 @@
                         <div class="product-price-badge">
                             <span class="product-card-price">${formatBadgePrice(product.price)}</span>
                         </div>
-                        <div class="image-fallback-label">CS</div>
+                        <div class="image-fallback-label"></div>
                     </div>
                     <div class="product-body">
                         <div class="product-meta">
@@ -4297,13 +4297,7 @@
         }
 
         function getProductInitials(product) {
-            return product.name
-                .split(/\s+/)
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((part) => part.charAt(0))
-                .join("")
-                .toUpperCase() || "CS";
+            return "";
         }
 
         function updateDetailQuantity(delta) {

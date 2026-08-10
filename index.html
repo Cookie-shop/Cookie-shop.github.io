@@ -131,14 +131,63 @@
         @keyframes reveal-up {
             from {
                 opacity: 0;
-                transform: translateY(28px);
-                filter: blur(14px);
+                transform: translateY(42px) scale(0.97);
+                filter: blur(18px) saturate(0.72);
+            }
+
+            72% {
+                opacity: 1;
+                transform: translateY(-4px) scale(1.004);
+                filter: blur(0) saturate(1.04);
             }
 
             to {
                 opacity: 1;
                 transform: translateY(0);
+                filter: blur(0) saturate(1);
+            }
+        }
+
+        @keyframes product-deal-in {
+            from {
+                opacity: 0;
+                transform: perspective(900px) translateY(58px) rotateX(10deg) scale(0.94);
+                filter: blur(20px) saturate(0.62);
+            }
+
+            68% {
+                opacity: 1;
+                transform: perspective(900px) translateY(-6px) rotateX(-1.2deg) scale(1.008);
+                filter: blur(0) saturate(1.05);
+            }
+
+            to {
+                opacity: 1;
+                transform: perspective(900px) translateY(0) rotateX(0) scale(1);
+                filter: blur(0) saturate(1);
+            }
+        }
+
+        @keyframes footer-signature-in {
+            from {
+                opacity: 0;
+                transform: translateY(72%) scale(0.94);
+                filter: blur(24px);
+                clip-path: inset(0 0 100% 0);
+            }
+
+            70% {
+                opacity: 1;
+                transform: translateY(-3%) scale(1.008);
                 filter: blur(0);
+                clip-path: inset(0 0 0 0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+                clip-path: inset(0 0 0 0);
             }
         }
 
@@ -187,7 +236,9 @@
         .scroll-reveal-ready .account-row,
         .scroll-reveal-ready .contact-panel,
         .scroll-reveal-ready .faq-item,
-        .scroll-reveal-ready .footer-col {
+        .scroll-reveal-ready .footer-col,
+        .scroll-reveal-ready .footer-bottom,
+        .scroll-reveal-ready .footer-wordmark {
             opacity: 0;
             transform: translateY(28px);
             filter: blur(14px);
@@ -215,8 +266,20 @@
         .scroll-reveal-ready .account-row.is-revealed,
         .scroll-reveal-ready .contact-panel.is-revealed,
         .scroll-reveal-ready .faq-item.is-revealed,
-        .scroll-reveal-ready .footer-col.is-revealed {
+        .scroll-reveal-ready .footer-col.is-revealed,
+        .scroll-reveal-ready .footer-bottom.is-revealed,
+        .scroll-reveal-ready .footer-wordmark.is-revealed {
             animation: reveal-up 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .scroll-reveal-ready .product-card.is-revealed {
+            animation-name: product-deal-in;
+            animation-duration: 0.88s;
+            transform-origin: center bottom;
+        }
+
+        .scroll-reveal-ready .footer-wordmark.is-revealed {
+            animation: footer-signature-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         .scroll-reveal-ready .reveal-done {
@@ -276,7 +339,9 @@
         body.reduce-motion .account-row,
         body.reduce-motion .contact-panel,
         body.reduce-motion .faq-item,
-        body.reduce-motion .footer-col {
+        body.reduce-motion .footer-col,
+        body.reduce-motion .footer-bottom,
+        body.reduce-motion .footer-wordmark {
             animation: none !important;
             opacity: 1;
             transform: none;
@@ -521,6 +586,10 @@
         .icon-btn {
             width: 46px;
             padding: 0;
+        }
+
+        .nav-actions #themeButton {
+            display: none;
         }
 
         .cart-count {
@@ -1285,14 +1354,19 @@
             border: 1px solid var(--line);
             border-radius: var(--radius);
             background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 42%),
-                var(--surface);
+                linear-gradient(180deg, rgba(244, 185, 66, 0.055), transparent 46%),
+                color-mix(in srgb, var(--surface) 68%, transparent);
             min-width: 0;
             overflow: hidden;
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            content-visibility: auto;
+            contain-intrinsic-size: 340px;
+            transform-style: preserve-3d;
+            backdrop-filter: blur(12px) saturate(118%);
+            -webkit-backdrop-filter: blur(12px) saturate(118%);
+            transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.34s ease;
         }
 
         .product-card::before {
@@ -1319,12 +1393,28 @@
             overflow: hidden;
         }
 
+        .product-image::before {
+            content: "";
+            position: absolute;
+            top: -24%;
+            bottom: -24%;
+            left: -42%;
+            z-index: 2;
+            width: 30%;
+            pointer-events: none;
+            background: linear-gradient(90deg, transparent, rgba(255, 241, 210, 0.34), transparent);
+            transform: translateX(-220%) skewX(-16deg);
+            transition: transform 0.82s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform;
+        }
+
         .product-image::after {
             content: "";
             position: absolute;
             inset: auto 0 0;
             height: 45%;
             pointer-events: none;
+            z-index: 1;
             background: linear-gradient(180deg, transparent, rgba(10, 12, 9, 0.72));
         }
 
@@ -1332,12 +1422,17 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.35s ease;
+            transition: transform 0.68s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease;
             filter: saturate(0.96) contrast(0.98);
         }
 
         .product-card:hover .product-image img {
-            transform: scale(1.04);
+            transform: scale(1.075) rotate(0.35deg);
+            filter: saturate(1.08) contrast(1.02);
+        }
+
+        .product-card:hover .product-image::before {
+            transform: translateX(520%) skewX(-16deg);
         }
 
         .image-fallback-label {
@@ -1401,13 +1496,23 @@
             display: grid;
             justify-items: end;
             gap: 2px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            overflow: hidden;
+            border: 1px solid rgba(255, 232, 190, 0.24);
             border-radius: 8px;
-            background: rgba(9, 10, 9, 0.82);
+            background: linear-gradient(135deg, rgba(255, 244, 220, 0.16), rgba(244, 185, 66, 0.06));
             color: #fff;
             padding: 6px 8px;
-            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .product-card:hover .product-price-badge {
+            transform: translateY(-4px) scale(1.045);
+            border-color: rgba(244, 185, 66, 0.48);
+            background:
+                linear-gradient(135deg, rgba(255, 244, 220, 0.22), rgba(244, 185, 66, 0.09));
         }
 
         .product-card-price {
@@ -1416,10 +1521,11 @@
             line-height: 1;
             font-weight: 950;
             white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.88), 0 0 12px rgba(0, 0, 0, 0.56);
         }
 
         body.light .product-price-badge {
-            background: rgba(30, 24, 18, 0.84);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(244, 185, 66, 0.1));
         }
 
         .product-body {
@@ -2148,10 +2254,23 @@
         }
 
         .footer {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
             border-top: 1px solid var(--line);
-            padding: 38px 0;
+            padding: 48px 0 0;
             color: var(--muted);
             background: rgba(0, 0, 0, 0.18);
+        }
+
+        .footer::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            z-index: -1;
+            height: 220px;
+            pointer-events: none;
+            background: radial-gradient(ellipse at 50% 0%, rgba(244, 185, 66, 0.09), transparent 70%);
         }
 
         body.light .footer {
@@ -2163,6 +2282,56 @@
             grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(120px, 0.6fr));
             gap: 34px;
             align-items: start;
+        }
+
+        .footer-bottom {
+            margin-top: 42px;
+            padding: 18px 0;
+            border-top: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .footer-back-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--khaki-beige);
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .footer-back-top:hover {
+            color: var(--honey-gold);
+            transform: translateY(-2px);
+        }
+
+        .footer-wordmark-wrap {
+            width: 100%;
+            overflow: hidden;
+            border-top: 1px solid rgba(198, 172, 143, 0.08);
+            padding: 34px 16px 20px;
+        }
+
+        .footer-wordmark {
+            color: rgba(234, 224, 213, 0.055);
+            font-size: 11rem;
+            line-height: 0.88;
+            font-weight: 1000;
+            letter-spacing: 0;
+            text-align: center;
+            white-space: nowrap;
+            user-select: none;
+            pointer-events: none;
+            text-shadow: 0 -1px 0 rgba(244, 185, 66, 0.08);
+        }
+
+        body.light .footer-wordmark {
+            color: rgba(94, 80, 63, 0.08);
         }
 
         .footer-links {
@@ -2921,8 +3090,13 @@
         }
 
         .product-card:hover {
+            transform: perspective(900px) translateY(-8px) rotateX(1.5deg) scale(1.012);
             border-color: rgba(244, 185, 66, 0.55);
             box-shadow: 0 24px 52px rgba(244, 185, 66, 0.12), 0 18px 34px rgba(0, 0, 0, 0.34);
+        }
+
+        .scroll-reveal-ready .product-card.reveal-done:hover {
+            transform: perspective(900px) translateY(-8px) rotateX(1.5deg) scale(1.012) !important;
         }
 
         .add-btn:hover,
@@ -3240,6 +3414,35 @@
                 grid-template-columns: 1fr 1fr;
             }
         }
+        @media (max-width: 940px) {
+            .footer-wordmark {
+                font-size: 7rem;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .footer-bottom {
+                align-items: flex-start;
+                flex-direction: column;
+                margin-top: 30px;
+            }
+
+            .footer-wordmark-wrap {
+                padding: 28px 10px 16px;
+            }
+
+            .footer-wordmark {
+                font-size: 4.4rem;
+            }
+
+            .product-card:hover {
+                transform: translateY(-5px) scale(1.006);
+            }
+
+            .scroll-reveal-ready .product-card.reveal-done:hover {
+                transform: translateY(-5px) scale(1.006) !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3249,23 +3452,23 @@
         <div class="topline">
             <div class="topline-inner">
                 <span>Need help? Join our <a href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">Discord</a>.</span>
-                <span class="topline-close" aria-hidden="true"></span>
+                <span class="topline-close" aria-hidden="true">x</span>
             </div>
         </div>
         <nav class="nav" aria-label="Main navigation">
-            <a class="brand" href="#top" aria-label="Cookie's Shop home">
-                <img class="brand-mark" src="cookie-cutout.png" alt="" aria-hidden="true">
+            <a class="brand" href="https://cookiestore.online/" aria-label="Cookie's Shop home">
+                <img class="brand-mark" src="https://cookiestore.online/logocookie.png" alt="" aria-hidden="true">
                 <span class="brand-copy">
                     <span class="brand-title">Cookie's Shop</span>
                     <span class="brand-sub">Gaming store</span>
                 </span>
             </a>
             <div class="nav-links">
-                <a class="active" href="#top">
+                <a class="active" href="https://cookiestore.online/">
                     <i data-lucide="home" class="icon" aria-hidden="true"></i>
                     Home
                 </a>
-                <a href="Products">
+                <a href="https://cookiestore.online/Products/">
                     <i data-lucide="search" class="icon" aria-hidden="true"></i>
                     All
                 </a>
@@ -3313,7 +3516,7 @@
                     <h1>Cheapest games and subscriptions. <span>Choose Cookie's Shop.</span></h1>
                     <p class="hero-copy">Choose from games, subscriptions, Robux, FiveM tools, and bundles. Add your picks to the cart, then checkout with a tracked PayPal Order ID.</p>
                     <div class="hero-actions">
-                        <a class="primary-btn" href="products.html">
+                        <a class="primary-btn" href="https://cookiestore.online/Products/">
                             <i data-lucide="store" class="icon" aria-hidden="true"></i>
                             Browse Products
                         </a>
@@ -3324,7 +3527,7 @@
                     </div>
                 </div>
                 <div class="hero-cookie-scene" aria-hidden="true">
-                    <img class="hero-cookie-img" src="cookie-cutout.png" alt="">
+                    <img class="hero-cookie-img" src="https://cookiestore.online/cookie-cutout.png" alt="">
                     <span class="cookie-spark"></span>
                     <span class="cookie-spark"></span>
                     <span class="cookie-spark"></span>
@@ -3349,21 +3552,21 @@
                     <p class="section-note">Start with the shelf you need, then use the catalog filters for the exact product.</p>
                 </div>
                 <div class="category-grid">
-                    <a class="category-card" href="products.html">
+                    <a class="category-card" href="https://cookiestore.online/Products/">
                         <span class="category-icon"><i data-lucide="store" class="icon" aria-hidden="true"></i></span>
                         <div>
                             <strong>Games</strong>
                             <span>Steam games, bundles, and accounts.</span>
                         </div>
                     </a>
-                    <a class="category-card" href="products.html">
+                    <a class="category-card" href="https://cookiestore.online/Products/">
                         <span class="category-icon"><i data-lucide="zap" class="icon" aria-hidden="true"></i></span>
                         <div>
                             <strong>Subscriptions</strong>
                             <span>Nitro, streaming, VPN, and apps.</span>
                         </div>
                     </a>
-                    <a class="category-card" href="products.html">
+                    <a class="category-card" href="https://cookiestore.online/Products/">
                         <span class="category-icon"><i data-lucide="message-circle" class="icon" aria-hidden="true"></i></span>
                         <div>
                             <strong>Social & Tools</strong>
@@ -3397,7 +3600,7 @@
                 </div>
                 <div class="home-shelf-footer">
                     <div class="shop-summary" id="shopSummary"></div>
-                    <a class="view-all-link" href="products.html">
+                    <a class="view-all-link" href="https://cookiestore.online/Products/">
                         View all products
                         <i data-lucide="arrow-right" class="icon" aria-hidden="true"></i>
                     </a>
@@ -3417,8 +3620,8 @@
                 </div>
                 <div class="reviews-grid">
                     <article class="review-card">
-                        <a class="proof-link" href="tuco.png" target="_blank" rel="noopener">
-                            <img src="tuco.png" alt="Robux order proof from tuco" loading="lazy">
+                        <a class="proof-link" href="https://cookiestore.online/tuco.png" target="_blank" rel="noopener">
+                            <img src="https://cookiestore.online/tuco.png" alt="Robux order proof from tuco" loading="lazy">
                         </a>
                         <div class="review-copy">
                             <h3>tuco</h3>
@@ -3427,8 +3630,8 @@
                         </div>
                     </article>
                     <article class="review-card">
-                        <a class="proof-link" href="kaspisijus.png" target="_blank" rel="noopener">
-                            <img src="kaspisijus.png" alt="Discord Nitro order proof from kaspisijus" loading="lazy">
+                        <a class="proof-link" href="https://cookiestore.online/kaspisijus.png" target="_blank" rel="noopener">
+                            <img src="https://cookiestore.online/kaspisijus.png" alt="Discord Nitro order proof from kaspisijus" loading="lazy">
                         </a>
                         <div class="review-copy">
                             <h3>kaspisijus</h3>
@@ -3437,8 +3640,8 @@
                         </div>
                     </article>
                     <article class="review-card">
-                        <a class="proof-link" href="kaspisijus2.png" target="_blank" rel="noopener">
-                            <img src="kaspisijus2.png" alt="Forza Horizon 5 order proof from kaspisijus" loading="lazy">
+                        <a class="proof-link" href="https://cookiestore.online/kaspisijus2.png" target="_blank" rel="noopener">
+                            <img src="https://cookiestore.online/kaspisijus2.png" alt="Forza Horizon 5 order proof from kaspisijus" loading="lazy">
                         </a>
                         <div class="review-copy">
                             <h3>kaspisijus</h3>
@@ -3549,8 +3752,8 @@
     <footer class="footer">
         <div class="section-inner footer-grid">
             <div class="footer-col">
-                <a class="brand" href="#top">
-                    <img class="brand-mark" src="logocookie.png" alt="" aria-hidden="true">
+                <a class="brand" href="https://cookiestore.online/">
+                    <img class="brand-mark" src="https://cookiestore.online/logocookie.png" alt="" aria-hidden="true">
                     <span class="brand-copy">
                         <span class="brand-title">Cookie's Shop</span>
                         <span class="brand-sub">Digital gaming store</span>
@@ -3560,13 +3763,13 @@
                 <div class="footer-socials">
                     <a href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener" aria-label="Discord">D</a>
                     <a href="#reviews" aria-label="Reviews">R</a>
-                    <a href="products.html" aria-label="Products">P</a>
+                    <a href="https://cookiestore.online/Products/" aria-label="Products">P</a>
                 </div>
             </div>
             <div class="footer-col">
                 <h3>Explore</h3>
                 <div class="footer-links">
-                    <a href="products.html">Products</a>
+                    <a href="https://cookiestore.online/Products/">Products</a>
                     <a href="#reviews">Reviews</a>
                     <a href="https://discord.gg/49cwUj62aC" target="_blank" rel="noopener">Discord</a>
                 </div>
@@ -3582,11 +3785,18 @@
             <div class="footer-col">
                 <h3>Store</h3>
                 <div class="footer-links">
-                    <a href="products.html">Games</a>
-                    <a href="products.html">Subscriptions</a>
-                    <a href="products.html">Bundles</a>
+                    <a href="https://cookiestore.online/Products/">Games</a>
+                    <a href="https://cookiestore.online/Products/">Subscriptions</a>
+                    <a href="https://cookiestore.online/Products/">Bundles</a>
                 </div>
             </div>
+        </div>
+        <div class="section-inner footer-bottom">
+            <span>&copy; 2026 Cookie's Shop. All rights reserved.</span>
+            <a class="footer-back-top" href="#top">Back to top <span aria-hidden="true">&uarr;</span></a>
+        </div>
+        <div class="footer-wordmark-wrap" aria-hidden="true">
+            <div class="footer-wordmark">Cookie's Shop</div>
         </div>
     </footer>
 
@@ -3856,6 +4066,7 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzfAENtvAxaxW70i3b_dZDJxJ0IDLufuLyHnzJ1XF0yPG71oAolGTZGWGOUWX-TJ6yBw/exec";
         const BACKEND_URL = "https://corsproxy.io/?" + encodeURIComponent(SCRIPT_URL);
         const DISCORD_URL = "https://discord.gg/49cwUj62aC";
+        const ASSET_BASE_URL = "https://cookiestore.online/";
         const PAYPAL_EMAIL = "nedxn100@gmail.com";
         const PAYPAL_PAYMENT_LINK = "https://www.paypal.com/myaccount/transfer/homepage";
         const PAYPAL_AUTO_CHECK_SECONDS = 20;
@@ -4024,7 +4235,9 @@
             ".account-row",
             ".contact-panel",
             ".faq-item",
-            ".footer-col"
+            ".footer-col",
+            ".footer-bottom",
+            ".footer-wordmark"
         ].join(",");
         let revealObserver = null;
         const revealedNodes = new WeakSet();
@@ -4152,6 +4365,12 @@
             return products.find((product) => product.id === id);
         }
 
+        function assetUrl(src) {
+            if (!src) return "";
+            if (/^(https?:|data:|blob:)/i.test(src)) return src;
+            return ASSET_BASE_URL + src.replace(/^\/+/, "");
+        }
+
         function showToast(message, isError = false) {
             el.toast.textContent = message;
             el.toast.className = "toast" + (isError ? " error" : "");
@@ -4244,7 +4463,7 @@
                         <div class="product-badges">
                             ${product.featured ? `<span class="badge hot">Hot</span>` : `<span class="badge">${escapeHtml(categoryLabel(product.cat))}</span>`}
                         </div>
-                        <img src="${escapeHtml(product.img)}" alt="${escapeHtml(product.name)}" loading="lazy" onerror="this.parentElement.classList.add('image-fallback'); this.remove();">
+                        <img src="${escapeHtml(assetUrl(product.img))}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" fetchpriority="low" onerror="this.parentElement.classList.add('image-fallback'); this.remove();">
                         <div class="product-price-badge">
                             <span class="product-card-price">${formatBadgePrice(product.price)}</span>
                         </div>
@@ -4324,7 +4543,7 @@
             el.detailImage.onerror = () => {
                 el.detailGallery.classList.add("image-fallback");
             };
-            el.detailImage.src = product.img;
+            el.detailImage.src = assetUrl(product.img);
             el.detailImage.alt = product.name;
 
             openModal("productDetailModal");
